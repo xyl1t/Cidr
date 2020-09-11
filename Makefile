@@ -7,29 +7,31 @@
 ### Variables ###
 PROJECT := Cidr
 CXX := clang++
-CXXFLAGS := -std=c++17 -I include -L lib -l SDL2-2.0.0
+CXXFLAGS := -std=c++17 -I include
+LDFLAGS := -L lib
+LDLIBS :=  -l SDL2-2.0.0
 BUILDDIR := build
 SOURCES := $(wildcard *.cpp)
-OBJS := $(patsubst %.cpp,%.o,$(SOURCES))
+OBJS := $(patsubst %.cpp,$(BUILDDIR)/%.o,$(SOURCES))
 
 ### Phony targets ###
 .PHONY: all clean
 all: $(BUILDDIR)/$(PROJECT)
 
 # Include mostly header dependencies 
-deps := $(patsubst %.o,%.d,$(OBJS))
--include $(BUILDDIR)/$(deps)
+deps := $(patsubst %.cpp,%.d,$(SOURCES))
+-include $(deps)
 DEPFLAGS = -MMD -MF $(@:.o=.d)
 
 ### Compilation ###
 # Compile project
-$(BUILDDIR)/$(PROJECT) : $(BUILDDIR)/$(OBJS)
-	$(CXX) $(CXXFLAGS) $^ -o $@ 
+$(BUILDDIR)/$(PROJECT) : $(OBJS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@ 
 
 # Compile .o files
-$(BUILDDIR)/%.o : %.cpp # ugly, but it works
-	$(CXX) $(CXXFLAGS) -c $< $(DEPFLAGS) -o $@ 
+$(BUILDDIR)/%.o : %.cpp # ugly, AND DOESN'T WORK
+	$(CXX) $(CXXFLAGS) -c $< $(DEPFLAGS) -o $@
 	
 # clean build
 clean: 
-	rm $(BUILDDIR)/$(OBJS) $(BUILDDIR)/$(PROJECT) $(BUILDDIR)/$(deps)
+	rm $(BUILDDIR)/$(OBJS) $(BUILDDIR)/$(PROJECT) $(BUILDDIR)/$(deps) *.o *.d
