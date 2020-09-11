@@ -58,7 +58,33 @@ void Cidr::Renderer::DrawLine(Cidr::RGBA color, int x1, int y1, int x2, int y2, 
 	}
 	// Anti aliasing enabled
 	else {
-		bool isSteep = std::abs(y2 - y1) > std::abs(x2 - x1);
+		
+		int biggest {std::max(std::abs(dx), std::abs(dy))};
+		float x;
+		float y;
+		for(int i {0}; i < biggest; i++) {
+			float t {i / static_cast<float>(biggest)};
+			x = (lerp(x1, x2, t));
+			y = (lerp(y1, y2, t));
+			
+			if(biggest == std::abs(dy)) {
+				RGBA c1 { color.getRGB(), static_cast<uint8_t>(color.a * (x - static_cast<int>(x)))};
+				RGBA c2 { color.getRGB(), static_cast<uint8_t>(color.a * (1.f - (x - static_cast<int>(x))))};
+				DrawPoint(c1, x + 1, y);
+				DrawPoint(c2, x, y);
+			}
+			else {
+				RGBA c3 { color.getRGB(), static_cast<uint8_t>(color.a * (y - static_cast<int>(y)))};
+				RGBA c4 { color.getRGB(), static_cast<uint8_t>(color.a * (1.f - (y - static_cast<int>(y))))};
+				DrawPoint(c3, x, y + 1);
+				DrawPoint(c4, x, y);
+			}
+		}
+	}
+}
+
+/*
+bool isSteep = std::abs(y2 - y1) > std::abs(x2 - x1);
 		// steep
 		if(isSteep) {
 			if(y1 > y2) {
@@ -89,9 +115,7 @@ void Cidr::Renderer::DrawLine(Cidr::RGBA color, int x1, int y1, int x2, int y2, 
 				DrawPoint(c1, x, y + 1);
 			}
 		}
-	}
-}
-
+*/
 
 /*
 if(x2 < x1) {

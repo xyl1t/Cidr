@@ -45,7 +45,7 @@ int main() {
 		// cidrRend.DrawPoint(0xff00ffff, mx, my);
 		// cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
 		
-		cidrRend.DrawLine({0, 0xff, 0}, 128, 128, mx, my);
+		cidrRend.DrawLine({0, 0xff, 0}, 128, 128, mx, my, true);
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);
