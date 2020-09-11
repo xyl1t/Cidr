@@ -26,7 +26,7 @@ struct RGB {
 	virtual void setColor(uint32_t color);
 };
 
-struct RGBA : RGB{
+struct RGBA : RGB {
 	uint8_t a{0xff};
 
 	RGBA(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 0xff);
@@ -35,6 +35,8 @@ struct RGBA : RGB{
 	virtual uint32_t getColor() override;
 	virtual void setColor(uint32_t color) override;
 };
+
+uint32_t ToColor(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 0xff);
 
 }
 

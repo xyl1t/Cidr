@@ -7,6 +7,7 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include "rgb.hpp"
+#include "cidr.hpp"
 // using namespace Cidr; 
 
 int main() {
@@ -22,9 +23,9 @@ int main() {
 	uint32_t* pixels = new uint32_t[WIDTH * HEIGHT];
 	memset(pixels, 0, WIDTH * HEIGHT * sizeof(uint32_t));
 	
-	// Cidr::RGB r{};
-	// std::cout << r;
-	// return 0;
+	Cidr::Renderer cidrRend {pixels, WIDTH, HEIGHT};
+	
+	cidrRend.DrawLine({0, 0xff, 0}, 10, 10, 64, 32);
 	
 	SDL_Event e;
 	bool alive = true;
@@ -34,8 +35,6 @@ int main() {
 				alive = false;
 			}
 		}
-		
-		pixels[10 + 10 * WIDTH] = 0x00ff00ff;
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
 		SDL_RenderCopy(renderer, texture, nullptr, nullptr);

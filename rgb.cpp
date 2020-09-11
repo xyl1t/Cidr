@@ -38,10 +38,15 @@ void Cidr::RGBA::setColor(uint32_t color) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Cidr::RGB& rgb) {
-	out << "r: " << rgb.r << " g:" << rgb.g << " b: " << rgb.b;
+	out << "r: " << (int)rgb.r << " g: " << (int)rgb.g << " b: " << (int)rgb.b;
 	return out;
 }
 std::ostream& operator<<(std::ostream& out, const Cidr::RGBA& rgba) {
-	out << "r: " << rgba.r << " g:" << rgba.g << " b: " << rgba.b << " a: " << rgba.a;
+	out << "r: " << (int)rgba.r << " g: " << (int)rgba.g << " b: " << (int)rgba.b << " a: " << (int)rgba.a;
 	return out;
+}
+
+
+uint32_t Cidr::ToColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	return (r << 24) + (g << 16) + (b << 8) + (a);
 }

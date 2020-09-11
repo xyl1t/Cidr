@@ -1,0 +1,5 @@
+TODO: 
+ * Point struct
+ * Drawing Functions
+ * Sprites
+ * Stroke width
