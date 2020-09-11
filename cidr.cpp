@@ -34,7 +34,7 @@ void Cidr::Renderer::DrawLine(Cidr::RGBA color, int x1, int y1, int x2, int y2, 
 
 	// Anti aliasing disabled
 	if(!AA) {
-		float x {0}, y {0};
+		float x {static_cast<float>(x1)}, y {static_cast<float>(y1)};
 		const int& greater = dx > dy ? dx : dy;
 		float stepX = dx / static_cast<float>(greater);
 		float stepY = dy / static_cast<float>(greater);

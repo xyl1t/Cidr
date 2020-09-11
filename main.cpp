@@ -25,7 +25,7 @@ int main() {
 	
 	Cidr::Renderer cidrRend {pixels, WIDTH, HEIGHT};
 	
-	cidrRend.DrawLine({0, 0xff, 0}, 10, 10, 64, 32);
+	cidrRend.DrawLine({0, 0xff, 0}, 8, 4, 64, 32);
 	
 	SDL_Event e;
 	bool alive = true;
