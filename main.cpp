@@ -18,25 +18,33 @@ int main() {
 
 	SDL_Window* window = SDL_CreateWindow("Cidr example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
+	SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR32, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 	
 	uint32_t* pixels = new uint32_t[WIDTH * HEIGHT];
 	memset(pixels, 0, WIDTH * HEIGHT * sizeof(uint32_t));
 	
 	Cidr::Renderer cidrRend {pixels, WIDTH, HEIGHT};
 	
-	cidrRend.DrawLine({0, 0xff, 0}, 8, 4, 64, 32);
 	
 	SDL_Event e;
 	bool alive = true;
+	int mx, my;
 	while(alive) {
 		while(SDL_PollEvent(&e)) {
 			if(e.type == SDL_QUIT) {
 				alive = false;
 			}
+			SDL_GetMouseState(&mx, &my);
 		}
 		
+		cidrRend.Clear();
+		cidrRend.DrawPoint(0xff0000ff, 256, 100);
+		cidrRend.DrawPoint(0x00ff00ff, mx, my);
+		cidrRend.DrawLine({0, 0xff, 0}, 256, 100, mx, my, true);
+		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
+		SDL_RenderClear(renderer);
 		SDL_RenderCopy(renderer, texture, nullptr, nullptr);
 		SDL_RenderPresent(renderer);
 	}

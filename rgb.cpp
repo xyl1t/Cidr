@@ -24,7 +24,8 @@ void Cidr::RGB::setColor(uint32_t color) {
 
 Cidr::RGBA::RGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : Cidr::RGB(r, g, b), a(a) {
 }
-Cidr::RGBA::RGBA(const Cidr::RGB& rgb) : Cidr::RGB(rgb) {
+Cidr::RGBA::RGBA(const Cidr::RGB& rgb, int a) : Cidr::RGB(rgb), a(a) {
+	
 }
 
 uint32_t Cidr::RGBA::getColor() {

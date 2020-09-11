@@ -24,22 +24,22 @@ private:
 public:
 	Renderer(uint32_t* pixels, size_t width, size_t height);
 	
-	void Clear();
+	void Clear(); 
 	void Clear(RGBA color);
 	void Clear(uint32_t color);
 	
-	void DrawPoint(RGBA color, int x, int y); // WIP
-	void DrawPoint(uint32_t color, int x, int y); // WIP
+	void DrawPoint(RGBA color, int x, int y);
+	void DrawPoint(uint32_t color, int x, int y);
 	void DrawLine(RGBA color, int x1, int y1, int x2, int y2, bool AA = false); // WIP
-	void DrawLine(uint32_t color, int x1, int y1, int x2, int y2, bool AA = false);
-	void DrawRectangle(RGBA color, int x, int y, int wdith, int height);
-	void DrawRectangle(uint32_t color, int x, int y, int wdith, int height);
-	void FillRectangle(RGBA color, int x, int y, int wdith, int height);
-	void FillRectangle(uint32_t color, int x, int y, int wdith, int height);
-	void DrawCircle(RGBA color, int centreX, int centreY, int radius, bool AA = false);
-	void DrawCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false);
-	void FillCircle(RGBA color, int centreX, int centreY, int radius, bool AA = false);
-	void FillCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false);
+	void DrawLine(uint32_t color, int x1, int y1, int x2, int y2, bool AA = false); // NOT IMPLEMENTED
+	void DrawRectangle(RGBA color, int x, int y, int wdith, int height); // NOT IMPLEMENTED
+	void DrawRectangle(uint32_t color, int x, int y, int wdith, int height); // NOT IMPLEMENTED
+	void FillRectangle(RGBA color, int x, int y, int wdith, int height); // NOT IMPLEMENTED
+	void FillRectangle(uint32_t color, int x, int y, int wdith, int height); // NOT IMPLEMENTED
+	void DrawCircle(RGBA color, int centreX, int centreY, int radius, bool AA = false); // NOT IMPLEMENTED
+	void DrawCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false); // NOT IMPLEMENTED
+	void FillCircle(RGBA color, int centreX, int centreY, int radius, bool AA = false); // NOT IMPLEMENTED
+	void FillCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false); // NOT IMPLEMENTED
 	// void DrawSprite();
 	
 };
