@@ -36,12 +36,16 @@ int main() {
 				alive = false;
 			}
 			SDL_GetMouseState(&mx, &my);
+			mx-=5;
+			my-=5;
 		}
 		
 		cidrRend.Clear();
-		cidrRend.DrawPoint(0xff0000ff, 256, 100);
-		cidrRend.DrawPoint(0x00ff00ff, mx, my);
-		cidrRend.DrawLine({0, 0xff, 0}, 256, 100, mx, my, true);
+		// cidrRend.DrawPoint(0xff0000ff, 256, 100);
+		// cidrRend.DrawPoint(0xff00ffff, mx, my);
+		// cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
+		
+		cidrRend.DrawLine({0, 0xff, 0}, 128, 128, mx, my);
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);

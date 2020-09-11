@@ -10,6 +10,10 @@
 #include <iterator>
 #include <cmath>
 
+static inline float lerp(float a, float b, float t) {
+    return a + (b - a) * t;
+}
+
 Cidr::Renderer::Renderer(uint32_t* pixels, size_t width, size_t height) 
 	: pixels{pixels}, 
 	width{width}, 
@@ -42,17 +46,15 @@ void Cidr::Renderer::DrawLine(Cidr::RGBA color, int x1, int y1, int x2, int y2, 
 	
 	// Anti aliasing disabled
 	if(!AA) {
-		float x {static_cast<float>(x1)};
-		float y {static_cast<float>(y1)};
-		const int& greater = dx > dy ? dx : dy;
-		float stepX = dx / static_cast<float>(greater);
-		float stepY = dy / static_cast<float>(greater);
-		
-		do {
+		int biggest {std::max(std::abs(dx), std::abs(dy))};
+		float x;
+		float y;
+		for(int i {0}; i < biggest; i++) {
+			float t {i / static_cast<float>(biggest)};
+			x = std::round(lerp(x1, x2, t));
+			y = std::round(lerp(y1, y2, t));
 			DrawPoint(color, x, y);
-			x += stepX;
-			y += stepY;
-		} while(x < x2 && y < y2);
+		}
 	}
 	// Anti aliasing enabled
 	else {
@@ -92,60 +94,36 @@ void Cidr::Renderer::DrawLine(Cidr::RGBA color, int x1, int y1, int x2, int y2, 
 
 
 /*
-		// check if line is steep or shallow
-		bool isSteep = std::abs(y2 - y1) > std::abs(x2 - x1);
-		std::cout << "dx: " << dx << '\n';
-		std::cout << "dy: " << dy << '\n';
-		float m; // slope 
-		// starting positions
-		float x {static_cast<float>(x1)}; 
-		float y {static_cast<float>(y1)};
+if(x2 < x1) {
+			std::swap(x1, x2);
+			std::swap(y1, y2);
+		}
 		
-		// steep line
-		if(isSteep) {
-			std::cout << "steep\n";
-			m = static_cast<float>(dx) / dy; 
-			// iterate through the line
-			while(y < y2) {
-				if(static_cast<int>(y) - y >= 0.5) {
-					float alphaValue1 = (x - static_cast<int>(x));
-					float alphaValue2 = 1 - alphaValue1;
-					DrawPoint({color.getRGB(), static_cast<int>(color.a * alphaValue1)}, x, y);
-					DrawPoint({color.getRGB(), static_cast<int>(color.a * alphaValue2)}, x + 1, y);
-				}
-				else {
-					float alphaValue1 = (x - static_cast<int>(x));
-					float alphaValue2 = 1 - alphaValue1;
-					DrawPoint({color.getRGB(), static_cast<int>(color.a * alphaValue1)}, x, y);
-					DrawPoint({color.getRGB(), static_cast<int>(color.a * alphaValue2)}, x - 1, y);
-				}
-				x += m;
-				y += 1;
-			}
+		float dx = x2 - x1;
+		float dy = y2 - y1;
+		float gradient = dy / dx;
+		
+		// first point
+		float xend = std::round(x1);
+		float yend = y1 + gradient * (xend - x1);
+		float xgap = 1 - ((x1 + 0.5) - static_cast<int>(x1 + 0.5));
+		float xpxl1 = xend;
+		float ypxl1 = static_cast<int>(yend);
+		DrawPoint({color.getRGB(), static_cast<int>(255*(1 - (yend - static_cast<int>(yend))) * xgap)}, xpxl1, ypxl1);
+		DrawPoint({color.getRGB(), static_cast<int>(255*(yend - static_cast<int>(yend)) * xgap)}, xpxl1, ypxl1 + 1);
+		float intery = yend + gradient; // first y for loop
+		
+		xend = std::round(x2);
+		yend = y2 + gradient * (xend - x2);
+		xgap = (x1 + 0.5) - static_cast<int>(x1 + 0.5);
+		float xpxl2 = xend;
+		float ypxl2 = static_cast<int>(yend);
+		DrawPoint({color.getRGB(), static_cast<int>(255*(1 - (yend - static_cast<int>(yend))) * xgap)}, xpxl2, ypxl2);
+		DrawPoint({color.getRGB(), static_cast<int>(255*(yend - static_cast<int>(yend)) * xgap)}, xpxl2, ypxl2 + 1);
+		
+		for (int x = xpxl1 + 1; x < xpxl2 - 1; x++) {
+			DrawPoint({color.getRGB(), static_cast<int>(255*(1 - (intery - (int)intery)))}, x, (int)intery);
+			DrawPoint({color.getRGB(), static_cast<int>(255*(intery - (int)intery))}, x, (int)intery + 1);
+			intery += gradient;
 		}
-		// shallow line
-		else {
-			std::cout << "shallow\n";
-			m = static_cast<float>(dy) / dx; 
-			// iterate through the line
-			while(x < x2) {
-				if(static_cast<int>(y) - y >= 0.5) {
-					float alphaValue1 = (y - static_cast<int>(y));
-					float alphaValue2 = 1 - alphaValue1;
-					DrawPoint({color.getRGB(), static_cast<int>(color.a * alphaValue1)}, x, y);
-					DrawPoint({color.getRGB(), static_cast<int>(color.a * alphaValue2)}, x, y + 1);
-				}
-				else {
-					float alphaValue1 = (y - static_cast<int>(y));
-					float alphaValue2 = 1 - alphaValue1;
-					DrawPoint({color.getRGB(), static_cast<int>(color.a * alphaValue1)}, x, y);
-					DrawPoint({color.getRGB(), static_cast<int>(color.a * alphaValue2)}, x, y - 1);
-				}
-				x += 1;
-				y += m;
-			}
-		}
-
-
-
 */
