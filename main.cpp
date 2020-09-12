@@ -1,7 +1,7 @@
 /********************************
- * Project: Cidr				* 
- * File: main.cpp				* 
- * Date: 10.8.2020				* 
+ * Project: Cidr                *
+ * File: main.cpp               *
+ * Date: 10.8.2020              *
  ********************************/
 
 #include <iostream>

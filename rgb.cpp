@@ -1,7 +1,7 @@
 /********************************
- * Project: Cidr				*
- * File: rgb.cpp				*
- * Date: 10.8.2020				*
+ * Project: Cidr                *
+ * File: rgb.cpp                *
+ * Date: 10.8.2020              *
  ********************************/
 
 #include "rgb.hpp"
