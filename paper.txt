@@ -3,3 +3,10 @@ TODO:
  * Drawing Functions
  * Sprites
  * Stroke width
+ 
+ 
+out = alpha * new + (1 - alpha) * old
+out - (1 - alpha) * old = alpha * new
+(out - (1 - alpha) * old) / alpha = new
+new = (out - (1 - alpha) * old) / alpha
+

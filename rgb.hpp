@@ -19,7 +19,8 @@ struct RGB {
 	uint8_t g{0};
 	uint8_t b{0};
 
-	RGB(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0);
+	RGB(uint8_t r, uint8_t g, uint8_t b);
+	RGB(uint32_t color);
 	RGB(const RGBA& rgba);
 	
 	virtual uint32_t getColor();
@@ -29,7 +30,8 @@ struct RGB {
 struct RGBA : RGB {
 	uint8_t a{0xff};
 
-	RGBA(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 0xff);
+	RGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xff);
+	RGBA(uint32_t color);
 	RGBA(const RGB& rgb, int a = 0xff);
 	
 	virtual uint32_t getColor() override;

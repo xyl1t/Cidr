@@ -19,7 +19,7 @@ OBJS := $(patsubst %.cpp,$(BUILDDIR)/%.o,$(SOURCES))
 all: $(BUILDDIR)/$(PROJECT)
 
 # Include mostly header dependencies 
-deps := $(patsubst %.cpp,%.d,$(SOURCES))
+deps := $(patsubst %.o,%.d,$(OBJS))
 -include $(deps)
 DEPFLAGS = -MMD -MF $(@:.o=.d)
 

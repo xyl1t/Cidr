@@ -42,7 +42,12 @@ public:
 	void FillCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false); // NOT IMPLEMENTED
 	// void DrawSprite();
 	
+	inline Cidr::RGBA GetPixel(int x, int y) {
+		return Cidr::RGBA{pixels[getIndex(x, y)]};
+	}
 };
+
+RGBA alphaBlendColor(const Cidr::RGBA& color1, const Cidr::RGBA& color2);
 
 }
 
