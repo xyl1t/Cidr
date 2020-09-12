@@ -55,8 +55,13 @@ void Cidr::Renderer::DrawLine(Cidr::RGBA color, int x1, int y1, int x2, int y2, 
 		float stepX = dx / static_cast<float>(biggest);
 		float stepY = dy / static_cast<float>(biggest);
 		
-		for(; std::abs(x - x1) < std::abs(dx) || std::abs(y - y1) < std::abs(dy); x += stepX, y += stepY) {
+//		for(; std::abs(x - x1) < std::abs(dx) || std::abs(y - y1) < std::abs(dy); x += stepX, y += stepY) {
+		for(int i {0}; i < biggest; i++) {
+			// Plot point in current location 
 			DrawPoint(color, std::round(x), std::round(y));
+			// step further in line 
+			x += stepX;
+			y += stepY;
 		}
 	}
 	// Anti aliasing enabled
