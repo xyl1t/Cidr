@@ -43,19 +43,19 @@ void Cidr::Renderer::DrawLine(Cidr::RGBA color, int x1, int y1, int x2, int y2, 
 	// calculate delta lengths
 	int dx {x2 - x1}; 
 	int dy {y2 - y1};
+
+	// get largest component (x or y) for stepping 
+	int biggest {std::max(std::abs(dx), std::abs(dy))};
+	// loop variables
+	float x { static_cast<float>(x1) };
+	float y { static_cast<float>(y1) };
+	// calculate how far each component should move every step in the loop
+	float stepX = dx / static_cast<float>(biggest);
+	float stepY = dy / static_cast<float>(biggest);
 	
 	// Anti aliasing disabled
 	if(!AA) {
-		// get largest component (x or y) for stepping 
-		int biggest {std::max(std::abs(dx), std::abs(dy))};
-		// loop variables
-		float x { static_cast<float>(x1) };
-		float y { static_cast<float>(y1) };
-		// calculate how far each component should move every step in the loop
-		float stepX = dx / static_cast<float>(biggest);
-		float stepY = dy / static_cast<float>(biggest);
 		
-//		for(; std::abs(x - x1) < std::abs(dx) || std::abs(y - y1) < std::abs(dy); x += stepX, y += stepY) {
 		for(int i {0}; i < biggest; i++) {
 			// Plot point in current location 
 			DrawPoint(color, std::round(x), std::round(y));
@@ -66,14 +66,7 @@ void Cidr::Renderer::DrawLine(Cidr::RGBA color, int x1, int y1, int x2, int y2, 
 	}
 	// Anti aliasing enabled
 	else {
-		int biggest {std::max(std::abs(dx), std::abs(dy))};
-		float x;
-		float y;
 		for(int i {0}; i < biggest; i++) {
-			float t {i / static_cast<float>(biggest)};
-			x = (lerp(x1, x2, t));
-			y = (lerp(y1, y2, t));
-			
 			if(biggest == std::abs(dy)) {
 				RGBA c1 { color.getRGB(), static_cast<uint8_t>(color.a * (x - static_cast<int>(x)))};
 				RGBA c2 { color.getRGB(), static_cast<uint8_t>(color.a * (1.f - (x - static_cast<int>(x))))};
@@ -86,6 +79,10 @@ void Cidr::Renderer::DrawLine(Cidr::RGBA color, int x1, int y1, int x2, int y2, 
 				DrawPoint(c3, x, y + 1);
 				DrawPoint(c4, x, y);
 			}
+			
+			// step further in line 
+			x += stepX;
+			y += stepY;
 		}
 	}
 }
