@@ -12,7 +12,8 @@
 
 int main() {
 	SDL_Init(SDL_INIT_VIDEO);
-
+	srand(time(NULL));
+	
 	const int WIDTH = 800;
 	const int HEIGHT = 600;
 
@@ -26,6 +27,10 @@ int main() {
 	
 	Cidr::Renderer cidrRend {pixels, WIDTH, HEIGHT};
 	
+	int x1 {rand()%WIDTH};
+	int y1 {rand()%HEIGHT};
+	int x2 {rand()%WIDTH};
+	int y2 {rand()%HEIGHT};
 	
 	SDL_Event e;
 	bool alive = true;
@@ -45,7 +50,8 @@ int main() {
 		// cidrRend.DrawPoint(0xff00ffff, mx, my);
 		// cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
 		
-		cidrRend.DrawLine({0, 0xff, 0}, 128, 128, mx, my, true);
+		cidrRend.DrawLine({0xff, 0, 0}, x1, y1, x2, y2, true);
+		cidrRend.DrawLine({0, 0xff, 0}, 128, 128, mx, my, false);
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);

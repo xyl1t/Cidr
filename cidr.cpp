@@ -46,19 +46,21 @@ void Cidr::Renderer::DrawLine(Cidr::RGBA color, int x1, int y1, int x2, int y2, 
 	
 	// Anti aliasing disabled
 	if(!AA) {
+		// get largest component (x or y) for stepping 
 		int biggest {std::max(std::abs(dx), std::abs(dy))};
-		float x;
-		float y;
-		for(int i {0}; i < biggest; i++) {
-			float t {i / static_cast<float>(biggest)};
-			x = std::round(lerp(x1, x2, t));
-			y = std::round(lerp(y1, y2, t));
-			DrawPoint(color, x, y);
+		// loop variables
+		float x { static_cast<float>(x1) };
+		float y { static_cast<float>(y1) };
+		// calculate how far each component should move every step in the loop
+		float stepX = dx / static_cast<float>(biggest);
+		float stepY = dy / static_cast<float>(biggest);
+		
+		for(; std::abs(x - x1) < std::abs(dx) || std::abs(y - y1) < std::abs(dy); x += stepX, y += stepY) {
+			DrawPoint(color, std::round(x), std::round(y));
 		}
 	}
 	// Anti aliasing enabled
 	else {
-		
 		int biggest {std::max(std::abs(dx), std::abs(dy))};
 		float x;
 		float y;
