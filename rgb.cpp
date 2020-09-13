@@ -6,6 +6,8 @@
 
 #include "rgb.hpp"
 
+Cidr::RGB::RGB() : r{0}, g{0}, b{0} {
+}
 Cidr::RGB::RGB(uint8_t r, uint8_t g, uint8_t b) : r{r}, g{g}, b{b} {
 }
 Cidr::RGB::RGB(uint32_t color)
@@ -27,6 +29,8 @@ void Cidr::RGB::setColor(uint32_t color) {
 }
 
 
+Cidr::RGBA::RGBA() : Cidr::RGB(), a(0xff) {
+}
 Cidr::RGBA::RGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : Cidr::RGB(r, g, b), a(a) {
 }
 Cidr::RGBA::RGBA(uint32_t color) : RGB(color), a{static_cast<uint8_t>(color & 0xff)} {

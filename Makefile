@@ -5,18 +5,19 @@
 # make clean -> clean build folder
 
 ### Variables ###
-PROJECT := Cidr
+PROJECTNAME := Cidr
+BUILDDIR := build
+PROJECT := $(BUILDDIR)/$(PROJECTNAME)
+SOURCES := $(wildcard *.cpp)
+OBJS := $(patsubst %.cpp,$(BUILDDIR)/%.o,$(SOURCES))
 CXX := clang++
 CXXFLAGS := -std=c++17 -I include
 LDFLAGS := -L lib
-LDLIBS :=  -l SDL2-2.0.0
-BUILDDIR := build
-SOURCES := $(wildcard *.cpp)
-OBJS := $(patsubst %.cpp,$(BUILDDIR)/%.o,$(SOURCES))
+LDLIBS :=  -l SDL2-2.0.0 -lm
 
 ### Phony targets ###
 .PHONY: all clean
-all: $(BUILDDIR)/$(PROJECT)
+all: $(PROJECT)
 
 # Include mostly header dependencies 
 deps := $(patsubst %.o,%.d,$(OBJS))
@@ -25,7 +26,7 @@ DEPFLAGS = -MMD -MF $(@:.o=.d)
 
 ### Compilation ###
 # Compile project
-$(BUILDDIR)/$(PROJECT) : $(OBJS)
+$(PROJECT) : $(OBJS)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@ 
 
 # Compile .o files
@@ -34,4 +35,4 @@ $(BUILDDIR)/%.o : %.cpp # ugly, AND DOESN'T WORK
 	
 # clean build
 clean: 
-	rm $(BUILDDIR)/$(OBJS) $(BUILDDIR)/$(PROJECT) $(BUILDDIR)/$(deps) *.o *.d
+	@rm -rf build/*
