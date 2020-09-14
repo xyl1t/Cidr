@@ -1,5 +1,4 @@
 TODO: 
- * Point struct
  * Color conversions: HSV, HSL, RGB
  	https://en.wikipedia.org/wiki/HSL_and_HSV
  * Drawing Functions

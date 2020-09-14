@@ -59,31 +59,42 @@ void Cidr::Renderer::DrawLine(const Cidr::RGBA& color, const Point& start, const
 		for(int i {0}; i < biggest; i++) {
 			// line is steep
 			if(biggest == std::abs(dy)) {
-				// calculate alpha values for points that are close to the line 
-				uint8_t alpha1 = color.a * (p.x - static_cast<int>(p.x));		
-				uint8_t alpha2 = color.a * (1 - (p.x - static_cast<int>(p.x)));
+				// calculate anti aliasing values for points that are close to the line 
+				float AAValue1 = (p.y - static_cast<int>(p.y));
+				float AAValue2 = (1 - (p.y - static_cast<int>(p.y)));
 				// use gamma correction
 				if(GC) {
-					DrawPoint(alphaBlendColorGammaCorrected(GetPixel(p.x + 1, p.y), color, alpha1), p.x + 1, p.y);
-					DrawPoint(alphaBlendColorGammaCorrected(GetPixel(p.x,     p.y), color, alpha2), p.x,     p.y);
+					
+					RGBA result1 {alphaBlendColorGammaCorrected(GetPixel(p.x + 1, p.y), color, AAValue1 * 255.f)};
+					RGBA result2 {alphaBlendColorGammaCorrected(GetPixel(p.x, p.y),     color, AAValue2 * 255.f)};
+					result1.a = result1.a * color.a / 255.f;
+					result2.a = result2.a * color.a / 255.f;
+					
+					DrawPoint(alphaBlendColor(GetPixel(p.x + 1, p.y), result1, result1.a), p.x + 1, p.y);
+					DrawPoint(alphaBlendColor(GetPixel(p.x, p.y),     result2, result2.a), p.x,     p.y);
 				}
 				else {
-					DrawPoint(alphaBlendColor(GetPixel(p.x + 1, p.y), color, alpha1), p.x + 1, p.y);
-					DrawPoint(alphaBlendColor(GetPixel(p.x,     p.y), color, alpha2), p.x,     p.y); // 14
+					DrawPoint(alphaBlendColor(GetPixel(p.x + 1, p.y), color, AAValue1 * color.a), p.x + 1, p.y);
+					DrawPoint(alphaBlendColor(GetPixel(p.x,     p.y), color, AAValue2 * color.a), p.x,     p.y); // 14
 				}
 			}
 			// line is shallow
 			else {
-				// calculate alpha values for points that are close to the line 
-				uint8_t alpha1 = color.a * (p.y - static_cast<int>(p.y));
-				uint8_t alpha2 = color.a * (1 - (p.y - static_cast<int>(p.y)));
+				// calculate anti aliasing values for points that are close to the line 
+				float AAValue1 = (p.y - static_cast<int>(p.y));
+				float AAValue2 = (1 - (p.y - static_cast<int>(p.y)));
+				// use gamma correction
 				if(GC) {
-					DrawPoint(alphaBlendColorGammaCorrected(GetPixel(p.x, p.y + 1), color, alpha1), p.x, p.y + 1);
-					DrawPoint(alphaBlendColorGammaCorrected(GetPixel(p.x, p.y),     color, alpha2), p.x, p.y);
+					RGBA result1 {alphaBlendColorGammaCorrected(GetPixel(p.x, p.y + 1), color, AAValue1 * 255.f)};
+					RGBA result2 {alphaBlendColorGammaCorrected(GetPixel(p.x, p.y),     color, AAValue2 * 255.f)};
+					result1.a = result1.a * color.a / 255.f;
+					result2.a = result2.a * color.a / 255.f;
+					DrawPoint(alphaBlendColor(GetPixel(p.x, p.y + 1), result1, result1.a), p.x, p.y + 1);
+					DrawPoint(alphaBlendColor(GetPixel(p.x, p.y),     result2, result2.a), p.x, p.y);
 				}
 				else {
-					DrawPoint(alphaBlendColor(GetPixel(p.x, p.y + 1), color, alpha1), p.x, p.y + 1);
-					DrawPoint(alphaBlendColor(GetPixel(p.x, p.y),     color, alpha2), p.x, p.y);
+					DrawPoint(alphaBlendColor(GetPixel(p.x, p.y + 1), color, AAValue1 * color.a), p.x, p.y + 1);
+					DrawPoint(alphaBlendColor(GetPixel(p.x, p.y),     color, AAValue2 * color.a), p.x, p.y);
 				}
 			}
 			
