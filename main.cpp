@@ -9,7 +9,7 @@
 #include "cidr.hpp"
 // using namespace Cidr; 
 
-int main() {
+int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 	
@@ -21,7 +21,7 @@ int main() {
 	SDL_Window* window = SDL_CreateWindow("Cidr Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR32, SDL_TEXTUREACCESS_STREAMING, WIDTH / zoom, HEIGHT / zoom);
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+	// SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 	
 	uint32_t* pixels = new uint32_t[WIDTH * HEIGHT];
 	memset(pixels, 0, WIDTH * HEIGHT * sizeof(uint32_t));
@@ -63,18 +63,13 @@ int main() {
 				cidrRend.DrawPoint(color, i, j);
 			}	
 		}
-		for (int i = 35; i < 85; i++) {
-			for (int j = 35; j < 85; j++) {
-				// Cidr::RGBA color = Cidr::alphaBlendColor(cidrRend.GetPixel(i, j), {0x00ff0077});
-				// cidrRend.DrawPoint(color, i,j);
-			}	
-		}
 		
-		// cidrRend.DrawLine({0xff, 0, 0}, x1, y1, x2, y2, true)
+		SDL_Point p;
 		
-		cidrRend.DrawLine({0, 0xff, 0}, 128, 64+10, mx, my+10, true);;
-		cidrRend.DrawLine({0, 0xff, 0}, 128, 64, mx, my, false);
-		cidrRend.DrawLine({0, 0xff, 0}, 128, 64-10, mx, my-10, true, true);
+		
+		cidrRend.DrawLine(0x00ff0013, 128, 64-10, mx, my-10, true, true);
+		cidrRend.DrawLine(0x00ff0013, 128, 64, mx, my, false);
+		cidrRend.DrawLine(0x00ff0013, 128, 64+10, mx, my+10, true);;
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);
