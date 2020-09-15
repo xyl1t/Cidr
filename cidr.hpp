@@ -7,7 +7,7 @@
 #ifndef CIDR_CIDR_HPP
 #define CIDR_CIDR_HPP
 
-#include "rgb.hpp"
+#include "color.hpp"
 #include <cmath>
 #include "point.hpp"
 
@@ -93,6 +93,8 @@ inline RGBA alphaBlendColor(const Cidr::RGBA& color1, const Cidr::RGBA& color2){
 		0xff
 	};
 }
+
+
 
 }
 

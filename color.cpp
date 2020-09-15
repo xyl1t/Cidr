@@ -4,7 +4,7 @@
  * Date: 10.8.2020              *
  ********************************/
 
-#include "rgb.hpp"
+#include "color.hpp"
 
 Cidr::RGB::RGB() : r{0}, g{0}, b{0} {
 }
