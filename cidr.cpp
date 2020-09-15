@@ -22,7 +22,7 @@ Cidr::Renderer::Renderer(uint32_t* pixels, size_t width, size_t height)
 }
 
 void Cidr::Renderer::Clear() {
-	std::fill(pixels, pixels + width * height, 0x000000ff);
+	memset(pixels, 0, width * height * sizeof(uint32_t));
 }
 void Cidr::Renderer::Clear(const RGBA& color) {
 	std::fill(pixels, pixels + width * height, color.getColor());

@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <cmath>
 
 namespace Cidr {
 
@@ -31,10 +32,10 @@ struct RGB {
     RGB& operator-=(const RGB&  that);
     virtual RGB& operator*=(const uint8_t that);
     virtual RGB& operator/=(const uint8_t that);
-    RGB  operator+ (const RGB&  that);
-    RGB  operator- (const RGB&  that);
-    RGB  operator* (const uint8_t that);
-    RGB  operator/ (const uint8_t that);
+    RGB  operator+ (const RGB&  that) const;
+    RGB  operator- (const RGB&  that) const;
+    RGB  operator* (const uint8_t that) const;
+    RGB  operator/ (const uint8_t that) const;
 };
 
 struct RGBA : RGB {
@@ -57,10 +58,10 @@ struct RGBA : RGB {
     RGBA& operator-=(const RGBA&  that);
     virtual RGBA& operator*=(const uint8_t that) override;
     virtual RGBA& operator/=(const uint8_t that) override;
-    RGBA  operator+ (const RGBA&  that);
-    RGBA  operator- (const RGBA&  that);
-    RGBA  operator* (const uint8_t that);
-    RGBA  operator/ (const uint8_t that);
+    RGBA  operator+ (const RGBA&  that) const;
+    RGBA  operator- (const RGBA&  that) const;
+    RGBA  operator* (const uint8_t that) const;
+    RGBA  operator/ (const uint8_t that) const;
 };
 
 uint32_t ToColor(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 0xff);
@@ -83,7 +84,7 @@ inline HSV RGBtoHSV(const RGB& colorRGB) {
 	min = std::min(std::min(colorRGB.r, colorRGB.g), colorRGB.b);
 	max = std::max(std::max(colorRGB.r, colorRGB.g), colorRGB.b);
 	
-	color.v = max;
+	color.v = max / 255.f;
 	delta = max - min;
 	if(delta < 0.00001f) {
 		color.s = 0;
@@ -174,12 +175,81 @@ inline RGB HSVtoRGB(const HSV& colorHSV) {
 	
 	return color;
 }
-// inline HSL RGBtoHSL(const RGB& colorRGB) {
+inline HSL RGBtoHSL(const RGB& colorRGB) {
+	HSL color;
+	float r {colorRGB.r / 255.f};
+	float g {colorRGB.g / 255.f};
+	float b {colorRGB.b / 255.f};
+	float cmax {static_cast<float>(std::fmax(std::fmax(r, g), b))};
+	float cmin {static_cast<float>(std::fmin(std::fmin(r, g), b))};
+	float delta {cmax - cmin};
 	
-// }
-// inline RGB HSLtoRGB(const HSL& colorHSL) {
+	color.l = (cmax + cmin) / 2.f;
 	
-// }
+	if(delta == 0){
+		color.h = 0;
+		color.s = 0;
+		return color;
+	}
+	else if(cmax == r) {
+		color.h = 60.f * (std::fmodf((g - b) / delta, 6));
+	}
+	else if(cmax == g) {
+		color.h = 60.f * ((b - r) / delta + 2); 
+	}
+	else if(cmax == b) {
+		color.h = 60.f * ((r - g) / delta + 4);
+	}
+	
+	if(color.h < 0) color.h += 360;
+	if(color.h > 360) color.h -= 360;
+	
+	color.s = delta / (1 - std::abs(color.l * 2 - 1));
+	
+	return color;
+}
+inline RGB HSLtoRGB(const HSL& colorHSL) {
+	float c = (1 - std::abs(2 * colorHSL.l - 1)) * colorHSL.s;
+	float x = c * (1 - std::abs(std::fmodf(colorHSL.h / 60.f, 2) - 1.f));
+	float m = colorHSL.l - c / 2.f;
+	
+	float r, g, b;
+	if(colorHSL.h >= 0 && colorHSL.h < 60) {
+		r = c;
+		g = x;
+		b = 0;
+	}
+	else if(colorHSL.h >= 60 && colorHSL.h < 120){
+		r = x;
+		g = c;
+		b = 0;
+	}
+	else if(colorHSL.h >= 120 && colorHSL.h < 180){
+		r = 0;
+		g = c;
+		b = x;
+	}
+	else if(colorHSL.h >= 180 && colorHSL.h < 240){
+		r = 0;
+		g = x;
+		b = c;
+	}
+	else if(colorHSL.h >= 240 && colorHSL.h < 300){
+		r = x;
+		g = 0;
+		b = c;
+	}
+	else if(colorHSL.h >= 300 && colorHSL.h < 360){
+		r = c;
+		g = 0;
+		b = x;
+	}
+	return (RGB){
+		static_cast<uint8_t>((r + m) * 255),
+		static_cast<uint8_t>((g + m) * 255),
+		static_cast<uint8_t>((b + m) * 255)
+		};
+}
 
 } // NAMESPACE CIDR END 
 
@@ -189,3 +259,43 @@ std::ostream& operator<<(std::ostream& out, const Cidr::RGB& rgb);
 std::ostream& operator<<(std::ostream& out, const Cidr::RGBA& rgba);
 
 #endif
+
+/*
+From stackoverflow hsl -> rgb
+RGB color;
+if(colorHSL.s == 0) {
+	color.r = colorHSL.l * 255;
+	color.g = colorHSL.l * 255;
+	color.b = colorHSL.l * 255;
+}
+else {
+	float h = colorHSL.h / 360.f;
+	auto hueToRgb {[](float p, float q, float t) -> float{
+		if (t < 0)
+			t += 1;
+
+		if (t > 1)
+			t -= 1;
+
+		if ((6 * t) < 1)
+			return (p + (q - p) * 6 * t);
+
+		if ((2 * t) < 1)
+			return q;
+
+		if ((3 * t) < 2)
+			return (p + (q - p) * ((2.0f / 3) - t) * 6);
+
+		return p;
+	}
+	};
+	
+
+	float q = colorHSL.l < 0.5f ? colorHSL.l * (1 + colorHSL.s) : colorHSL.l + colorHSL.s - colorHSL.l * colorHSL.s;
+	float p = 2 * colorHSL.l - q;
+	color.r = std::min(255.f, hueToRgb(p, q, h + 1/3.f) * 255.f);
+	color.g = std::min(255.f, hueToRgb(p, q, h        ) * 255.f);
+	color.b = std::min(255.f, hueToRgb(p, q, h - 1/3.f) * 255.f);
+}
+
+return color;*/

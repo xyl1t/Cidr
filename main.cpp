@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 	int zoom = 1;
 
 	SDL_Window* window = SDL_CreateWindow("Cidr Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED/* | SDL_RENDERER_PRESENTVSYNC*/);
 	SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR32, SDL_TEXTUREACCESS_STREAMING, WIDTH / zoom, HEIGHT / zoom);
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 	
@@ -31,6 +31,10 @@ int main(int argc, char** argv) {
 	SDL_Event e;
 	bool alive = true;
 	int mx, my;
+	uint32_t current = SDL_GetTicks();
+	uint32_t old = 0;
+	uint32_t timer = 0;
+	
 	while(alive) {
 		while(SDL_PollEvent(&e)) {
 			if(e.type == SDL_QUIT) {
@@ -42,24 +46,32 @@ int main(int argc, char** argv) {
 			mx-=5;
 			my-=5;
 		}
+
+		old = current;
+		current = SDL_GetTicks();
+		if(timer > 1000) {
+			std::cout << "ms: " << current - old << '\n';
+			timer = 0;
+		}
+		timer += current - old;
 		
 		cidrRend.Clear();
 		// cidrRend.DrawPoint(0xff0000ff, 256, 100);
 		// cidrRend.DrawPoint(0xff00ffff, mx, my);
 		// cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
 		
-		for (int i = 0; i < 255; i++) {
+		for (int i = 0; i < 360; i++) {
 			for (int j = 0; j < 255; j++) {
-				Cidr::RGB color {
-					static_cast<uint8_t>(i),
-					static_cast<uint8_t>(j),
-					static_cast<uint8_t>(255 - i)
-				};
+				// Cidr::RGB color {
+				// 	static_cast<uint8_t>(i),
+				// 	static_cast<uint8_t>(j),
+				// 	static_cast<uint8_t>(255 - i)
+				// };
 				
-				Cidr::HSV c1 = Cidr::RGBtoHSV(color);
-				Cidr::RGB c2 = Cidr::HSVtoRGB(c1);
-				
-				cidrRend.DrawPoint(c2, i + 3, j + 3);
+				// Cidr::HSL c1 = Cidr::RGBtoHSL(color);
+				// Cidr::RGB c2 = Cidr::HSLtoRGB(c1);
+
+				cidrRend.DrawPoint(Cidr::HSLtoRGB({(float)i, 1 - j / 255.f, 0.5f}), i + 3, j + 3);
 			}	
 		}
 		

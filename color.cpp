@@ -52,28 +52,28 @@ Cidr::RGB& Cidr::RGB::operator/=(const uint8_t that) {
 	this->b = static_cast<uint8_t>(std::clamp(this->b / that, 0, 255));
 	return *this;
 }
-Cidr::RGB Cidr::RGB::operator+(const RGB& that) {
+Cidr::RGB Cidr::RGB::operator+(const RGB& that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r + that.r, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g + that.g, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b + that.b, 0, 255)),
 	};
 }
-Cidr::RGB Cidr::RGB::operator-(const RGB& that) {
+Cidr::RGB Cidr::RGB::operator-(const RGB& that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r - that.r, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g - that.g, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b - that.b, 0, 255)),
 	};
 }
-Cidr::RGB Cidr::RGB::operator*(const uint8_t that) {
+Cidr::RGB Cidr::RGB::operator*(const uint8_t that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r * that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g * that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b * that, 0, 255)),
 	};
 }
-Cidr::RGB Cidr::RGB::operator/(const uint8_t that) {
+Cidr::RGB Cidr::RGB::operator/(const uint8_t that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r / that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g / that, 0, 255)),
@@ -137,28 +137,28 @@ Cidr::RGBA& Cidr::RGBA::operator/=(const uint8_t that) {
 	this->b = static_cast<uint8_t>(std::clamp(this->b / that, 0, 255));
 	return *this;
 }
-Cidr::RGBA Cidr::RGBA::operator+(const RGBA& that) {
+Cidr::RGBA Cidr::RGBA::operator+(const RGBA& that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r + that.r, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g + that.g, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b + that.b, 0, 255)),
 	};
 }
-Cidr::RGBA Cidr::RGBA::operator-(const RGBA& that) {
+Cidr::RGBA Cidr::RGBA::operator-(const RGBA& that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r - that.r, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g - that.g, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b - that.b, 0, 255)),
 	};
 }
-Cidr::RGBA Cidr::RGBA::operator*(const uint8_t that) {
+Cidr::RGBA Cidr::RGBA::operator*(const uint8_t that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r * that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g * that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b * that, 0, 255)),
 	};
 }
-Cidr::RGBA Cidr::RGBA::operator/(const uint8_t that) {
+Cidr::RGBA Cidr::RGBA::operator/(const uint8_t that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r / that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g / that, 0, 255)),
