@@ -76,9 +76,46 @@ struct HSL {
 	float l;
 };
 
-// inline HSV RGBtoHSV(const RGB& colorRGB) {
+inline HSV RGBtoHSV(const RGB& colorRGB) {
+	HSV color;
+	float min, max, delta;
 	
-// }
+	min = std::min(std::min(colorRGB.r, colorRGB.g), colorRGB.b);
+	max = std::max(std::max(colorRGB.r, colorRGB.g), colorRGB.b);
+	
+	color.v = max;
+	delta = max - min;
+	if(delta < 0.00001f) {
+		color.s = 0;
+		color.h = 0;
+		return color;
+	}
+	if(max > 0.f) {
+		color.s = delta / max;
+	}
+	else {
+		color.s = 0.f;
+		color.h = 0.f;
+		return color;
+	}
+	if(colorRGB.r >= max) {
+		color.h = (colorRGB.g - colorRGB.b) / delta;
+	}
+	else if(colorRGB.g >= max) {
+		color.h = 2.0 + (colorRGB.b - colorRGB.r) / delta;
+	}
+	else {
+		color.h = 4.0 + (colorRGB.r - colorRGB.g) / delta;
+	}
+	
+	color.h *= 60;
+	
+	if(color.h < 0.f) {
+		color.h += 360.f;
+	}
+	
+	return color;
+}
 inline RGB HSVtoRGB(const HSV& colorHSV) {
 	RGB color;
 	float hh, ff, p, q, t;
@@ -91,7 +128,8 @@ inline RGB HSVtoRGB(const HSV& colorHSV) {
 		return color;
 	}
 	
-	hh = static_cast<int>(colorHSV.h) % 360;
+	hh = colorHSV.h;
+    if(hh >= 360.0) hh = 0.0;
 	hh /= 60.f;
 	i = static_cast<int>(hh);
 	ff = hh - i;
