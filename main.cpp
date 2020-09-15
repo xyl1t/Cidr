@@ -60,24 +60,21 @@ int main(int argc, char** argv) {
 		// cidrRend.DrawPoint(0xff00ffff, mx, my);
 		// cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
 		
-		for (int i = 0; i < 360; i++) {
+		for (int i = 0; i < 255; i++) {
 			for (int j = 0; j < 255; j++) {
-				// Cidr::RGB color {
-				// 	static_cast<uint8_t>(i),
-				// 	static_cast<uint8_t>(j),
-				// 	static_cast<uint8_t>(255 - i)
-				// };
-				
-				// Cidr::HSL c1 = Cidr::RGBtoHSL(color);
-				// Cidr::RGB c2 = Cidr::HSLtoRGB(c1);
+				Cidr::RGB color {
+					static_cast<uint8_t>(i),
+					static_cast<uint8_t>(j),
+					static_cast<uint8_t>(255 - i)
+				};
 
-				cidrRend.DrawPoint(Cidr::HSLtoRGB({(float)i, 1 - j / 255.f, 0.5f}), i + 3, j + 3);
+				cidrRend.DrawPoint(color, i + 3, j + 3);
 			}	
 		}
 		
-		// cidrRend.DrawLine(0x00ff00ff, 128, 64-10, mx, my-10, true, true);
-		// cidrRend.DrawLine(0x00ff00ff, 128, 64, mx, my, false);
-		// cidrRend.DrawLine(0x00ff00ff, 128, 64+10, mx, my+10, true);;
+		cidrRend.DrawLine(0x00ff00ff, 128, 64-10, mx, my-10, true, true);
+		cidrRend.DrawLine(0x00ff00ff, 128, 64, mx, my, false);
+		cidrRend.DrawLine(0x00ff00ff, 128, 64+10, mx, my+10, true);
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);

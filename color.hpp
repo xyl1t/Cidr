@@ -253,8 +253,6 @@ inline RGB HSLtoRGB(const HSL& colorHSL) {
 
 } // NAMESPACE CIDR END 
 
-
-
 std::ostream& operator<<(std::ostream& out, const Cidr::RGB& rgb);
 std::ostream& operator<<(std::ostream& out, const Cidr::RGBA& rgba);
 

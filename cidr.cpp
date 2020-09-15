@@ -60,22 +60,20 @@ void Cidr::Renderer::DrawLine(const Cidr::RGBA& color, const Point& start, const
 			// line is steep
 			if(biggest == std::abs(dy)) {
 				// calculate anti aliasing values for points that are close to the line 
-				float AAValue1 = (p.y - static_cast<int>(p.y));
-				float AAValue2 = (1 - (p.y - static_cast<int>(p.y)));
+				float AAValue1 = (p.x - static_cast<int>(p.x));
+				float AAValue2 = (1 - (p.x - static_cast<int>(p.x)));
 				// use gamma correction
 				if(GC) {
-					
 					RGBA result1 {alphaBlendColorGammaCorrected(GetPixel(p.x + 1, p.y), color, AAValue1 * 255.f)};
 					RGBA result2 {alphaBlendColorGammaCorrected(GetPixel(p.x, p.y),     color, AAValue2 * 255.f)};
 					result1.a = result1.a * color.a / 255.f;
 					result2.a = result2.a * color.a / 255.f;
-					
 					DrawPoint(alphaBlendColor(GetPixel(p.x + 1, p.y), result1, result1.a), p.x + 1, p.y);
 					DrawPoint(alphaBlendColor(GetPixel(p.x, p.y),     result2, result2.a), p.x,     p.y);
 				}
 				else {
 					DrawPoint(alphaBlendColor(GetPixel(p.x + 1, p.y), color, AAValue1 * color.a), p.x + 1, p.y);
-					DrawPoint(alphaBlendColor(GetPixel(p.x,     p.y), color, AAValue2 * color.a), p.x,     p.y); // 14
+					DrawPoint(alphaBlendColor(GetPixel(p.x,     p.y), color, AAValue2 * color.a), p.x,     p.y); 
 				}
 			}
 			// line is shallow
