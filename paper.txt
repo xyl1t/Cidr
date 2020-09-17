@@ -1,5 +1,7 @@
 TODO: 
+ * Shading in rectangles
  * Drawing Functions
+ * Line clipping
  * Font rendering 
  * Sprites
  * Stroke width

@@ -16,49 +16,49 @@ namespace Cidr {
 class Renderer {
 private:
 	uint32_t* pixels {nullptr};
-	size_t width {0};
-	size_t height {0};
+	int width {0};
+	int height {0};
 	
-	inline size_t getIndex(const Point& p) {
+	inline int getIndex(const Point& p) {
 		return p.x + p.y * width;
 	}
-	inline size_t getIndex(int x, int y) {
+	inline int getIndex(int x, int y) {
 		return x + y * width;
 	}
 	
 public:
-	Renderer(uint32_t* pixels, size_t width, size_t height);
+	Renderer(uint32_t* pixels, int width, int height);
 	
-	void Clear(); // NOT IMPLEMENTED
-	void Clear(const RGBA& color); // NOT IMPLEMENTED
-	void Clear(uint32_t color); // NOT IMPLEMENTED
+	void Clear();
+	void Clear(const RGBA& color);
+	void Clear(uint32_t color); 
 	
-	void DrawPoint(const RGBA& color, const Point& p); // NOT IMPLEMENTED
-	void DrawLine(const RGBA& color, const Point& start, const Point& end, bool AA = false, bool GC = false); // NOT IMPLEMENTED
-	void DrawRectangle(const RGBA& color, const Point& location, int wdith, int height); // NOT IMPLEMENTED
-	void FillRectangle(const RGBA& color, const Point& location, int wdith, int height); // NOT IMPLEMENTED
+	void DrawPoint(const RGBA& color, const Point& p);
+	void DrawLine(const RGBA& color, const Point& start, const Point& end, bool AA = false, bool GC = false);
+	void DrawRectangle(const RGBA& color, const Point& location, int width, int height); // WIP
+	void FillRectangle(const RGBA& color, const Point& location, int width, int height); // WIP
 	void DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false); // NOT IMPLEMENTED
 	void FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false); // NOT IMPLEMENTED
 	
 	// overloads 
 	inline void DrawPoint(const RGBA& color, int x, int y) { DrawPoint(color, (Point){x, y}); }
 	inline void DrawLine(const RGBA& color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(color, (Point){x1, y1}, (Point){x2, y2}, AA, GC); }
-	inline void DrawRectangle(const RGBA& color, int x, int y, int wdith, int height) { DrawRectangle(color, (Point){x,y}, wdith, height); }
-	inline void FillRectangle(const RGBA& color, int x, int y, int wdith, int height) { FillRectangle(color, (Point){x,y}, wdith, height); }
+	inline void DrawRectangle(const RGBA& color, int x, int y, int width, int height) { DrawRectangle(color, (Point){x,y}, width, height); }
+	inline void FillRectangle(const RGBA& color, int x, int y, int width, int height) { FillRectangle(color, (Point){x,y}, width, height); }
 	inline void DrawCircle(const RGBA& color, int centreX, int centreY, int radius, bool AA = false) { DrawCircle(color, (Point){centreX,centreY}, radius, AA); }
 	inline void FillCircle(const RGBA& color, int centreX, int centreY, int radius, bool AA = false) { FillCircle(color, (Point){centreX,centreY}, radius, AA); }
 
 	inline void DrawPoint(uint32_t color, const Point& p) { DrawPoint((RGBA){color}, p); }
 	inline void DrawLine(uint32_t color, const Point& start, const Point& end, bool AA = false, bool GC = false) { DrawLine((RGBA){color}, start, end, AA, GC); }
-	inline void DrawRectangle(uint32_t color, const Point& location, int wdith, int height) { DrawRectangle((RGBA){color}, location, wdith, height); }
-	inline void FillRectangle(uint32_t color, const Point& location, int wdith, int height) { FillRectangle((RGBA){color}, location, wdith, height); }
+	inline void DrawRectangle(uint32_t color, const Point& location, int width, int height) { DrawRectangle((RGBA){color}, location, width, height); }
+	inline void FillRectangle(uint32_t color, const Point& location, int width, int height) { FillRectangle((RGBA){color}, location, width, height); }
 	inline void DrawCircle(uint32_t color, const Point& centreLocation, int radius, bool AA = false) { DrawCircle((RGBA){color}, centreLocation, radius, AA); }
 	inline void FillCircle(uint32_t color, const Point& centreLocation, int radius, bool AA = false) { FillCircle((RGBA){color}, centreLocation, radius, AA); }
 	
 	inline void DrawPoint(uint32_t color, int x, int y) { DrawPoint((RGBA){color}, (Point){x, y}); }
 	inline void DrawLine(uint32_t color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine((RGBA){color}, (Point){x1, y1}, (Point){x2, y2}, AA, GC); }
-	inline void DrawRectangle(uint32_t color, int x, int y, int wdith, int height) { DrawRectangle((RGBA){color}, (Point){x,y}, wdith, height); }
-	inline void FillRectangle(uint32_t color, int x, int y, int wdith, int height) { FillRectangle((RGBA){color}, (Point){x,y}, wdith, height); }
+	inline void DrawRectangle(uint32_t color, int x, int y, int width, int height) { DrawRectangle((RGBA){color}, (Point){x,y}, width, height); }
+	inline void FillRectangle(uint32_t color, int x, int y, int width, int height) { FillRectangle((RGBA){color}, (Point){x,y}, width, height); }
 	inline void DrawCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false) { DrawCircle((RGBA){color}, (Point){centreX,centreY}, radius, AA); }
 	inline void FillCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false) { FillCircle((RGBA){color}, (Point){centreX,centreY}, radius, AA); }
 	

@@ -25,9 +25,6 @@ struct RGB {
 	RGB(uint32_t color);
 	RGB(const RGBA& rgba);
 	
-	virtual uint32_t getColor() const;
-	virtual void setColor(uint32_t color);
-	
     RGB& operator+=(const RGB&  that);
     RGB& operator-=(const RGB&  that);
     virtual RGB& operator*=(const uint8_t that);
@@ -45,9 +42,6 @@ struct RGBA : RGB {
 	RGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 0xff);
 	RGBA(uint32_t color);
 	RGBA(const RGB& rgb, int a = 0xff);
-	
-	virtual uint32_t getColor() const override ;
-	virtual void setColor(uint32_t color) override;
 	
 	inline RGB getRGB() {
 		return static_cast<RGB>(*this);
@@ -77,6 +71,20 @@ struct HSL {
 	float l;
 };
 
+inline uint32_t RGBtoUINT(const RGB& colorRGB) {
+	return (colorRGB.r << 24) + (colorRGB.g << 16) + (colorRGB.b << 8) + 0xff;
+}
+inline uint32_t RGBtoUINT(const RGBA& colorRGB) {
+	return (colorRGB.r << 24) + (colorRGB.g << 16) + (colorRGB.b << 8) + colorRGB.a;
+}
+inline RGBA UINTtoRGB(const uint32_t& colorUINT) {
+	return {
+		static_cast<uint8_t>((colorUINT >> 24) & 0xff),
+		static_cast<uint8_t>((colorUINT >> 16) & 0xff),
+		static_cast<uint8_t>((colorUINT >>  8) & 0xff),
+		static_cast<uint8_t>((colorUINT >>  0) & 0xff)
+	};
+}
 inline HSV RGBtoHSV(const RGB& colorRGB) {
 	HSV color;
 	float min, max, delta;

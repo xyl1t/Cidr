@@ -18,16 +18,6 @@ Cidr::RGB::RGB(uint32_t color)
 Cidr::RGB::RGB(const Cidr::RGBA& rgba) : r{rgba.r}, g{rgba.g}, b{rgba.b} {
 }
 
-uint32_t Cidr::RGB::getColor() const {
-	return (r << 24) + (g << 16) + (b << 8) + 0xff;
-}
-
-void Cidr::RGB::setColor(uint32_t color) {
-	r = (color >> 24) & 0xff;
-	g = (color >> 16) & 0xff;
-	b = (color >>  8) & 0xff;
-}
-
 Cidr::RGB& Cidr::RGB::operator+=(const RGB& that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r + that.r, 0, 255));
 	this->g = static_cast<uint8_t>(std::clamp(this->g + that.g, 0, 255));
@@ -92,16 +82,6 @@ Cidr::RGBA::RGBA(uint32_t color) : RGB(color), a{static_cast<uint8_t>(color & 0x
 }
 Cidr::RGBA::RGBA(const Cidr::RGB& rgb, int a) : Cidr::RGB(rgb), a(a) {
 	
-}
-
-uint32_t Cidr::RGBA::getColor() const {
-	return (r << 24) + (g << 16) + (b << 8) + (a);
-}
-void Cidr::RGBA::setColor(uint32_t color) {
-	r = (color >> 24) & 0xff;
-	g = (color >> 16) & 0xff;
-	b = (color >>  8) & 0xff;
-	a = (color)       & 0xff;
 }
 
 std::ostream& operator<<(std::ostream& out, const Cidr::RGB& rgb) {

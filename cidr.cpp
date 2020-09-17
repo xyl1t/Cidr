@@ -14,7 +14,7 @@ static inline float lerp(float a, float b, float t) {
 	return a + (b - a) * t;
 }
 
-Cidr::Renderer::Renderer(uint32_t* pixels, size_t width, size_t height) 
+Cidr::Renderer::Renderer(uint32_t* pixels, int width, int height) 
 	: pixels{pixels}, 
 	width{width}, 
 	height{height} {
@@ -25,11 +25,11 @@ void Cidr::Renderer::Clear() {
 	memset(pixels, 0, width * height * sizeof(uint32_t));
 }
 void Cidr::Renderer::Clear(const RGBA& color) {
-	std::fill(pixels, pixels + width * height, color.getColor());
+	std::fill(pixels, pixels + width * height, RGBtoUINT(color));
 }
 
 void Cidr::Renderer::DrawPoint(const Cidr::RGBA& color, const Point& p) {
-	pixels[getIndex(p.x, p.y)] = color.getColor();
+	pixels[getIndex(p.x, p.y)] = RGBtoUINT(color);
 }
 
 void Cidr::Renderer::DrawLine(const Cidr::RGBA& color, const Point& start, const Point& end, bool AA, bool GC) {
@@ -99,5 +99,74 @@ void Cidr::Renderer::DrawLine(const Cidr::RGBA& color, const Point& start, const
 			// step further in line 
 			p += step;
 		}
+	}
+}
+
+// ADD CLIPPING
+void Cidr::Renderer::DrawRectangle(const RGBA& color, const Point& location, int width, int height) {
+		// exit if the rectangle is outside of the screen
+	if(location.x >= this->width) return;
+	if(location.y >= this->height) return;
+	
+	// clamp locations
+	Point clampedLocation {location.x, location.y};
+	if(location.x < 0) {
+		width -= std::abs(clampedLocation.x);
+		clampedLocation.x = 0;
+		// exit function if rectangle is outside of screen
+		if(width < 0) 
+			return;
+	}
+	if(location.y < 0) {
+		height -= std::abs(clampedLocation.y);
+		clampedLocation.y = 0;
+		// exit function if rectangle is outside of screen
+		if(height < 0) 
+			return;
+	}
+	int clampedWidth {std::min(this->width - clampedLocation.x, width)};
+	int clampedHeight {std::min(this->height - clampedLocation.y, height)};
+	
+	// loop till the itrating value hits the rectangle end or if it goes outside of the screen
+	for(int i = clampedLocation.x; i < clampedLocation.x + clampedWidth; i++) {
+		if(location.y > 0)
+			DrawPoint(color, i, clampedLocation.y);
+		if(clampedLocation.y + height < this->height)
+			DrawPoint(color, i, clampedLocation.y + height);
+	}
+	// loop till the itrating value hits the rectangle end or if it goes outside of the screen
+	for(int i = clampedLocation.y; i < clampedLocation.y + clampedHeight; i++) {
+		if(location.x > 0)
+			DrawPoint(color, clampedLocation.x, i);
+		if(clampedLocation.x + width < this->width)
+			DrawPoint(color, clampedLocation.x + width, i);
+	}
+}
+
+void Cidr::Renderer::FillRectangle(const RGBA& color, const Point& location, int width, int height) {
+	// exit if the rectangle is outside of the screen
+	if(location.x >= this->width) return;
+	if(location.y >= this->height) return;
+	
+	// clamp locations
+	Point clampedLocation {location.x, location.y};
+	if(location.x < 0) {
+		width -= std::abs(clampedLocation.x);
+		clampedLocation.x = 0;
+		// exit function if rectangle is outside of screen
+		if(width < 0) 
+			return;
+	}
+	if(location.y < 0) {
+		height -= std::abs(clampedLocation.y);
+		clampedLocation.y = 0;
+		// exit function if rectangle is outside of screen
+		if(height < 0) 
+			return;
+	}
+	int clampedWidth {std::min(this->width - clampedLocation.x, width)};
+	int clampedHeight {std::min(this->height - clampedLocation.y, height)};
+	for(int i = 0; i < clampedHeight; i++) {
+		std::fill_n(pixels + getIndex(clampedLocation.x, clampedLocation.y + i), clampedWidth, RGBtoUINT(color));
 	}
 }

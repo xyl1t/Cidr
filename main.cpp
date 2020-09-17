@@ -69,12 +69,14 @@ int main(int argc, char** argv) {
 				};
 
 				cidrRend.DrawPoint(color, i + 3, j + 3);
-			}	
+			}
 		}
 		
 		cidrRend.DrawLine(0x00ff00ff, 128, 64-10, mx, my-10, true, true);
 		cidrRend.DrawLine(0x00ff00ff, 128, 64, mx, my, false);
 		cidrRend.DrawLine(0x00ff00ff, 128, 64+10, mx, my+10, true);
+		
+		cidrRend.DrawRectangle((Cidr::RGB){0x20ee05}, mx, my, 64, 64);
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);
