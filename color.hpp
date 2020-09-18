@@ -60,15 +60,75 @@ struct RGBA : RGB {
 
 uint32_t ToColor(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 0xff);
 
-struct HSV {
-	float h;
-	float s;
-	float v;
+class HSV {
+float h;
+float s;
+float v;
+public:
+	inline void setH(float valueInDegrees) {
+		if(valueInDegrees < 0) {
+			valueInDegrees += 360 * std::ceil(std::abs(valueInDegrees / 360.f));
+		}
+		else {
+			valueInDegrees = std::fmod(valueInDegrees, 360);
+		}
+		this->h = valueInDegrees;
+	}
+	inline void setS(float value) {
+		if(value < 0) s = 0;
+		else if(value > 1) s = 1;
+		else s = value;
+	}
+	inline void setV(float value) {
+		if(value < 0) v = 0;
+		else if(value > 1) v = 1;
+		else v = value;
+	}
+	
+	inline float getH() const {
+		return h;
+	}
+	inline float getS() const  {
+		return s;
+	}
+	inline float getV() const  {
+		return v;
+	}
 };
-struct HSL {
+class HSL {
 	float h;
 	float s;
 	float l;
+public:
+	inline void setH(float valueInDegrees) {
+		if(valueInDegrees < 0) {
+			valueInDegrees += 360 * std::ceil(std::abs(valueInDegrees / 360.f));
+		}
+		else {
+			valueInDegrees = std::fmod(valueInDegrees, 360.f);
+		}
+		this->h = valueInDegrees;
+	}
+	inline void setS(float value) {
+		if(value < 0) s = 0;
+		else if(value > 1) s = 1;
+		else s = value;
+	}
+	inline void setL(float value) {
+		if(value < 0) l = 0;
+		else if(value > 1) l = 1;
+		else l = value;
+	}
+	
+	inline float getH() const {
+		return h;
+	}
+	inline float getS() const  {
+		return s;
+	}
+	inline float getL() const  {
+		return l;
+	}
 };
 
 inline uint32_t RGBtoUINT(const RGB& colorRGB) {
@@ -92,35 +152,35 @@ inline HSV RGBtoHSV(const RGB& colorRGB) {
 	min = std::min(std::min(colorRGB.r, colorRGB.g), colorRGB.b);
 	max = std::max(std::max(colorRGB.r, colorRGB.g), colorRGB.b);
 	
-	color.v = max / 255.f;
+	color.setV(max / 255.f);
 	delta = max - min;
 	if(delta < 0.00001f) {
-		color.s = 0;
-		color.h = 0;
+		color.setS(0);
+		color.setH(0);
 		return color;
 	}
 	if(max > 0.f) {
-		color.s = delta / max;
+		color.setS(delta / max);
 	}
 	else {
-		color.s = 0.f;
-		color.h = 0.f;
+		color.setS(0.f);
+		color.setH(0.f);
 		return color;
 	}
 	if(colorRGB.r >= max) {
-		color.h = (colorRGB.g - colorRGB.b) / delta;
+		color.setH((colorRGB.g - colorRGB.b) / delta);
 	}
 	else if(colorRGB.g >= max) {
-		color.h = 2.0 + (colorRGB.b - colorRGB.r) / delta;
+		color.setH(2.0 + (colorRGB.b - colorRGB.r) / delta);
 	}
 	else {
-		color.h = 4.0 + (colorRGB.r - colorRGB.g) / delta;
+		color.setH(4.0 + (colorRGB.r - colorRGB.g) / delta);
 	}
 	
-	color.h *= 60;
+	color.setH(color.getH() * 60);
 	
-	if(color.h < 0.f) {
-		color.h += 360.f;
+	if(color.getH() < 0.f) {
+		color.setH(color.getH() + 360.f);
 	}
 	
 	return color;
@@ -130,53 +190,53 @@ inline RGB HSVtoRGB(const HSV& colorHSV) {
 	float hh, ff, p, q, t;
 	int i;
 	
-	if(colorHSV.s <= 0) {
-		color.r = colorHSV.v;
-		color.g = colorHSV.v;
-		color.b = colorHSV.v;
+	if(colorHSV.getS() <= 0) {
+		color.r = colorHSV.getV();
+		color.g = colorHSV.getV();
+		color.b = colorHSV.getV();
 		return color;
 	}
 	
-	hh = colorHSV.h;
+	hh = colorHSV.getH();
     if(hh >= 360.0) hh = 0.0;
 	// hh = std::fmod(hh, 360);
 	hh /= 60.f;
 	i = static_cast<int>(hh);
 	ff = hh - i;
-	p = colorHSV.v * (1.f - colorHSV.s);
-	q = colorHSV.v * (1.f - (colorHSV.s * ff));
-	t = colorHSV.v * (1.f - (colorHSV.s * (1.f - ff)));
+	p = colorHSV.getV() * (1.f - colorHSV.getS());
+	q = colorHSV.getV() * (1.f - (colorHSV.getS() * ff));
+	t = colorHSV.getV() * (1.f - (colorHSV.getS() * (1.f - ff)));
 	
     switch(i) {
     case 0:
-        color.r = colorHSV.v * 255;
+        color.r = colorHSV.getV() * 255;
         color.g = t * 255;
         color.b = p * 255;
         break;
     case 1:
         color.r = q * 255;
-        color.g = colorHSV.v * 255;
+        color.g = colorHSV.getV() * 255;
         color.b = p * 255;
         break;
     case 2:
         color.r = p * 255;
-        color.g = colorHSV.v * 255;
+        color.g = colorHSV.getV() * 255;
         color.b = t * 255;
         break;
 
     case 3:
         color.r = p * 255;
         color.g = q * 255;
-        color.b = colorHSV.v * 255;
+        color.b = colorHSV.getV() * 255;
         break;
     case 4:
         color.r = t * 255;
         color.g = p * 255;
-        color.b = colorHSV.v * 255;
+        color.b = colorHSV.getV() * 255;
         break;
     case 5:
     default:
-        color.r = colorHSV.v * 255;
+        color.r = colorHSV.getV() * 255;
         color.g = p * 255;
         color.b = q * 255;
         break;
@@ -193,62 +253,62 @@ inline HSL RGBtoHSL(const RGB& colorRGB) {
 	float cmin {static_cast<float>(std::fmin(std::fmin(r, g), b))};
 	float delta {cmax - cmin};
 	
-	color.l = (cmax + cmin) / 2.f;
+	color.setL((cmax + cmin) / 2.f);
 	
 	if(delta == 0){
-		color.h = 0;
-		color.s = 0;
+		color.setH(0);
+		color.setS(0);
 		return color;
 	}
 	else if(cmax == r) {
-		color.h = 60.f * (std::fmodf((g - b) / delta, 6));
+		color.setH(60.f * (std::fmodf((g - b) / delta, 6)));
 	}
 	else if(cmax == g) {
-		color.h = 60.f * ((b - r) / delta + 2); 
+		color.setH(60.f * ((b - r) / delta + 2)); 
 	}
 	else if(cmax == b) {
-		color.h = 60.f * ((r - g) / delta + 4);
+		color.setH(60.f * ((r - g) / delta + 4));
 	}
 	
-	if(color.h < 0) color.h += 360;
-	if(color.h > 360) color.h -= 360;
+	if(color.getH() < 0) color.setH(color.getH() + 360);
+	if(color.getH() > 360) color.setH(color.getH() - 360);
 	
-	color.s = delta / (1 - std::abs(color.l * 2 - 1));
+	color.setS(delta / (1 - std::abs(color.getL() * 2 - 1)));
 	
 	return color;
 }
 inline RGB HSLtoRGB(const HSL& colorHSL) {
-	float c = (1 - std::abs(2 * colorHSL.l - 1)) * colorHSL.s;
-	float x = c * (1 - std::abs(std::fmodf((colorHSL.h) / 60.f, 2) - 1.f));
-	float m = colorHSL.l - c / 2.f;
+	float c = (1 - std::abs(2 * colorHSL.getL() - 1)) * colorHSL.getS();
+	float x = c * (1 - std::abs(std::fmodf((colorHSL.getH()) / 60.f, 2) - 1.f));
+	float m = colorHSL.getL() - c / 2.f;
 	
 	float r, g, b;
-	if(colorHSL.h >= 0 && colorHSL.h < 60) {
+	if(colorHSL.getH() >= 0 && colorHSL.getH() < 60) {
 		r = c;
 		g = x;
 		b = 0;
 	}
-	else if(colorHSL.h >= 60 && colorHSL.h < 120){
+	else if(colorHSL.getH() >= 60 && colorHSL.getH() < 120){
 		r = x;
 		g = c;
 		b = 0;
 	}
-	else if(colorHSL.h >= 120 && colorHSL.h < 180){
+	else if(colorHSL.getH() >= 120 && colorHSL.getH() < 180){
 		r = 0;
 		g = c;
 		b = x;
 	}
-	else if(colorHSL.h >= 180 && colorHSL.h < 240){
+	else if(colorHSL.getH() >= 180 && colorHSL.getH() < 240){
 		r = 0;
 		g = x;
 		b = c;
 	}
-	else if(colorHSL.h >= 240 && colorHSL.h < 300){
+	else if(colorHSL.getH() >= 240 && colorHSL.getH() < 300){
 		r = x;
 		g = 0;
 		b = c;
 	}
-	else if(colorHSL.h >= 300 && colorHSL.h < 360){
+	else if(colorHSL.getH() >= 300 && colorHSL.getH() < 360){
 		r = c;
 		g = 0;
 		b = x;
