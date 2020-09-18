@@ -138,8 +138,8 @@ inline RGB HSVtoRGB(const HSV& colorHSV) {
 	}
 	
 	hh = colorHSV.h;
-    // if(hh >= 360.0) hh = 0.0;
-	hh = std::fmod(hh, 360);
+    if(hh >= 360.0) hh = 0.0;
+	// hh = std::fmod(hh, 360);
 	hh /= 60.f;
 	i = static_cast<int>(hh);
 	ff = hh - i;
@@ -219,7 +219,7 @@ inline HSL RGBtoHSL(const RGB& colorRGB) {
 }
 inline RGB HSLtoRGB(const HSL& colorHSL) {
 	float c = (1 - std::abs(2 * colorHSL.l - 1)) * colorHSL.s;
-	float x = c * (1 - std::abs(std::fmodf(colorHSL.h / 60.f, 2) - 1.f));
+	float x = c * (1 - std::abs(std::fmodf((colorHSL.h) / 60.f, 2) - 1.f));
 	float m = colorHSL.l - c / 2.f;
 	
 	float r, g, b;

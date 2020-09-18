@@ -9,34 +9,19 @@
 #include "cidr.hpp"
 // using namespace Cidr; 
 
-
 Cidr::RGBA myShader(const Cidr::Renderer& renderer, int x, int y) {
 	Cidr::RGBA finalColor{};
-	
-	// finalColor = renderer.GetPixel(x + sin(x / 10.f) * 10, y);
-	
-	int blurSize = 5;
-	int rTotal{0}, gTotal{0}, bTotal{0};
-	float total = 0;
-	
-	for(int bx = -blurSize; bx <= blurSize; bx++) {	
-		for(int by = -blurSize; by <= blurSize; by++) {
-			int fx = bx + x;
-			int fy = by + y;
-			if(fx < 0) fx += renderer.GetWidth();
-			if(fy < 0) fy += renderer.GetWidth();
-			if(fx >= 0) fx %= renderer.GetWidth();
-			if(fy >= 0) fy %= renderer.GetWidth();
-			rTotal += renderer.GetPixel(fx, fy).r;
-			gTotal += renderer.GetPixel(fx, fy).g;
-			bTotal += renderer.GetPixel(fx, fy).b;
-			total++;
-		}
-	}
-	
-	finalColor.r = rTotal / total;
-	finalColor.g = gTotal / total;
-	finalColor.b = bTotal / total;
+	const Cidr::RGBA& currentPixel = renderer.GetPixel(x,y);
+
+	static double v {};
+	v += 0.00005;
+	if(v > 360) v = 0;
+	// std::cout << v << std::endl;
+
+	Cidr::HSV temp = Cidr::RGBtoHSV(currentPixel); 
+	temp.h = std::fmod(temp.h + v, 360);
+	finalColor = Cidr::HSVtoRGB(temp);
+
 	
 	return finalColor;
 }
@@ -104,17 +89,17 @@ int main(int argc, char** argv) {
 			}
 		}
 		
-		cidrRend.DrawLine(0x00ff00ff, 128, 64-10, 400, 400-10);
+		cidrRend.DrawLine(0x00ff00ff, 128, 64-10, 400, 400-10, true, true);
 		cidrRend.DrawLine(0x00ff00ff, 128, 64,    400, 400);
-		cidrRend.DrawLine(0x00ff00ff, 128, 64+10, 400, 400+10);
+		cidrRend.DrawLine(0x00ff00ff, 128, 64+10, 400, 400+10, true);
 		
 		cidrRend.FillRectangle(0xff0000ff, 300,300,40,40);
 		cidrRend.FillRectangle(0x00ff00ff, 320,320,40,40);
 		cidrRend.FillRectangle(0x0000ffff, 340,340,40,40);
 		
 		// cidrRend.DrawRectangle((Cidr::RGB){0x20ee05}, mx, my, 64, 64);
-		cidrRend.FillRectangle(&myShader, (Cidr::Point){mx, my}, 64, 64);
-		cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, {mx, my}, 64, 64);
+		cidrRend.FillRectangle(&myShader, (Cidr::Point){mx, my}, 256, 256);
+		cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, {mx, my}, 256, 256);
 		
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
