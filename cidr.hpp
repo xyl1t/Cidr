@@ -63,6 +63,13 @@ public:
 	inline void DrawCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false) { DrawCircle((RGBA){color}, (Point){centreX,centreY}, radius, AA); }
 	inline void FillCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false) { FillCircle((RGBA){color}, (Point){centreX,centreY}, radius, AA); }
 	
+	
+	inline int GetWidth() const {
+		return width;
+	}
+	inline int GetHeight() const {
+		return width;
+	}
 	// TODO: check for valid coordinates
 	inline Cidr::RGBA GetPixel(const Point& p) const {
 		return Cidr::RGBA{pixels[getIndex(p)]};
