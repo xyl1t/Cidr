@@ -138,7 +138,8 @@ inline RGB HSVtoRGB(const HSV& colorHSV) {
 	}
 	
 	hh = colorHSV.h;
-    if(hh >= 360.0) hh = 0.0;
+    // if(hh >= 360.0) hh = 0.0;
+	hh = std::fmod(hh, 360);
 	hh /= 60.f;
 	i = static_cast<int>(hh);
 	ff = hh - i;
