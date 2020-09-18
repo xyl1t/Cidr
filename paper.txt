@@ -1,8 +1,6 @@
 TODO: 
- * Shading in rectangles
- * Drawing Functions
+ * Shading in rectangles or even all shapes using function pointers/lambads
  * Line clipping
  * Font rendering 
  * Sprites
  * Stroke width
- 

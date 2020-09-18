@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 #include <cmath>
+#include <vector>
 
 static inline float lerp(float a, float b, float t) {
 	return a + (b - a) * t;
@@ -168,5 +169,45 @@ void Cidr::Renderer::FillRectangle(const RGBA& color, const Point& location, int
 	int clampedHeight {std::min(this->height - clampedLocation.y, height)};
 	for(int i = 0; i < clampedHeight; i++) {
 		std::fill_n(pixels + getIndex(clampedLocation.x, clampedLocation.y + i), clampedWidth, RGBtoUINT(color));
+	}
+}
+
+void Cidr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& location, int width, int height) {
+	// exit if the rectangle is outside of the screen
+	if(location.x >= this->width) return;
+	if(location.y >= this->height) return;
+	
+	// clamp locations
+	Point clampedLocation {location.x, location.y};
+	if(location.x < 0) {
+		width -= std::abs(clampedLocation.x);
+		clampedLocation.x = 0;
+		// exit function if rectangle is outside of screen
+		if(width < 0) 
+			return;
+	}
+	if(location.y < 0) {
+		height -= std::abs(clampedLocation.y);
+		clampedLocation.y = 0;
+		// exit function if rectangle is outside of screen
+		if(height < 0) 
+			return;
+	}
+	int clampedWidth {std::min(this->width - clampedLocation.x, width)};
+	int clampedHeight {std::min(this->height - clampedLocation.y, height)};
+	
+	std::vector<std::vector<uint32_t>> shadedPixels{};
+	for (int x = clampedLocation.x; x < clampedLocation.x + clampedWidth; x++) {
+		shadedPixels.push_back((std::vector<uint32_t>){});
+		for (int y = clampedLocation.y; y < clampedLocation.y + clampedHeight; y++) {
+			shadedPixels[x - clampedLocation.x].push_back(RGBtoUINT(shader(*this, x, y)));
+		}
+	}
+	
+	for (int x = clampedLocation.x; x < clampedLocation.x + clampedWidth; x++) {
+		for (int y = clampedLocation.y; y <	 clampedLocation.y + clampedHeight; y++) {
+			// std::cout << (RGB){shadedPixels[x - clampedLocation.x][y - clampedLocation.y]} << '\n';
+			DrawPoint(shadedPixels[x - clampedLocation.x][y - clampedLocation.y], x, y);
+		}
 	}
 }

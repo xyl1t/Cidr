@@ -19,10 +19,10 @@ private:
 	int width {0};
 	int height {0};
 	
-	inline int getIndex(const Point& p) {
+	inline int getIndex(const Point& p) const {
 		return p.x + p.y * width;
 	}
-	inline int getIndex(int x, int y) {
+	inline int getIndex(int x, int y) const {
 		return x + y * width;
 	}
 	
@@ -35,8 +35,9 @@ public:
 	
 	void DrawPoint(const RGBA& color, const Point& p);
 	void DrawLine(const RGBA& color, const Point& start, const Point& end, bool AA = false, bool GC = false);
-	void DrawRectangle(const RGBA& color, const Point& location, int width, int height); // WIP
-	void FillRectangle(const RGBA& color, const Point& location, int width, int height); // WIP
+	void DrawRectangle(const RGBA& color, const Point& location, int width, int height);
+	void FillRectangle(const RGBA& color, const Point& location, int width, int height);
+	void FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& location, int width, int height); // WIP
 	void DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false); // NOT IMPLEMENTED
 	void FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false); // NOT IMPLEMENTED
 	
@@ -62,10 +63,11 @@ public:
 	inline void DrawCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false) { DrawCircle((RGBA){color}, (Point){centreX,centreY}, radius, AA); }
 	inline void FillCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false) { FillCircle((RGBA){color}, (Point){centreX,centreY}, radius, AA); }
 	
-	inline Cidr::RGBA GetPixel(const Point& p) {
+	// TODO: check for valid coordinates
+	inline Cidr::RGBA GetPixel(const Point& p) const {
 		return Cidr::RGBA{pixels[getIndex(p)]};
 	}
-	inline Cidr::RGBA GetPixel(int x, int y) {
+	inline Cidr::RGBA GetPixel(int x, int y) const {
 		return Cidr::RGBA{pixels[getIndex(x, y)]};
 	}
 };

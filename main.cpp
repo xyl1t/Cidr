@@ -9,6 +9,15 @@
 #include "cidr.hpp"
 // using namespace Cidr; 
 
+
+Cidr::RGBA myShader(const Cidr::Renderer& renderer, int x, int y) {
+	Cidr::RGBA color{};
+	
+	color = renderer.GetPixel(x + sin(x / 10.f) * 10, y);
+	
+	return color;
+}
+
 int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
@@ -72,11 +81,13 @@ int main(int argc, char** argv) {
 			}
 		}
 		
-		cidrRend.DrawLine(0x00ff00ff, 128, 64-10, mx, my-10, true, true);
-		cidrRend.DrawLine(0x00ff00ff, 128, 64, mx, my, false);
-		cidrRend.DrawLine(0x00ff00ff, 128, 64+10, mx, my+10, true);
+		cidrRend.DrawLine(0x00ff00ff, 128, 64-10, 400, 400-10, true, true);
+		cidrRend.DrawLine(0x00ff00ff, 128, 64,    400, 400, false);
+		cidrRend.DrawLine(0x00ff00ff, 128, 64+10, 400, 400+10, true);
 		
-		cidrRend.DrawRectangle((Cidr::RGB){0x20ee05}, mx, my, 64, 64);
+		// cidrRend.DrawRectangle((Cidr::RGB){0x20ee05}, mx, my, 64, 64);
+		cidrRend.FillRectangle(&myShader, (Cidr::Point){mx, my}, 64, 64);
+		cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, {mx, my}, 64, 64);
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);
