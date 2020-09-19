@@ -65,7 +65,7 @@ public:
 	inline void FillCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false) { FillCircle((RGBA){color}, (Point){centreX,centreY}, radius, AA); }
 	
 	
-	inline int GetData() const {
+	inline uint32_t* GetData() const {
 		return pixels;
 	}
 	inline int GetWidth() const {
