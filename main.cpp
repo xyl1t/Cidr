@@ -94,10 +94,11 @@ int main(int argc, char** argv) {
 		/* CIRCLE */
 		cidrRend.DrawCircle(0x23ff10ff, 340, 340, 50);
 		
+		cidrRend.FillCircle(0x23ff10ff, 600, 128, 50);
+		
 		/* SHADER */
 		int shaderSize = 128;
-		cidrRend.FillRectangle(&hBlurShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
-		cidrRend.FillRectangle(&vBlurShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
+		cidrRend.FillRectangle(&distortionShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
 		cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));

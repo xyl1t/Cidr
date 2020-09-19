@@ -226,3 +226,19 @@ void Cidr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, 
 		y++;
 	}
 }
+void Cidr::Renderer::FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
+	float rSqr = radius * radius;
+	float x{static_cast<float>(radius)};
+	float y{};
+	
+	while((int) x != 0) {
+		x = sqrt(x * x - 2 * y - 1);
+		
+		for(int i = (int)-x + centreLocation.x; i < (int)x + centreLocation.x; i++) {
+			DrawPoint(color, i, (int)y + centreLocation.y);
+			DrawPoint(color, i, (int)-y + centreLocation.y);
+		}
+		
+		y++;
+	}
+}
