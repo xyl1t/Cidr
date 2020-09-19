@@ -75,6 +75,7 @@ public:
 		return Cidr::RGBA{pixels[getIndex(p)]};
 	}
 	inline Cidr::RGBA GetPixel(int x, int y) const {
+		if(x < 0 || y < 0 || x >= GetWidth() || y >= GetHeight()) return Cidr::RGBA{};
 		return Cidr::RGBA{pixels[getIndex(x, y)]};
 	}
 };

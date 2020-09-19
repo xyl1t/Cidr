@@ -57,8 +57,8 @@ int main(int argc, char** argv) {
 			SDL_GetMouseState(&mx, &my);
 			mx /= zoom;
 			my /= zoom;
-			mx-=5;
-			my-=5;
+			// mx-=3;
+			// my-=3;
 		}
 
 		old = current;
@@ -71,9 +71,9 @@ int main(int argc, char** argv) {
 		
 		cidrRend.Clear();
 		
-		cidrRend.DrawPoint(0xff0000ff, 256, 100);
-		cidrRend.DrawPoint(0xff00ffff, mx, my);
-		cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
+		// cidrRend.DrawPoint(0xff0000ff, 256, 100);
+		// cidrRend.DrawPoint(0xff00ffff, mx, my);
+		// cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
 		
 		auto lambda = [](const Cidr::Renderer& renderer, int x, int y) -> Cidr::RGBA {
 			return {
@@ -92,9 +92,9 @@ int main(int argc, char** argv) {
 		cidrRend.FillRectangle(0x0000ffff, 340,340,40,40);
 		
 		// cidrRend.DrawRectangle((Cidr::RGB){0x20ee05}, mx, my, 64, 64);
-		cidrRend.FillRectangle(&hBlurShader, (Cidr::Point){mx, my}, 256, 256);
-		cidrRend.FillRectangle(&vBlurShader, (Cidr::Point){mx, my}, 256, 256);
-		cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, {mx, my}, 256, 256);
+		int shaderSize = 128;
+		cidrRend.FillRectangle(&distortionShader, (Cidr::Point){mx-shaderSize, my-shaderSize}, shaderSize, shaderSize);
+		cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, {mx-shaderSize, my-shaderSize}, shaderSize, shaderSize);
 		
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
@@ -214,9 +214,16 @@ Cidr::RGBA vBlurShader(const Cidr::Renderer& renderer, int x, int y) {
 Cidr::RGBA distortionShader(const Cidr::Renderer& renderer, int x, int y) {
 	Cidr::RGBA color{};
 	
-	static double v{0};
-	v += 0.000001;
-	color = renderer.GetPixel(x + sin(x / 7.f - v) * 12, y + cos(y / 13.f + (1-v)) * 16);
+	static double v1{0};
+	static double v2{0};
+	static double v3{0};
+	v1 = sin(v3);
+	v2 = cos(v3);
+	v3 += 0.000001;
+	color = renderer.GetPixel(
+		x + (cos(x / 8.f + v1 * 2 * M_PI)) * 12,
+		y + (sin(y / 6.f + v2 * 2 * M_PI)) * 18
+	);
 
 	return color;
 }
