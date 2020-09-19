@@ -197,17 +197,14 @@ void Cidr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int 
 	int clampedHeight {std::min(this->height - clampedLocation.y, height)};
 	
 	std::vector<std::vector<uint32_t>> shadedPixels{};
-	for (int x = clampedLocation.x; x < clampedLocation.x + clampedWidth; x++) {
+	for (int y = clampedLocation.y; y < clampedLocation.y + clampedHeight; y++) {
 		shadedPixels.push_back((std::vector<uint32_t>){});
-		for (int y = clampedLocation.y; y < clampedLocation.y + clampedHeight; y++) {
-			shadedPixels[x - clampedLocation.x].push_back(RGBtoUINT(shader(*this, x, y)));
+		for (int x = clampedLocation.x; x < clampedLocation.x + clampedWidth; x++) {
+			shadedPixels[y - clampedLocation.y].push_back(RGBtoUINT(shader(*this, x, y)));
 		}
 	}
 	
-	for (int x = clampedLocation.x; x < clampedLocation.x + clampedWidth; x++) {
-		for (int y = clampedLocation.y; y <	 clampedLocation.y + clampedHeight; y++) {
-			// std::cout << (RGB){shadedPixels[x - clampedLocation.x][y - clampedLocation.y]} << '\n';
-			DrawPoint(shadedPixels[x - clampedLocation.x][y - clampedLocation.y], x, y);
-		}
+	for (int y = clampedLocation.y; y <	 clampedLocation.y + clampedHeight; y++) {
+		memcpy(pixels + getIndex(clampedLocation.x, y), shadedPixels[y - clampedLocation.y].data(), clampedWidth * sizeof(uint32_t));
 	}
 }
