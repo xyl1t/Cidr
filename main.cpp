@@ -14,46 +14,14 @@
 #include <string>
 #include <chrono> // for std::chrono functions
 // using namespace Cidr;
- 
-class Timer
-{
-private:
-	// Type aliases to make accessing nested type easier
-	using clock_t = std::chrono::high_resolution_clock;
-	using second_t = std::chrono::duration<double, std::ratio<1> >;
-	
-	std::chrono::time_point<clock_t> m_beg;
- 
-public:
-	Timer() : m_beg(clock_t::now())
-	{
-	}
-	
-	void reset()
-	{
-		m_beg = clock_t::now();
-	}
-	
-	double elapsed() const
-	{
-		return std::chrono::duration_cast<second_t>(clock_t::now() - m_beg).count();
-	}
-};
 
-Cidr::RGBA myShader(const Cidr::Renderer& renderer, int x, int y) {
-	Cidr::RGBA finalColor{};
-	const Cidr::RGBA& currentPixel = renderer.GetPixel(x,y);
+class Timer; 
 
-	static double v {};
-	v += 0.00005;
-	if(v > 360) v = 0;
-
-	Cidr::HSV temp = Cidr::RGBtoHSV(currentPixel); 
-	temp.setH(temp.getH() + v);
-	finalColor = Cidr::HSVtoRGB(temp);
-	
-	return finalColor;
-}
+Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y);
+Cidr::RGBA hBlurShader(const Cidr::Renderer& renderer, int x, int y);
+Cidr::RGBA vBlurShader(const Cidr::Renderer& renderer, int x, int y);
+Cidr::RGBA hsvHueRotationShader(const Cidr::Renderer& renderer, int x, int y);
+Cidr::RGBA distortionShader(const Cidr::Renderer& renderer, int x, int y);
 
 int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -102,29 +70,18 @@ int main(int argc, char** argv) {
 		timer += current - old;
 		
 		cidrRend.Clear();
-		// cidrRend.DrawPoint(0xff0000ff, 256, 100);
-		// cidrRend.DrawPoint(0xff00ffff, mx, my);
-		// cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
 		
-		// for (int i = 0; i < 255; i++) {
-		// 	for (int j = 0; j < 255; j++) {
-		// 		Cidr::RGB color {
-		// 			static_cast<uint8_t>(i),
-		// 			static_cast<uint8_t>(j),
-		// 			static_cast<uint8_t>(255 - i)
-		// 		};
-
-		// 		cidrRend.DrawPoint(color, i + 3, j + 3);
-		// 	}
-		// }
+		cidrRend.DrawPoint(0xff0000ff, 256, 100);
+		cidrRend.DrawPoint(0xff00ffff, mx, my);
+		cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
 		
 		auto lambda = [](const Cidr::Renderer& renderer, int x, int y) -> Cidr::RGBA {
 			return {
-				static_cast<uint8_t>(x), 
-				static_cast<uint8_t>(y), 
-				static_cast<uint8_t>(255 - x)};
+				static_cast<uint8_t>(x - 3), 
+				static_cast<uint8_t>(y - 3), 
+				static_cast<uint8_t>(255 - (x - 3))};
 		};
-		cidrRend.FillRectangle(lambda, (Cidr::Point){mx, my}, 256, 256);
+		cidrRend.FillRectangle(lambda, (Cidr::Point){3, 3}, 255, 255);
 		
 		cidrRend.DrawLine(0x00ff00ff, 128, 64-10, 400, 400-10, true, true);
 		cidrRend.DrawLine(0x00ff00ff, 128, 64,    400, 400);
@@ -135,7 +92,8 @@ int main(int argc, char** argv) {
 		cidrRend.FillRectangle(0x0000ffff, 340,340,40,40);
 		
 		// cidrRend.DrawRectangle((Cidr::RGB){0x20ee05}, mx, my, 64, 64);
-		cidrRend.FillRectangle(&myShader, (Cidr::Point){mx, my}, 256, 256);
+		cidrRend.FillRectangle(&hBlurShader, (Cidr::Point){mx, my}, 256, 256);
+		cidrRend.FillRectangle(&vBlurShader, (Cidr::Point){mx, my}, 256, 256);
 		cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, {mx, my}, 256, 256);
 		
 		
@@ -150,4 +108,115 @@ int main(int argc, char** argv) {
 	SDL_Quit();
 	
 	return 0;
+}
+
+class Timer
+{
+private:
+	// Type aliases to make accessing nested type easier
+	using clock_t = std::chrono::high_resolution_clock;
+	using second_t = std::chrono::duration<double, std::ratio<1> >;
+	
+	std::chrono::time_point<clock_t> m_beg;
+ 
+public:
+	Timer() : m_beg(clock_t::now())
+	{
+	}
+	
+	void reset()
+	{
+		m_beg = clock_t::now();
+	}
+	
+	double elapsed() const
+	{
+		return std::chrono::duration_cast<second_t>(clock_t::now() - m_beg).count();
+	}
+};
+
+Cidr::RGBA hsvHueRotationShader(const Cidr::Renderer& renderer, int x, int y) {
+	Cidr::RGBA finalColor{};
+	const Cidr::RGBA& currentPixel = renderer.GetPixel(x,y);
+
+	static double v {};
+	v += 0.00005;
+	if(v > 360) v = 0;
+
+	Cidr::HSV temp = Cidr::RGBtoHSV(currentPixel); 
+	temp.setH(temp.getH() + v);
+	finalColor = Cidr::HSVtoRGB(temp);
+	
+	return finalColor;
+}
+Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y) {
+	Cidr::RGBA finalColor{};
+	int blurSize = 5;
+	int rTotal{0}, gTotal{0}, bTotal{0};
+	float total = 0;
+	
+	for(int bx = -blurSize; bx <= blurSize; bx++) {	
+		for(int by = -blurSize; by <= blurSize; by++) {
+			int fx = bx + x;
+			int fy = by + y;
+			if(fx < 0) fx += renderer.GetWidth();
+			if(fy < 0) fy += renderer.GetWidth();
+			if(fx >= 0) fx %= renderer.GetWidth();
+			if(fy >= 0) fy %= renderer.GetWidth();
+			rTotal += renderer.GetPixel(fx, fy).r;
+			gTotal += renderer.GetPixel(fx, fy).g;
+			bTotal += renderer.GetPixel(fx, fy).b;
+			total++;
+		}
+	}
+	finalColor.r = rTotal / total;	
+	finalColor.g = gTotal / total;	
+	finalColor.b = bTotal / total;	
+	
+	return finalColor;
+}
+Cidr::RGBA hBlurShader(const Cidr::Renderer& renderer, int x, int y) {
+	Cidr::RGBA finalColor{};
+	
+	int offset = -5;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.0093f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.028002f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.065984f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.121703f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.175713f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.198596f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.175713f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.121703f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.065984f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.028002f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.0093f;
+	
+	return finalColor;
+}
+Cidr::RGBA vBlurShader(const Cidr::Renderer& renderer, int x, int y) {
+	Cidr::RGBA finalColor{};
+	
+	int offset = -5;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.0093f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.028002f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.065984f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.121703f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.175713f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.198596f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.175713f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.121703f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.065984f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.028002f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.0093f;
+	
+	return finalColor;
+}
+Cidr::RGBA distortionShader(const Cidr::Renderer& renderer, int x, int y) {
+	Cidr::RGBA color{};
+	
+	static double v{0};
+	v += 0.000001;
+	color = renderer.GetPixel(x + sin(x / 7.f - v) * 12, y + cos(y / 13.f + (1-v)) * 16);
+
+	return color;
 }
