@@ -5,9 +5,40 @@
  ********************************/
 
 #include <iostream>
+#if __has_include("SDL2/SDL.h")
 #include <SDL2/SDL.h>
+#else
+#include <SDL.h>
+#endif
 #include "cidr.hpp"
-// using namespace Cidr; 
+#include <string>
+#include <chrono> // for std::chrono functions
+// using namespace Cidr;
+ 
+class Timer
+{
+private:
+	// Type aliases to make accessing nested type easier
+	using clock_t = std::chrono::high_resolution_clock;
+	using second_t = std::chrono::duration<double, std::ratio<1> >;
+	
+	std::chrono::time_point<clock_t> m_beg;
+ 
+public:
+	Timer() : m_beg(clock_t::now())
+	{
+	}
+	
+	void reset()
+	{
+		m_beg = clock_t::now();
+	}
+	
+	double elapsed() const
+	{
+		return std::chrono::duration_cast<second_t>(clock_t::now() - m_beg).count();
+	}
+};
 
 Cidr::RGBA myShader(const Cidr::Renderer& renderer, int x, int y) {
 	Cidr::RGBA finalColor{};
@@ -16,12 +47,10 @@ Cidr::RGBA myShader(const Cidr::Renderer& renderer, int x, int y) {
 	static double v {};
 	v += 0.00005;
 	if(v > 360) v = 0;
-	// std::cout << v << std::endl;
 
 	Cidr::HSV temp = Cidr::RGBtoHSV(currentPixel); 
-	temp.h = std::fmod(temp.h + v, 360);
+	temp.setH(temp.getH() + v);
 	finalColor = Cidr::HSVtoRGB(temp);
-
 	
 	return finalColor;
 }
@@ -36,7 +65,7 @@ int main(int argc, char** argv) {
 	int zoom = 1;
 
 	SDL_Window* window = SDL_CreateWindow("Cidr Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED/* | SDL_RENDERER_PRESENTVSYNC*/);
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR32, SDL_TEXTUREACCESS_STREAMING, WIDTH / zoom, HEIGHT / zoom);
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 	
@@ -77,17 +106,25 @@ int main(int argc, char** argv) {
 		// cidrRend.DrawPoint(0xff00ffff, mx, my);
 		// cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
 		
-		for (int i = 0; i < 255; i++) {
-			for (int j = 0; j < 255; j++) {
-				Cidr::RGB color {
-					static_cast<uint8_t>(i),
-					static_cast<uint8_t>(j),
-					static_cast<uint8_t>(255 - i)
-				};
+		// for (int i = 0; i < 255; i++) {
+		// 	for (int j = 0; j < 255; j++) {
+		// 		Cidr::RGB color {
+		// 			static_cast<uint8_t>(i),
+		// 			static_cast<uint8_t>(j),
+		// 			static_cast<uint8_t>(255 - i)
+		// 		};
 
-				cidrRend.DrawPoint(color, i + 3, j + 3);
-			}
-		}
+		// 		cidrRend.DrawPoint(color, i + 3, j + 3);
+		// 	}
+		// }
+		
+		auto lambda = [](const Cidr::Renderer& renderer, int x, int y) -> Cidr::RGBA {
+			return {
+				static_cast<uint8_t>(x), 
+				static_cast<uint8_t>(y), 
+				static_cast<uint8_t>(255 - x)};
+		};
+		cidrRend.FillRectangle(lambda, (Cidr::Point){mx, my}, 256, 256);
 		
 		cidrRend.DrawLine(0x00ff00ff, 128, 64-10, 400, 400-10, true, true);
 		cidrRend.DrawLine(0x00ff00ff, 128, 64,    400, 400);
