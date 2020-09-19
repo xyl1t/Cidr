@@ -27,12 +27,16 @@ struct RGB {
 	
     RGB& operator+=(const RGB&  that);
     RGB& operator-=(const RGB&  that);
-    virtual RGB& operator*=(const uint8_t that);
-    virtual RGB& operator/=(const uint8_t that);
+    virtual RGB& operator*=(const int that);
+    virtual RGB& operator/=(const int that);
+    virtual RGB& operator*=(const float that);
+    virtual RGB& operator/=(const float that);
     RGB  operator+ (const RGB&  that) const;
     RGB  operator- (const RGB&  that) const;
-    RGB  operator* (const uint8_t that) const;
-    RGB  operator/ (const uint8_t that) const;
+    RGB  operator* (const int that) const;
+    RGB  operator/ (const int that) const;
+    RGB  operator* (const float that) const;
+    RGB  operator/ (const float that) const;
 };
 
 struct RGBA : RGB {
@@ -50,12 +54,16 @@ struct RGBA : RGB {
 	
 	RGBA& operator+=(const RGBA&  that);
     RGBA& operator-=(const RGBA&  that);
-    virtual RGBA& operator*=(const uint8_t that) override;
-    virtual RGBA& operator/=(const uint8_t that) override;
+    virtual RGBA& operator*=(const int that);
+    virtual RGBA& operator/=(const int that);
+    virtual RGBA& operator*=(const float that);
+    virtual RGBA& operator/=(const float that);
     RGBA  operator+ (const RGBA&  that) const;
     RGBA  operator- (const RGBA&  that) const;
-    RGBA  operator* (const uint8_t that) const;
-    RGBA  operator/ (const uint8_t that) const;
+    RGBA  operator* (const int that) const;
+    RGBA  operator/ (const int that) const;
+    RGBA  operator* (const float that) const;
+    RGBA  operator/ (const float that) const;
 };
 
 uint32_t ToColor(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 0xff);
