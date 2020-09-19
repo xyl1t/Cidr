@@ -1,5 +1,4 @@
 PLANED FEATURES
- * Circles
  * Triangles
  * Shaders for all shapes
  * Triangles with interpolated color
@@ -12,3 +11,4 @@ MAYBE
 
 TODO: 
  * Line clipping
+ * Circles AA

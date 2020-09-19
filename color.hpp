@@ -199,9 +199,9 @@ inline RGB HSVtoRGB(const HSV& colorHSV) {
 	int i;
 	
 	if(colorHSV.getS() <= 0) {
-		color.r = colorHSV.getV();
-		color.g = colorHSV.getV();
-		color.b = colorHSV.getV();
+		color.r = colorHSV.getV() * 255;
+		color.g = colorHSV.getV() * 255;
+		color.b = colorHSV.getV() * 255;
 		return color;
 	}
 	
