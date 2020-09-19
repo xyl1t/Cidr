@@ -37,8 +37,8 @@ public:
 	void DrawLine(const RGBA& color, const Point& start, const Point& end, bool AA = false, bool GC = false);
 	void DrawRectangle(const RGBA& color, const Point& location, int width, int height);
 	void FillRectangle(const RGBA& color, const Point& location, int width, int height);
-	void FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& location, int width, int height); // WIP
-	void DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false); // NOT IMPLEMENTED
+	void FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& location, int width, int height);
+	void DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false); // WIP
 	void FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false); // NOT IMPLEMENTED
 	
 	// overloads 
@@ -46,6 +46,7 @@ public:
 	inline void DrawLine(const RGBA& color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(color, (Point){x1, y1}, (Point){x2, y2}, AA, GC); }
 	inline void DrawRectangle(const RGBA& color, int x, int y, int width, int height) { DrawRectangle(color, (Point){x,y}, width, height); }
 	inline void FillRectangle(const RGBA& color, int x, int y, int width, int height) { FillRectangle(color, (Point){x,y}, width, height); }
+	inline void FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), int x, int y, int width, int height) { FillRectangle(shader, {x, y}, width, height); }
 	inline void DrawCircle(const RGBA& color, int centreX, int centreY, int radius, bool AA = false) { DrawCircle(color, (Point){centreX,centreY}, radius, AA); }
 	inline void FillCircle(const RGBA& color, int centreX, int centreY, int radius, bool AA = false) { FillCircle(color, (Point){centreX,centreY}, radius, AA); }
 

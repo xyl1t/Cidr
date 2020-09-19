@@ -1,6 +1,14 @@
-TODO: 
- * Shading in rectangles or even all shapes using function pointers/lambads
- * Line clipping
+PLANED FEATURES
+ * Circles
+ * Triangles
+ * Shaders for all shapes
+ * Triangles with interpolated color
  * Font rendering 
  * Sprites
+ * Textured triangles (maybe using sprites?)
+
+MAYBE 
  * Stroke width
+
+TODO: 
+ * Line clipping

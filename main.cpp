@@ -91,11 +91,14 @@ int main(int argc, char** argv) {
 		cidrRend.FillRectangle(0x00ff00ff, 320,320,40,40);
 		cidrRend.FillRectangle(0x0000ffff, 340,340,40,40);
 		
-		// cidrRend.DrawRectangle((Cidr::RGB){0x20ee05}, mx, my, 64, 64);
-		int shaderSize = 128;
-		cidrRend.FillRectangle(&distortionShader, (Cidr::Point){mx-shaderSize, my-shaderSize}, shaderSize, shaderSize);
-		cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, {mx-shaderSize, my-shaderSize}, shaderSize, shaderSize);
+		/* SHADER */
+		// int shaderSize = 128;
+		// cidrRend.FillRectangle(&hBlurShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
+		// cidrRend.FillRectangle(&vBlurShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
+		// cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
 		
+		/* CIRCLE */
+		cidrRend.DrawCircle(0x00ff00ff, mx, my, 64);
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);

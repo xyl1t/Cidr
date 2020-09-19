@@ -33,6 +33,7 @@ void Cidr::Renderer::DrawPoint(const Cidr::RGBA& color, const Point& p) {
 	pixels[getIndex(p.x, p.y)] = RGBtoUINT(color);
 }
 
+// TODO: Add clipping
 void Cidr::Renderer::DrawLine(const Cidr::RGBA& color, const Point& start, const Point& end, bool AA, bool GC) {
 	// calculate delta lengths
 	int dx {end.x - start.x}; 
@@ -103,7 +104,6 @@ void Cidr::Renderer::DrawLine(const Cidr::RGBA& color, const Point& start, const
 	}
 }
 
-// ADD CLIPPING
 void Cidr::Renderer::DrawRectangle(const RGBA& color, const Point& location, int width, int height) {
 		// exit if the rectangle is outside of the screen
 	if(location.x >= this->width) return;
@@ -143,7 +143,6 @@ void Cidr::Renderer::DrawRectangle(const RGBA& color, const Point& location, int
 			DrawPoint(color, clampedLocation.x + width, i);
 	}
 }
-
 void Cidr::Renderer::FillRectangle(const RGBA& color, const Point& location, int width, int height) {
 	// exit if the rectangle is outside of the screen
 	if(location.x >= this->width) return;
@@ -171,7 +170,6 @@ void Cidr::Renderer::FillRectangle(const RGBA& color, const Point& location, int
 		std::fill_n(pixels + getIndex(clampedLocation.x, clampedLocation.y + i), clampedWidth, RGBtoUINT(color));
 	}
 }
-
 void Cidr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& location, int width, int height) {
 	// exit if the rectangle is outside of the screen
 	if(location.x >= this->width) return;
@@ -206,5 +204,25 @@ void Cidr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int 
 	
 	for (int y = clampedLocation.y; y <	 clampedLocation.y + clampedHeight; y++) {
 		memcpy(pixels + getIndex(clampedLocation.x, y), shadedPixels[y - clampedLocation.y].data(), clampedWidth * sizeof(uint32_t));
+	}
+}
+
+// TODO: implement AA if possible
+void Cidr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
+	float rSqr = radius * radius;
+	float x{static_cast<float>(radius)};
+	float y{};
+	
+	while((int)x != (int)y) {
+		x = sqrt(x * x - 2 * y - 1);
+		DrawPoint(color, (int) x + centreLocation.x, (int) y + centreLocation.y);
+		DrawPoint(color, (int)-x + centreLocation.x, (int) y + centreLocation.y);
+		DrawPoint(color, (int) x + centreLocation.x, (int)-y + centreLocation.y);
+		DrawPoint(color, (int)-x + centreLocation.x, (int)-y + centreLocation.y);
+		DrawPoint(color, (int) y + centreLocation.x, (int) x + centreLocation.y);
+		DrawPoint(color, (int)-y + centreLocation.x, (int) x + centreLocation.y);
+		DrawPoint(color, (int) y + centreLocation.x, (int)-x + centreLocation.y);
+		DrawPoint(color, (int)-y + centreLocation.x, (int)-x + centreLocation.y);
+		y++;
 	}
 }
