@@ -213,21 +213,16 @@ void Cidr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, 
 	float x{static_cast<float>(radius)};
 	float y{};
 	
-	HSV h = RGBtoHSV(color);
-	h.setS(1);
-	
 	while((int)x > (int)y) {
 		x = sqrt(x * x - 2 * y - 1);
-		DrawPoint(HSVtoRGB(h), (int) x + centreLocation.x, (int) y + centreLocation.y);
-		DrawPoint(HSVtoRGB(h), (int)-x + centreLocation.x, (int) y + centreLocation.y);
-		DrawPoint(HSVtoRGB(h), (int) x + centreLocation.x, (int)-y + centreLocation.y);
-		DrawPoint(HSVtoRGB(h), (int)-x + centreLocation.x, (int)-y + centreLocation.y);
-		DrawPoint(HSVtoRGB(h), (int) y + centreLocation.x, (int) x + centreLocation.y);
-		DrawPoint(HSVtoRGB(h), (int)-y + centreLocation.x, (int) x + centreLocation.y);
-		DrawPoint(HSVtoRGB(h), (int) y + centreLocation.x, (int)-x + centreLocation.y);
-		DrawPoint(HSVtoRGB(h), (int)-y + centreLocation.x, (int)-x + centreLocation.y);
-		h.setH(h.getH() + 7);
-		// h.setV(h.getV() - 0.1);
+		DrawPoint(color, (int) x + centreLocation.x, (int) y + centreLocation.y);
+		DrawPoint(color, (int)-x + centreLocation.x, (int) y + centreLocation.y);
+		DrawPoint(color, (int) x + centreLocation.x, (int)-y + centreLocation.y);
+		DrawPoint(color, (int)-x + centreLocation.x, (int)-y + centreLocation.y);
+		DrawPoint(color, (int) y + centreLocation.x, (int) x + centreLocation.y);
+		DrawPoint(color, (int)-y + centreLocation.x, (int) x + centreLocation.y);
+		DrawPoint(color, (int) y + centreLocation.x, (int)-x + centreLocation.y);
+		DrawPoint(color, (int)-y + centreLocation.x, (int)-x + centreLocation.y);
 		y++;
 	}
 }
