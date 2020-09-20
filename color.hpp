@@ -74,13 +74,10 @@ float s;
 float v;
 public:
 	inline void setH(float valueInDegrees) {
-		if(valueInDegrees < 0) {
-			valueInDegrees += 360 * std::ceil(std::abs(valueInDegrees / 360.f));
-		}
-		else {
-			valueInDegrees = std::fmod(valueInDegrees, 360);
-		}
-		this->h = valueInDegrees;
+		this->h = std::fmod(
+			valueInDegrees + 
+			(valueInDegrees < 0) * 360 * std::ceil(std::abs(valueInDegrees / 360.f)), 
+			360);
 	}
 	inline void setS(float value) {
 		if(value < 0) s = 0;
@@ -109,13 +106,10 @@ class HSL {
 	float l;
 public:
 	inline void setH(float valueInDegrees) {
-		if(valueInDegrees < 0) {
-			valueInDegrees += 360 * std::ceil(std::abs(valueInDegrees / 360.f));
-		}
-		else {
-			valueInDegrees = std::fmod(valueInDegrees, 360.f);
-		}
-		this->h = valueInDegrees;
+		this->h = std::fmod(
+			valueInDegrees + 
+			(valueInDegrees < 0) * 360 * std::ceil(std::abs(valueInDegrees / 360.f)), 
+			360);
 	}
 	inline void setS(float value) {
 		if(value < 0) s = 0;
