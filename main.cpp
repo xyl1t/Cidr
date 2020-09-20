@@ -51,13 +51,14 @@ int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 	
-	const int WIDTH = 800;
-	const int HEIGHT = 600;
 
 	int zoom = 1;
 
+	const int WIDTH = 800 * zoom;
+	const int HEIGHT = 600 * zoom;
+	
 	SDL_Window* window = SDL_CreateWindow("Cidr Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED/* | SDL_RENDERER_PRESENTVSYNC*/);
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR32, SDL_TEXTUREACCESS_STREAMING, WIDTH / zoom, HEIGHT / zoom);
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 	
@@ -132,6 +133,9 @@ int main(int argc, char** argv) {
 			}
 			cidrRend.FillCircle(color, 128, 340, (circlesCount - i) / (float)circlesCount * 50);
 		}
+		
+		cidrRend.FillCircle(0x30ee0Aff, 350, 50, 30, true);
+		cidrRend.FillCircle(0x30ee0Aff, 350 + 30*2 + 15, 50, 30, false);
 		
 		/* SHADER */
 		int shaderSize = 128;
