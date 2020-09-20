@@ -27,21 +27,24 @@ private:
 	}
 	
 public:
+	/* CONSTRUCTOR - DESTRUCTOR */
 	Renderer(uint32_t* pixels, int width, int height);
 	
+	/* */ 
 	void Clear();
 	void Clear(const RGBA& color);
 	void Clear(uint32_t color); 
 	
+	/* CORE DRAWING FUNCTIONS */
 	void DrawPoint(const RGBA& color, const Point& p);
 	void DrawLine(const RGBA& color, const Point& start, const Point& end, bool AA = false, bool GC = false);
 	void DrawRectangle(const RGBA& color, const Point& location, int width, int height);
 	void FillRectangle(const RGBA& color, const Point& location, int width, int height);
 	void FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& location, int width, int height);
-	void DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false); // WIP
-	void FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false); // NOT IMPLEMENTED
+	void DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false);
+	void FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false);
 	
-	// overloads 
+	/* DRAWING FUNCTION OVERLOADS */
 	inline void DrawPoint(const RGBA& color, int x, int y) { DrawPoint(color, (Point){x, y}); }
 	inline void DrawLine(const RGBA& color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(color, (Point){x1, y1}, (Point){x2, y2}, AA, GC); }
 	inline void DrawRectangle(const RGBA& color, int x, int y, int width, int height) { DrawRectangle(color, (Point){x,y}, width, height); }
@@ -64,7 +67,7 @@ public:
 	inline void DrawCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false) { DrawCircle((RGBA){color}, (Point){centreX,centreY}, radius, AA); }
 	inline void FillCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false) { FillCircle((RGBA){color}, (Point){centreX,centreY}, radius, AA); }
 	
-	
+	/* GETTERS */
 	inline uint32_t* GetData() const {
 		return pixels;
 	}
@@ -74,8 +77,8 @@ public:
 	inline int GetHeight() const {
 		return width;
 	}
-	// TODO: check for valid coordinates
 	inline Cidr::RGBA GetPixel(const Point& p) const {
+		if(p.x < 0 || p.y < 0 || p.x >= GetWidth() || p.y >= GetHeight()) return Cidr::RGBA{};
 		return Cidr::RGBA{pixels[getIndex(p)]};
 	}
 	inline Cidr::RGBA GetPixel(int x, int y) const {
@@ -107,8 +110,6 @@ inline RGBA alphaBlendColor(const Cidr::RGBA& color1, const Cidr::RGBA& color2){
 		0xff
 	};
 }
-
-
 
 }
 

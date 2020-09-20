@@ -15,7 +15,31 @@
 #include <chrono> // for std::chrono functions
 // using namespace Cidr;
 
-class Timer; 
+
+class Timer
+{
+private:
+	// Type aliases to make accessing nested type easier
+	using clock_t = std::chrono::high_resolution_clock;
+	using second_t = std::chrono::duration<double, std::ratio<1> >;
+	
+	std::chrono::time_point<clock_t> m_beg;
+ 
+public:
+	Timer() : m_beg(clock_t::now())
+	{
+	}
+	
+	void reset()
+	{
+		m_beg = clock_t::now();
+	}
+	
+	double elapsed() const
+	{
+		return std::chrono::duration_cast<second_t>(clock_t::now() - m_beg).count();
+	}
+};
 
 Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA hBlurShader(const Cidr::Renderer& renderer, int x, int y);
@@ -33,7 +57,7 @@ int main(int argc, char** argv) {
 	int zoom = 1;
 
 	SDL_Window* window = SDL_CreateWindow("Cidr Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED/* | SDL_RENDERER_PRESENTVSYNC*/);
 	SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR32, SDL_TEXTUREACCESS_STREAMING, WIDTH / zoom, HEIGHT / zoom);
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 	
@@ -61,6 +85,7 @@ int main(int argc, char** argv) {
 			// my-=3;
 		}
 
+		// TIMER
 		old = current;
 		current = SDL_GetTicks();
 		if(timer > 1000) {
@@ -69,12 +94,13 @@ int main(int argc, char** argv) {
 		}
 		timer += current - old;
 		
+		/* CLEARING THE SCREEN*/
 		cidrRend.Clear();
 		
-		// cidrRend.DrawPoint(0xff0000ff, 256, 100);
-		// cidrRend.DrawPoint(0xff00ffff, mx, my);
+		/* DRAWING A LINE TO THE CURSOR */
 		// cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
 		
+		/* DRAWING A COLORFUL RECTANGLE */
 		auto lambda = [](const Cidr::Renderer& renderer, int x, int y) -> Cidr::RGBA {
 			return {
 				static_cast<uint8_t>(x - 3), 
@@ -83,18 +109,29 @@ int main(int argc, char** argv) {
 		};
 		cidrRend.FillRectangle(lambda, (Cidr::Point){3, 3}, 255, 255);
 		
+		/* DRAWING THREE TYPES OF LINES */
 		cidrRend.DrawLine(0x00ff00ff, 128, 64-10, 400, 370-10, true, true);
 		cidrRend.DrawLine(0x00ff00ff, 128, 64,    400, 370);
 		cidrRend.DrawLine(0x00ff00ff, 128, 64+10, 400, 370+10, true);
 		
+		/* DRAWING FILLED RGB SQUARES */
 		cidrRend.FillRectangle(0xff0000ff, 300-5,300+5,40,40);
 		cidrRend.FillRectangle(0x00ff00ff, 320-5,320+5,40,40);
 		cidrRend.FillRectangle(0x0000ffff, 340-5,340+5,40,40);
 		
-		/* CIRCLE */
+		/* CIRCLES */
 		cidrRend.DrawCircle(0x23ff10ff, 340, 340, 50);
-		
-		cidrRend.FillCircle(0x23ff10ff, 600, 128, 50);
+		int circlesCount = 5;
+		for(int i = 0; i < circlesCount; i++) {
+			Cidr::RGB color{0xff, 0xff, 0xff};
+			if(i % 2) {
+				color = {};
+			}
+			if(i == circlesCount - 1) {
+				color = {0xff0000ff};
+			}
+			cidrRend.FillCircle(color, 128, 340, (circlesCount - i) / (float)circlesCount * 50);
+		}
 		
 		/* SHADER */
 		int shaderSize = 128;
@@ -113,31 +150,6 @@ int main(int argc, char** argv) {
 	
 	return 0;
 }
-
-class Timer
-{
-private:
-	// Type aliases to make accessing nested type easier
-	using clock_t = std::chrono::high_resolution_clock;
-	using second_t = std::chrono::duration<double, std::ratio<1> >;
-	
-	std::chrono::time_point<clock_t> m_beg;
- 
-public:
-	Timer() : m_beg(clock_t::now())
-	{
-	}
-	
-	void reset()
-	{
-		m_beg = clock_t::now();
-	}
-	
-	double elapsed() const
-	{
-		return std::chrono::duration_cast<second_t>(clock_t::now() - m_beg).count();
-	}
-};
 
 Cidr::RGBA hsvHueRotationShader(const Cidr::Renderer& renderer, int x, int y) {
 	Cidr::RGBA finalColor{};
