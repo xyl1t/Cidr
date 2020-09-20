@@ -209,7 +209,9 @@ void Cidr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int 
 
 // TODO: implement AA if possible
 void Cidr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
-	float rSqr = radius * radius;
+	if(radius < 1) return;
+	if(radius == 1) DrawPoint(color, centreLocation);
+	
 	float x{static_cast<float>(radius)};
 	float y{};
 	
@@ -227,11 +229,13 @@ void Cidr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, 
 	}
 }
 void Cidr::Renderer::FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
-	float rSqr = radius * radius;
+	if(radius < 1) return;
+	if(radius == 1) DrawPoint(color, centreLocation);
+	
 	float x{static_cast<float>(radius)};
 	float y{};
 	
-	while((int) x != 0) {
+	while((int) x > 0) {
 		x = sqrt(x * x - 2 * y - 1);
 		
 		for(int i = (int)-x + centreLocation.x; i < (int)x + centreLocation.x; i++) {
