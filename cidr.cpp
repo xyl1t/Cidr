@@ -28,6 +28,9 @@ void Cidr::Renderer::Clear() {
 void Cidr::Renderer::Clear(const RGBA& color) {
 	std::fill(pixels, pixels + width * height, RGBtoUINT(color));
 }
+void Cidr::Renderer::Clear(uint32_t color) {
+	std::fill(pixels, pixels + width * height, color);
+}
 
 void Cidr::Renderer::DrawPoint(const Cidr::RGBA& color, const Point& p) {
 	pixels[getIndex(p.x, p.y)] = RGBtoUINT(color);

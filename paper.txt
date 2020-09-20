@@ -12,3 +12,4 @@ MAYBE
 TODO: 
  * Line clipping
  * Circles AA
+ * Make functions that transforms two points into a centre point and radius (for triangles)

@@ -5,6 +5,7 @@
  ********************************/
 
 #include <iostream>
+#include <map>
 #if __has_include("SDL2/SDL.h")
 #include <SDL2/SDL.h>
 #else
@@ -54,8 +55,8 @@ int main(int argc, char** argv) {
 
 	int zoom = 1;
 
-	const int WIDTH = 800 * zoom;
-	const int HEIGHT = 600 * zoom;
+	const int WIDTH = 500 * zoom;
+	const int HEIGHT = 500 * zoom;
 	
 	SDL_Window* window = SDL_CreateWindow("Cidr Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -67,17 +68,28 @@ int main(int argc, char** argv) {
 	
 	Cidr::Renderer cidrRend {pixels, WIDTH, HEIGHT};
 	
-	SDL_Event e;
+	SDL_Event event;
 	bool alive = true;
+	std::map<int, bool> keyboard;
 	int mx, my;
 	uint32_t current = SDL_GetTicks();
 	uint32_t old = 0;
 	uint32_t timer = 0;
 	
+	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
+	
 	while(alive) {
-		while(SDL_PollEvent(&e)) {
-			if(e.type == SDL_QUIT) {
+		while(SDL_PollEvent(&event)) {
+			if(event.type == SDL_QUIT) {
 				alive = false;
+			}
+			switch(event.type) {
+			case SDL_KEYDOWN:
+				keyboard[event.key.keysym.sym] = true;
+				break;
+			case SDL_KEYUP:
+				keyboard[event.key.keysym.sym] = false;
+				break;
 			}
 			SDL_GetMouseState(&mx, &my);
 			mx /= zoom;
@@ -85,6 +97,7 @@ int main(int argc, char** argv) {
 			// mx-=3;
 			// my-=3;
 		}
+
 
 		// TIMER
 		old = current;
@@ -96,12 +109,12 @@ int main(int argc, char** argv) {
 		timer += current - old;
 		
 		/* CLEARING THE SCREEN*/
-		cidrRend.Clear();
+		cidrRend.Clear(0x0F0F1AFF);
 		
 		/* DRAWING A LINE TO THE CURSOR */
 		// cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
 		
-		/* DRAWING A COLORFUL RECTANGLE */
+		/* DRAWING A COLORFUL RECTANGLE USING A SHADER */
 		auto lambda = [](const Cidr::Renderer& renderer, int x, int y) -> Cidr::RGBA {
 			return {
 				static_cast<uint8_t>(x - 3), 
@@ -122,7 +135,7 @@ int main(int argc, char** argv) {
 		
 		/* CIRCLES */
 		cidrRend.DrawCircle(0x23ff10ff, 340, 340, 50);
-		int circlesCount = 5;
+		int circlesCount = 7;
 		for(int i = 0; i < circlesCount; i++) {
 			Cidr::RGB color{0xff, 0xff, 0xff};
 			if(i % 2) {
@@ -131,16 +144,38 @@ int main(int argc, char** argv) {
 			if(i == circlesCount - 1) {
 				color = {0xff0000ff};
 			}
-			cidrRend.FillCircle(color, 128, 340, (circlesCount - i) / (float)circlesCount * 50);
+			cidrRend.FillCircle(color, 128, 340, (circlesCount - i) / (float)circlesCount * 50, true);
 		}
-		
 		cidrRend.FillCircle(0x30ee0Aff, 350, 50, 30, true);
 		cidrRend.FillCircle(0x30ee0Aff, 350 + 30*2 + 15, 50, 30, false);
 		
 		/* SHADER */
+		/* SELECT SHADER */
+		if(keyboard[SDLK_0]) {
+			currentShader = nullptr;
+		}
+		if(keyboard[SDLK_1]) {
+			currentShader = &distortionShader;
+		}
+		if(keyboard[SDLK_2]) {
+			currentShader = &hsvHueRotationShader;
+		}
+		if(keyboard[SDLK_3]) {
+			currentShader = &hBlurShader;
+		}
+
+		/* APPLY SHADER */
 		int shaderSize = 128;
-		cidrRend.FillRectangle(&distortionShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
-		cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
+		if(currentShader != nullptr) {
+			if(currentShader == &hBlurShader) {
+				cidrRend.FillRectangle(&hBlurShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
+				cidrRend.FillRectangle(&vBlurShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
+			}
+			else {
+				cidrRend.FillRectangle(currentShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);				
+			}
+			cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
+		}
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);
