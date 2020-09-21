@@ -22,7 +22,7 @@ Cidr (pronounced "Sidr" and stands for "Simple Drawer" or "Simple Drawing") is (
 Here is a small demo of what you can already do with Cidr
 ![Cidr application demo](https://imgur.com/K4kjS5C.jpg)
 
-# Building the demo
+# Building the demo (Mac only for now)
 In order to build the example shown in the image just get all of the github files, and then run:
 ```bash
 $ make
