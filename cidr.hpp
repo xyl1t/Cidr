@@ -1,7 +1,7 @@
 /********************************
  * Project: Cidr				*
  * File: rgb.hpp				*
- * Date: 10.8.2020				*
+ * Date: 10.9.2020				*
  ********************************/
 
 #ifndef CIDR_CIDR_HPP
@@ -30,7 +30,7 @@ public:
 	/* CONSTRUCTOR - DESTRUCTOR */
 	Renderer(uint32_t* pixels, int width, int height);
 	
-	/* */ 
+	/* CLEAR FUNCTIONS */ 
 	void Clear();
 	void Clear(const RGBA& color);
 	void Clear(uint32_t color); 

@@ -1,7 +1,7 @@
 /********************************
  * Project: Cidr                *
  * File: main.cpp               *
- * Date: 10.8.2020              *
+ * Date: 10.9.2020              *
  ********************************/
 
 #include <iostream>
@@ -52,7 +52,6 @@ int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 	
-
 	int zoom = 1;
 
 	const int WIDTH = 500 * zoom;

@@ -1,10 +1,8 @@
-//
-//  tensorMath.hpp
-//  Voksel
-//
-//  Created by Marat Isaw on 21.06.20.
-//  Copyright © 2020 Marat Isaw. All rights reserved.
-//
+/********************************
+ * Project: Cidr                *
+ * File: tensorMath.hpp         *
+ * Date: 13.9.2020              *
+ ********************************/
 
 #ifndef TENSOR_MATH_HPP
 #define TENSOR_MATH_HPP

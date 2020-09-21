@@ -1,10 +1,8 @@
-//
-//  tensorMath.cpp
-//  Voksel
-//
-//  Created by Marat Isaw on 21.06.20.
-//  Copyright © 2020 Marat Isaw. All rights reserved.
-//
+/********************************
+ * Project: Cidr                *
+ * File: tensorMath.cpp         *
+ * Date: 13.9.2020              *
+ ********************************/
 
 #include "tensorMath.hpp"
 #include <iostream>
