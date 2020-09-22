@@ -317,6 +317,17 @@ void Cidr::Renderer::DrawTriangle(const RGBA& color, const Point& p1, const Poin
 	DrawLine(color, p3, p1, AA, GC);
 }
 
-void Cidr::Renderer::FillTriangle(const RGBA& color, const Point& p1, const Point& p2, const Point& p3, bool AA) {
+void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p3, bool AA) {
+	// sort top most point
+	if(p1.y > p2.y) {
+		std::swap(p1, p2);
+	}
+	if(p2.y > p3.y) {
+		std::swap(p2, p3);
+	}
+	if(p1.y > p2.y) {
+		std::swap(p1, p2);
+	}
+	
 	
 }
