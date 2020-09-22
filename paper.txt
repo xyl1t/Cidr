@@ -10,6 +10,8 @@ MAYBE
  * Stroke width
 
 TODO: 
+ * Gamma corrected circles
  * Line clipping
  * Circles AA
  * Make functions that transforms two points into a centre point and radius (for triangles)
+ * add alpha blending toggle

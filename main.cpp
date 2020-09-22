@@ -16,7 +16,6 @@
 #include <chrono> // for std::chrono functions
 // using namespace Cidr;
 
-
 class Timer
 {
 private:
@@ -52,10 +51,10 @@ int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 	
-	int zoom = 1;
+	int zoom = 2;
 
-	const int WIDTH = 500 * zoom;
-	const int HEIGHT = 500 * zoom;
+	const int WIDTH = 600 * zoom;
+	const int HEIGHT = 480 * zoom;
 	
 	SDL_Window* window = SDL_CreateWindow("Cidr Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -123,17 +122,17 @@ int main(int argc, char** argv) {
 		cidrRend.FillRectangle(lambda, (Cidr::Point){3, 3}, 255, 255);
 		
 		/* DRAWING THREE TYPES OF LINES */
-		cidrRend.DrawLine(0x00ff00ff, 128, 64-10, 400, 370-10, true, true);
-		cidrRend.DrawLine(0x00ff00ff, 128, 64,    400, 370);
-		cidrRend.DrawLine(0x00ff00ff, 128, 64+10, 400, 370+10, true);
+		cidrRend.DrawLine(0x00ff00ff, 64, 64-10, 290, 370-10, true, true);
+		cidrRend.DrawLine(0x00ff00ff, 64, 64,    290, 370);
+		cidrRend.DrawLine(0x00ff00ff, 64, 64+10, 290, 370+10, true);
 		
 		/* DRAWING FILLED RGB SQUARES */
-		cidrRend.FillRectangle(0xff0000ff, 300-5,300+5,40,40);
-		cidrRend.FillRectangle(0x00ff00ff, 320-5,320+5,40,40);
-		cidrRend.FillRectangle(0x0000ffff, 340-5,340+5,40,40);
+		cidrRend.FillRectangle(0xff0000ff, 200,300+5,40,40);
+		cidrRend.FillRectangle(0x00ff00ff, 220,320+5,40,40);
+		cidrRend.FillRectangle(0x0000ffff, 240,340+5,40,40);
 		
 		/* CIRCLES */
-		cidrRend.DrawCircle(0x23ff10ff, 340, 340, 50);
+		cidrRend.DrawCircle(0x23ff10ff, 240, 340, 50);
 		int circlesCount = 7;
 		for(int i = 0; i < circlesCount; i++) {
 			Cidr::RGB color{0xff, 0xff, 0xff};
@@ -162,6 +161,17 @@ int main(int argc, char** argv) {
 		if(keyboard[SDLK_3]) {
 			currentShader = &hBlurShader;
 		}
+
+
+		/* TRIANGLES */
+		// cidrRend.DrawTriangle(0xffffffff, 
+		// 	 0 + 300, 0 + 128,
+		// 	64 + 300,32 + 128,
+		// 	32 + 300,64 + 128);
+		cidrRend.DrawTriangle(0xffffffff, 
+			 0 + 300, 0 + 128,
+			64 + 300,32 + 128,
+			mx,my);
 
 		/* APPLY SHADER */
 		int shaderSize = 128;
