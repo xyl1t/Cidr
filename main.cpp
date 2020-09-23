@@ -92,8 +92,8 @@ int main(int argc, char** argv) {
 			SDL_GetMouseState(&mx, &my);
 			mx /= zoom;
 			my /= zoom;
-			// mx-=3;
-			// my-=3;
+			mx-=3;
+			my-=3;
 		}
 
 
@@ -164,7 +164,11 @@ int main(int argc, char** argv) {
 
 
 		/* TRIANGLES */
-		// cidrRend.DrawTriangle(0xffffffff, 
+		// cidrRend.FillTriangle(0xffffffff, 
+		// 	 0 + 300, 0 + 128,
+		// 	64 + 300,32 + 128,
+		// 	32 + 300,64 + 128);
+		// cidrRend.DrawTriangle(0xff0000ff, 
 		// 	 0 + 300, 0 + 128,
 		// 	64 + 300,32 + 128,
 		// 	32 + 300,64 + 128);
