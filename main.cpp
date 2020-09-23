@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 	
-	int zoom = 2;
+	int zoom = 1;
 
 	const int WIDTH = 600 * zoom;
 	const int HEIGHT = 480 * zoom;
@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
 		timer += current - old;
 		
 		/* CLEARING THE SCREEN*/
-		cidrRend.Clear(0x0F0F1AFF);
+		cidrRend.Clear(0x120F1FFF);
 		
 		/* DRAWING A LINE TO THE CURSOR */
 		// cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
@@ -168,7 +168,7 @@ int main(int argc, char** argv) {
 		// 	 0 + 300, 0 + 128,
 		// 	64 + 300,32 + 128,
 		// 	32 + 300,64 + 128);
-		cidrRend.DrawTriangle(0xffffffff, 
+		cidrRend.FillTriangle(0x00ff00ff, 
 			 0 + 300, 0 + 128,
 			64 + 300,32 + 128,
 			mx,my);

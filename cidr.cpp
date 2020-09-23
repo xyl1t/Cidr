@@ -328,6 +328,38 @@ void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p
 	if(p1.y > p2.y) {
 		std::swap(p1, p2);
 	}
+
+	// TEST 
+	DrawPoint(0xff0000ff, p1);
+	DrawPoint(0x00ff00ff, p2);
+	DrawPoint(0x0000ffff, p3);
+	uint32_t invertedColor = ((~RGBtoUINT(color) >> 8) << 8) + 0xff;
 	
+	// Start at top point
+	float x1 = p1.x;
+	float x2 = p1.x; 
+	// Slopes
+	float step1 = (p3.x - p1.x) / (float)(p3.y - p1.y);
+	float step2 = (p2.x - p1.x) / (float)(p2.y - p1.y);
+	/* FIRST TRIANGLE */
+	for	(int i = p1.y; i < p2.y; i++) {
+		DrawLine(color, x1, i, x2, i);
+		DrawPoint(invertedColor, x1, i);
+		DrawPoint(invertedColor, x2, i);
+		x1 += step1;
+		x2 += step2;
+	}
 	
+	// Set point to second part/half of the triangle
+	x2 = p2.x;
+	// Recalculate step
+	step2 = (p3.x - p2.x) / (float)(p3.y - p2.y);
+	/* SECOND TRIANGLE */
+	for	(int i = p2.y; i < p3.y; i++) {
+		DrawLine(color, x1, i, x2, i);
+		DrawPoint(invertedColor, x1, i);
+		DrawPoint(invertedColor, x2, i);
+		x1 += step1;
+		x2 += step2;
+	}
 }
