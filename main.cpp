@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 	
-	int zoom = 1;
+	int zoom = 2;
 
 	const int WIDTH = 600 * zoom;
 	const int HEIGHT = 480 * zoom;
@@ -172,10 +172,12 @@ int main(int argc, char** argv) {
 		// 	 0 + 300, 0 + 128,
 		// 	64 + 300,32 + 128,
 		// 	32 + 300,64 + 128);
-		cidrRend.FillTriangle(0x00ff00ff, 
+		cidrRend.FillTriangle(0xffffffff, 
+			mx,my,
 			 0 + 300, 0 + 128,
-			64 + 300,32 + 128,
-			mx,my);
+			64 + 300,32 + 128, true);
+
+		// cidrRend.DrawLine(0xffffffff, 350, 128, mx, my, true);
 
 		/* APPLY SHADER */
 		int shaderSize = 128;
