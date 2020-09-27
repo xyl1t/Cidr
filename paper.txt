@@ -1,18 +1,18 @@
-PLANED FEATURES
- * Triangles
- * Shaders for all shapes
- * Triangles with interpolated color
- * Font rendering 
- * Sprites
- * Textured triangles (maybe using sprites?)
+PLANED FEATURES (+ -> done, - -> planned)
+ + Triangles
+ + Quick colors, such as Cidr::RGBA::White
+ - Shaders for all shapes
+ - Triangles with interpolated color
+ - Font rendering 
+ - Sprites
+ - Textured triangles (maybe using sprites?)
+
+TODO: 
+ * Line clipping (https://lodev.org/cgtutor/lineclipping.html)
+ * Make functions that transforms two points into a centre point and radius (for triangles)
+ * add alpha blending toggle for when drawing shapes or sprites
 
 MAYBE 
  * Stroke width
-
-TODO: 
- * Finish AA triangles
- * Gamma corrected circles?
- * Gamma corrected triangles?
- * Line clipping
- * Make functions that transforms two points into a centre point and radius (for triangles)
- * add alpha blending toggle
+ * AA triangles
+ * Gamma corrected circles

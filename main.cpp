@@ -119,12 +119,12 @@ int main(int argc, char** argv) {
 				static_cast<uint8_t>(y - 3), 
 				static_cast<uint8_t>(255 - (x - 3))};
 		};
-		cidrRend.FillRectangle(lambda, (Cidr::Point){3, 3}, 255, 255);
+		cidrRend.FillRectangle(lambda, (Cidr::Point){3, 3}, 256, 256);
 		
 		/* DRAWING THREE TYPES OF LINES */
-		cidrRend.DrawLine(0x00ff00ff, 64, 64-10, 290, 370-10, true, true);
-		cidrRend.DrawLine(0x00ff00ff, 64, 64,    290, 370);
-		cidrRend.DrawLine(0x00ff00ff, 64, 64+10, 290, 370+10, true);
+		// cidrRend.DrawLine(0x00ff00ff, 64, 64-10, 290, 370-10, true, true);
+		// cidrRend.DrawLine(0x00ff00ff, 64, 64,    290, 370);
+		// cidrRend.DrawLine(0x00ff00ff, 64, 64+10, 290, 370+10, true);
 		
 		/* DRAWING FILLED RGB SQUARES */
 		cidrRend.FillRectangle(0xff0000ff, 200,300+5,40,40);
@@ -164,20 +164,17 @@ int main(int argc, char** argv) {
 
 
 		/* TRIANGLES */
-		// cidrRend.FillTriangle(0xffffffff, 
-		// 	 0 + 300, 0 + 128,
-		// 	64 + 300,32 + 128,
-		// 	32 + 300,64 + 128);
-		// cidrRend.DrawTriangle(0xff0000ff, 
-		// 	 0 + 300, 0 + 128,
-		// 	64 + 300,32 + 128,
-		// 	32 + 300,64 + 128);
-		cidrRend.FillTriangle(0xffffffff, 
-			mx,my,
+		cidrRend.FillTriangle(Cidr::RGB::White, 
 			 0 + 300, 0 + 128,
-			64 + 300,32 + 128, true);
+			64 + 300,32 + 128,
+			32 + 300,64 + 128);
+		cidrRend.DrawTriangle(Cidr::RGB::Red, 
+			 0 + 300, 0 + 128,
+			64 + 300,32 + 128,
+			32 + 300,64 + 128);
 
 		// cidrRend.DrawLine(0xffffffff, 350, 128, mx, my, true);
+
 
 		/* APPLY SHADER */
 		int shaderSize = 128;
@@ -191,6 +188,9 @@ int main(int argc, char** argv) {
 			}
 			cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
 		}
+		
+		cidrRend.FillCircle(&hBlurShader, (Cidr::Point){mx, my}, shaderSize/2);
+		cidrRend.FillCircle(&vBlurShader, (Cidr::Point){mx, my}, shaderSize/2);
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);

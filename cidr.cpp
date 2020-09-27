@@ -310,6 +310,67 @@ void Cidr::Renderer::FillCircle(const RGBA& color, const Point& centreLocation, 
 		y++;
 	}
 }
+void Cidr::Renderer::FillCircle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& centreLocation, int radius, bool AA) {
+	if(radius < 1) return;
+	if(radius == 1) DrawPoint(shader(*this, centreLocation.x, centreLocation.y), centreLocation);
+	
+	float x{static_cast<float>(radius)};
+	float y{};
+	
+	std::vector<std::vector<uint32_t>> shadedPixels{};
+	shadedPixels.resize(radius * 2);
+	for (int i = 0; i < radius * 2; i++) {
+		shadedPixels[i].resize(radius * 2);
+	}
+	for (int i = 0; i < radius * 2-1; i++) {
+		for (int j = 0; j < radius * 2-1; j++) {
+			shadedPixels[i][j] = RGBtoUINT(shader(*this, i - radius + centreLocation.x, j- radius + centreLocation.y));
+		}
+	}		
+	
+	while((int) x > 0) {
+		x = sqrt(x * x - 2 * y - 1);
+		shadedPixels.push_back({});	
+		
+		for(int i = (int)-x + centreLocation.x; i < (int)x + centreLocation.x; i++) {
+			if(!AA || (i != (int)-x + centreLocation.x)){
+				int ni = i - centreLocation.x + x;
+				DrawPoint(shadedPixels[ni][y + radius], i, (int)y + centreLocation.y);
+				DrawPoint(shadedPixels[ni][-y + radius], i, (int)-y + centreLocation.y);
+			}
+			else if(AA && i == (int)-x + centreLocation.x) {
+				// float AAValue1 = 255 * (x - static_cast<int>(x));
+				// float AAValue2 = 255 * (1 - (x - static_cast<int>(x)));
+				
+				// DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int)y + centreLocation.y), color, AAValue1), (int)-x + centreLocation.x, (int)y + centreLocation.y);
+				// DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int)y + centreLocation.y), color, AAValue2), (int)-x + centreLocation.x + 1, (int)y + centreLocation.y);
+				
+				// DrawPoint(alphaBlendColor(GetPixel((int)x + centreLocation.x, (int)y + centreLocation.y), color, AAValue1), (int)x + centreLocation.x, (int)y + centreLocation.y);
+				// DrawPoint(alphaBlendColor(GetPixel((int)x + centreLocation.x - 1, (int)y + centreLocation.y), color, AAValue2), (int)x + centreLocation.x - 1, (int)y + centreLocation.y);
+				
+				// DrawPoint(alphaBlendColor(GetPixel((int)x + centreLocation.x, (int)-y + centreLocation.y), color, AAValue1), (int)x + centreLocation.x, (int)-y + centreLocation.y);
+				// DrawPoint(alphaBlendColor(GetPixel((int)x + centreLocation.x - 1, (int)-y + centreLocation.y), color, AAValue2), (int)x + centreLocation.x - 1, (int)-y + centreLocation.y);
+
+				// DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int)-y + centreLocation.y), color, AAValue1), (int)-x + centreLocation.x, (int)-y + centreLocation.y);
+				// DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int)-y + centreLocation.y), color, AAValue2), (int)-x + centreLocation.x + 1, (int)-y + centreLocation.y);
+				
+				// DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)x + centreLocation.y), color, AAValue1), (int)-y + centreLocation.x, (int)x + centreLocation.y);
+				// DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)x + centreLocation.y - 1), color, AAValue2), (int)-y + centreLocation.x, (int)x + centreLocation.y - 1);
+				
+				// DrawPoint(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)x + centreLocation.y), color, AAValue1), (int)y + centreLocation.x, (int)x + centreLocation.y);
+				// DrawPoint(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)x + centreLocation.y - 1), color, AAValue2), (int)y + centreLocation.x, (int)x + centreLocation.y - 1);
+
+				// DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y), color, AAValue1), (int)-y + centreLocation.x, (int)-x + centreLocation.y);
+				// DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y + 1), color, AAValue2), (int)-y + centreLocation.x, (int)-x + centreLocation.y + 1);
+								
+				// DrawPoint(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)-x + centreLocation.y), color, AAValue1), (int)y + centreLocation.x, (int)-x + centreLocation.y);
+				// DrawPoint(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)-x + centreLocation.y + 1), color, AAValue2), (int)y + centreLocation.x, (int)-x + centreLocation.y + 1);
+			}
+		}
+		
+		y++;
+	}
+}
 
 void Cidr::Renderer::DrawTriangle(const RGBA& color, const Point& p1, const Point& p2, const Point& p3, bool AA, bool GC) {
 	DrawLine(color, p1, p2, AA, GC);

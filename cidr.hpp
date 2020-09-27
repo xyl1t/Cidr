@@ -43,6 +43,7 @@ public:
 	void FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& location, int width, int height);
 	void DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false);
 	void FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false);
+	void FillCircle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& centreLocation, int radius, bool AA = false);
 	void DrawTriangle(const RGBA& color, const Point& p1, const Point& p2, const Point& p3, bool AA = false, bool GC = false); // WIP
 	void FillTriangle(const RGBA& color, Point p1, Point p2, Point p3); // WIP
 	
