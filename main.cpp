@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 	
-	int zoom = 2;
+	int zoom = 1;
 
 	const int WIDTH = 600 * zoom;
 	const int HEIGHT = 480 * zoom;

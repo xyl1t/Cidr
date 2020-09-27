@@ -8,6 +8,7 @@ PLANED FEATURES (+ -> done, - -> planned)
  - Textured triangles (maybe using sprites?)
 
 TODO: 
+ * FIX CIRCLES 
  * Line clipping (https://lodev.org/cgtutor/lineclipping.html)
  * Make functions that transforms two points into a centre point and radius (for triangles)
  * add alpha blending toggle for when drawing shapes or sprites
