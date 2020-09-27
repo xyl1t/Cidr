@@ -37,6 +37,23 @@ struct RGB {
     RGB  operator/ (const int that) const;
     RGB  operator* (const float that) const;
     RGB  operator/ (const float that) const;
+	
+	static const RGB Black;
+	static const RGB Red;
+	static const RGB Green;
+	static const RGB Blue;
+	static const RGB Cyan;
+	static const RGB Magenta;
+	static const RGB Yellow;
+	static const RGB White;
+	static const RGB Gray;
+	static const RGB Grey;
+	static const RGB Maroon;
+	static const RGB Darkgreen;
+	static const RGB Navy;
+	static const RGB Teal;
+	static const RGB Purple;
+	static const RGB Olive;
 };
 
 struct RGBA : RGB {

@@ -205,3 +205,20 @@ Cidr::RGBA Cidr::RGBA::operator/(const float that) const {
 uint32_t Cidr::ToColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	return (r << 24) + (g << 16) + (b << 8) + (a);
 }
+
+const Cidr::RGB Cidr::RGB::Black 	{  0,   0,   0};
+const Cidr::RGB Cidr::RGB::Red 		{255,   0,   0};
+const Cidr::RGB Cidr::RGB::Green 	{  0, 255,   0};
+const Cidr::RGB Cidr::RGB::Blue 	{  0,   0, 255};
+const Cidr::RGB Cidr::RGB::Cyan 	{  0, 255, 255};
+const Cidr::RGB Cidr::RGB::Magenta 	{255,   0, 255};
+const Cidr::RGB Cidr::RGB::Yellow 	{255, 255,   0};
+const Cidr::RGB Cidr::RGB::White 	{255, 255, 255};
+const Cidr::RGB Cidr::RGB::Gray 	{128, 128, 128};
+const Cidr::RGB Cidr::RGB::Grey 	{192, 192, 192};
+const Cidr::RGB Cidr::RGB::Maroon 	{128,   0,   0};
+const Cidr::RGB Cidr::RGB::Darkgreen{  0, 128,   0};
+const Cidr::RGB Cidr::RGB::Navy 	{  0,   0, 128};
+const Cidr::RGB Cidr::RGB::Teal 	{  0, 128, 128};
+const Cidr::RGB Cidr::RGB::Purple 	{128,   0, 128};
+const Cidr::RGB Cidr::RGB::Olive 	{128, 128,   0};
