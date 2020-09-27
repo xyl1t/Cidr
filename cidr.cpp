@@ -331,7 +331,7 @@ void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p
 	if(p3.y - p1.y != 0) {
 		float x1 = 0;
 		float x2 = 0;
-		for (int i = p1.y; i < p2.y; i++)	{
+		for (int i = p2.y; i >= p1.y; i--)	{
 			x1 = lerp(p1.x, p3.x, (i - p1.y) / (float)(p3.y - p1.y));
 			x2 = lerp(p1.x, p2.x, (i - p1.y) / (float)(p2.y - p1.y));
 			if(x1 > x2) {
