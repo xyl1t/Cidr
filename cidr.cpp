@@ -316,7 +316,7 @@ void Cidr::Renderer::DrawTriangle(const RGBA& color, const Point& p1, const Poin
 	DrawLine(color, p2, p3, AA, GC);
 	DrawLine(color, p3, p1, AA, GC);
 }
-void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p3, bool AA) {
+void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p3) {
 	// sort top most point
 	if(p1.y > p2.y) {
 		std::swap(p1, p2);
@@ -327,10 +327,6 @@ void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p
 	if(p1.y > p2.y) {
 		std::swap(p1, p2);
 	}
-	
-	// DrawPoint(0xff0000ff, p1);
-	// DrawPoint(0x00ff00ff, p2);
-	// DrawPoint(0x0000ffff, p3);
 
 	if(p3.y - p1.y != 0) {
 		float x1 = 0;
@@ -341,54 +337,8 @@ void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p
 			if(x1 > x2) {
 				std::swap(x1, x2);
 			}
-			
-			if(AA){
-				
-				float AAValue {};
-				if(std::abs(p2.y - p1.y) > std::abs(p2.x - p1.x)) {
-					AAValue = 1 - (x1 - static_cast<int>(x1));
-					DrawPoint(alphaBlendColor(GetPixel(x1, i), color, 255.f * AAValue), x1, i);
-					
-					AAValue = ((x2-1 - static_cast<int>(x2-1)));
-					DrawPoint(alphaBlendColor(GetPixel(x2-1, i), color, 255.f * AAValue), x2-1, i);
-				}
-				else {
-					for(int j = std::round(x1); j < std::round(x2); j++) {
-						float m = (p2.y - p1.y) / (float)(j - p1.x);
-						float y = (i - p1.y) * m;
-						AAValue = 1 - (y - static_cast<int>(y));
-						DrawPoint(alphaBlendColor(GetPixel(j, i), color, 255.f * AAValue), j, i);
-					}
-				}
-				
-				
-				
-				
-				// for (int j = std::floor(x1); j < std::floor(x2); j++) {
-				// 	if(j == std::floor(x1)) {
-				// 		float AAValue = 0;
-				// 		if(p2.x - p1.x < p2.y - p1.y){
-				// 			AAValue = (1 - (x1 - static_cast<int>(x1)));
-				// 			DrawPoint(alphaBlendColor(GetPixel(j, i), color, 255.f * AAValue), j, i);
-				// 		}
-				// 	}
-				// 	else if(j == std::floor(x2 - 1)) {
-				// 		float AAValue = 0;
-				// 		if(p2.x - p1.x < p2.y - p1.y){
-				// 			AAValue = ((x2-1 - static_cast<int>(x2-1)));
-				// 			DrawPoint(alphaBlendColor(GetPixel(j, i), color, 255.f * AAValue), j, i);
-				// 		}
-				// 	}
-				// 	else {
-				// 		DrawPoint(color, j, i);
-				// 	}
-				// }
-			}
-			else {
-				//??????????????
-				if(int j = std::round(x1) || j == std::round(x2 - 1)) {
-					DrawPoint(color, j, i);
-				}
+			for (int j = std::round(x1); j < std::round(x2); j++) {
+				DrawPoint(color, j, i);
 			}
 		}
 		
@@ -399,13 +349,7 @@ void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p
 				std::swap(x1, x2);
 			}
 			for (int j = std::round(x1); j < std::round(x2); j++) {
-				if(AA && (j == std::round(x1) || j == std::round(x2 - 1))) {
-					DrawPoint(alphaBlendColor(GetPixel(j, i), color, x1 - (int)x1), j, i);
-					DrawPoint(alphaBlendColor(GetPixel(j, i), color, 1.f - (x1 - (int)x1)), j + 1, i);
-				}
-				else {
-					DrawPoint(color, j, i);
-				}
+				DrawPoint(color, j, i);
 			}
 		}
 	}
