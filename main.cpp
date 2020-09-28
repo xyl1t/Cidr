@@ -41,6 +41,7 @@ public:
 	}
 };
 
+Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA hBlurShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA vBlurShader(const Cidr::Renderer& renderer, int x, int y);
@@ -51,7 +52,7 @@ int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 	
-	int zoom = 1;
+	int zoom = 2;
 
 	const int WIDTH = 600 * zoom;
 	const int HEIGHT = 480 * zoom;
@@ -189,8 +190,7 @@ int main(int argc, char** argv) {
 			cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
 		}
 		
-		cidrRend.FillCircle(&hBlurShader, (Cidr::Point){mx, my}, shaderSize/2);
-		cidrRend.FillCircle(&vBlurShader, (Cidr::Point){mx, my}, shaderSize/2);
+		cidrRend.FillCircle(&hsvHueRotationShader, (Cidr::Point){mx, my}, shaderSize/2, true);
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);
@@ -203,6 +203,15 @@ int main(int argc, char** argv) {
 	SDL_Quit();
 	
 	return 0;
+}
+
+Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y) { 
+	Cidr::RGBA finalColor{};
+	const Cidr::RGBA& currentPixel = renderer.GetPixel(x,y);
+
+	
+	
+	return finalColor;
 }
 
 Cidr::RGBA hsvHueRotationShader(const Cidr::Renderer& renderer, int x, int y) {
