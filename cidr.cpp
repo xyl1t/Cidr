@@ -334,7 +334,7 @@ void Cidr::Renderer::FillCircle(RGBA (*shader)(const Renderer& renderer, int x, 
 		
 		for(int i = (int)-x + centreLocation.x; i < (int)x + centreLocation.x; i++) {
 			if(!AA || (i != (int)-x + centreLocation.x)){
-				int ni = i - centreLocation.x + x;
+				int ni = i - centreLocation.x + radius;
 				DrawPoint(shadedPixels[ni][y + radius], i, (int)y + centreLocation.y);
 				DrawPoint(shadedPixels[ni][-y + radius], i, (int)-y + centreLocation.y);
 			}
