@@ -190,7 +190,7 @@ int main(int argc, char** argv) {
 			cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
 		}
 		
-		cidrRend.FillCircle(&hsvHueRotationShader, (Cidr::Point){mx, my}, shaderSize/2, true);
+		cidrRend.FillCircle(&testShader, (Cidr::Point){mx, my}, shaderSize/2, true);
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);
@@ -209,7 +209,9 @@ Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y) {
 	Cidr::RGBA finalColor{};
 	const Cidr::RGBA& currentPixel = renderer.GetPixel(x,y);
 
-	
+	finalColor.r = 255 - currentPixel.r;
+	finalColor.g = 255 - currentPixel.g;
+	finalColor.b = 255 - currentPixel.b;
 	
 	return finalColor;
 }
