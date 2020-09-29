@@ -54,18 +54,20 @@ int main(int argc, char** argv) {
 	
 	int zoom = 2;
 
-	const int WIDTH = 600 * zoom;
-	const int HEIGHT = 480 * zoom;
+	const int CANVAS_WIDTH = 600;
+	const int CANVAS_HEIGHT = 480;
+	const int WINDOW_WIDTH = CANVAS_WIDTH * zoom;
+	const int WINDOW_HEIGHT = CANVAS_HEIGHT * zoom;
 	
-	SDL_Window* window = SDL_CreateWindow("Cidr Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
+	SDL_Window* window = SDL_CreateWindow("Cidr Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR32, SDL_TEXTUREACCESS_STREAMING, WIDTH / zoom, HEIGHT / zoom);
+	SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR32, SDL_TEXTUREACCESS_STREAMING, CANVAS_WIDTH, CANVAS_HEIGHT);
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 	
-	uint32_t* pixels = new uint32_t[WIDTH * HEIGHT];
-	memset(pixels, 0, WIDTH * HEIGHT * sizeof(uint32_t));
+	uint32_t* pixels = new uint32_t[CANVAS_WIDTH * CANVAS_HEIGHT];
+	memset(pixels, 0, CANVAS_WIDTH * CANVAS_HEIGHT * sizeof(uint32_t));
 	
-	Cidr::Renderer cidrRend {pixels, WIDTH, HEIGHT};
+	Cidr::Renderer cidrRend {pixels, CANVAS_WIDTH, CANVAS_HEIGHT};
 	
 	SDL_Event event;
 	bool alive = true;
@@ -190,13 +192,13 @@ int main(int argc, char** argv) {
 			cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
 		}
 		
-		cidrRend.FillCircle(&testShader, (Cidr::Point){mx, my}, shaderSize/2, true);
+		cidrRend.FillCircle(&testShader, (Cidr::Point){mx, my}, shaderSize/4, true);
 		
-		SDL_UpdateTexture(texture, nullptr, pixels, WIDTH * sizeof(uint32_t));
+		SDL_UpdateTexture(texture, nullptr, pixels, CANVAS_WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);
-		SDL_Rect rect1{0,0, WIDTH/zoom, HEIGHT/zoom};
-		SDL_Rect rect2{0,0, WIDTH, HEIGHT};
-		SDL_RenderCopy(renderer, texture, 0, 0);
+		SDL_Rect rect1{0,0, CANVAS_WIDTH, CANVAS_HEIGHT};
+		SDL_Rect rect2{0,0, WINDOW_WIDTH, WINDOW_HEIGHT};
+		SDL_RenderCopy(renderer, texture, &rect1, &rect2);
 		SDL_RenderPresent(renderer);
 	}
 	
@@ -209,9 +211,9 @@ Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y) {
 	Cidr::RGBA finalColor{};
 	const Cidr::RGBA& currentPixel = renderer.GetPixel(x,y);
 
-	finalColor.r = 255 - currentPixel.r;
-	finalColor.g = 255 - currentPixel.g;
-	finalColor.b = 255 - currentPixel.b;
+	finalColor.r = currentPixel.r / 1.2;
+	finalColor.g = currentPixel.g / 1.2;
+	finalColor.b = currentPixel.b / 1.2;
 	
 	return finalColor;
 }
