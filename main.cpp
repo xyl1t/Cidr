@@ -192,7 +192,8 @@ int main(int argc, char** argv) {
 			cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
 		}
 		
-		cidrRend.FillCircle(&testShader, (Cidr::Point){mx, my}, shaderSize/4, true);
+		cidrRend.FillCircle(&testShader, (Cidr::Point){mx, my}, 64, true);
+		cidrRend.DrawLine(Cidr::RGB::White, 400, 400, 400+64, 400);
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, CANVAS_WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);

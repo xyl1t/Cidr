@@ -324,6 +324,7 @@ void Cidr::Renderer::FillCircle(RGBA (*shader)(const Renderer& renderer, int x, 
 	}
 	for (int i = 0; i < radius * 2; i++) {
 		for (int j = 0; j < radius * 2; j++) {
+			if((i-radius) * (i-radius) + (j-radius) * (j-radius) <= radius*radius)
 			shadedPixels[i][j] = RGBtoUINT(shader(*this, i - radius + centreLocation.x, j- radius + centreLocation.y));
 		}
 	}		
