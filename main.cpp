@@ -47,6 +47,7 @@ Cidr::RGBA hBlurShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA vBlurShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA hsvHueRotationShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA distortionShader(const Cidr::Renderer& renderer, int x, int y);
+Cidr::RGBA grayScaleShader(const Cidr::Renderer& renderer, int x, int y);
 
 int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -130,12 +131,12 @@ int main(int argc, char** argv) {
 		// cidrRend.DrawLine(0x00ff00ff, 64, 64+10, 290, 370+10, true);
 		
 		/* DRAWING FILLED RGB SQUARES */
-		cidrRend.FillRectangle(0xff0000ff, 200,300+5,40,40);
-		cidrRend.FillRectangle(0x00ff00ff, 220,320+5,40,40);
-		cidrRend.FillRectangle(0x0000ffff, 240,340+5,40,40);
+		cidrRend.FillRectangle(0xff0000ff, 152,300+5,40,40);
+		cidrRend.FillRectangle(0x00ff00ff, 172,320+5,40,40);
+		cidrRend.FillRectangle(0x0000ffff, 192,340+5,40,40);
 		
 		/* CIRCLES */
-		cidrRend.DrawCircle(0x23ff10ff, 240, 340, 50);
+		cidrRend.DrawCircle(0x23ff10ff, 192, 340, 50);
 		int circlesCount = 7;
 		for(int i = 0; i < circlesCount; i++) {
 			Cidr::RGB color{0xff, 0xff, 0xff};
@@ -145,7 +146,7 @@ int main(int argc, char** argv) {
 			if(i == circlesCount - 1) {
 				color = {0xff0000ff};
 			}
-			cidrRend.FillCircle(color, 128, 340, (circlesCount - i) / (float)circlesCount * 50, true);
+			cidrRend.FillCircle(color, 64, 340, (circlesCount - i) / (float)circlesCount * 50, true);
 		}
 		cidrRend.FillCircle(0x30ee0Aff, 350, 50, 30, true);
 		cidrRend.FillCircle(0x30ee0Aff, 350 + 30*2 + 15, 50, 30, false);
@@ -167,14 +168,14 @@ int main(int argc, char** argv) {
 
 
 		/* TRIANGLES */
-		cidrRend.FillTriangle(Cidr::RGB::White, 
+		cidrRend.FillTriangle(Cidr::RGB::Maroon, 
 			 0 + 300, 0 + 128,
 			64 + 300,32 + 128,
 			32 + 300,64 + 128);
 		cidrRend.DrawTriangle(Cidr::RGB::Red, 
 			 0 + 300, 0 + 128,
 			64 + 300,32 + 128,
-			32 + 300,64 + 128);
+			32 + 300,64 + 128, true);
 
 		// cidrRend.DrawLine(0xffffffff, 350, 128, mx, my, true);
 
@@ -193,7 +194,6 @@ int main(int argc, char** argv) {
 		}
 		
 		cidrRend.FillCircle(&testShader, (Cidr::Point){mx, my}, 64, true);
-		cidrRend.DrawLine(Cidr::RGB::White, 400, 400, 400+64, 400);
 		
 		SDL_UpdateTexture(texture, nullptr, pixels, CANVAS_WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);
@@ -212,9 +212,20 @@ Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y) {
 	Cidr::RGBA finalColor{};
 	const Cidr::RGBA& currentPixel = renderer.GetPixel(x,y);
 
-	finalColor.r = currentPixel.r / 1.2;
-	finalColor.g = currentPixel.g / 1.2;
-	finalColor.b = currentPixel.b / 1.2;
+	finalColor.r = 255 - currentPixel.r;
+	finalColor.g = 255 - currentPixel.g;
+	finalColor.b = 255 - currentPixel.b;
+	
+	
+	return finalColor;
+}
+
+Cidr::RGBA grayScaleShader(const Cidr::Renderer& renderer, int x, int y) { 
+	Cidr::RGBA finalColor{};
+	const Cidr::RGBA& currentPixel = renderer.GetPixel(x,y);
+
+	finalColor.r = finalColor.g = finalColor.b = 
+		0.2126 * currentPixel.r + 0.7152 * currentPixel.g + 0.0722 * currentPixel.b;
 	
 	return finalColor;
 }

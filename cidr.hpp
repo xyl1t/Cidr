@@ -44,8 +44,9 @@ public:
 	void DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false);
 	void FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA = false);
 	void FillCircle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& centreLocation, int radius, bool AA = false);
-	void DrawTriangle(const RGBA& color, const Point& p1, const Point& p2, const Point& p3, bool AA = false, bool GC = false); // WIP
-	void FillTriangle(const RGBA& color, Point p1, Point p2, Point p3); // WIP
+	void DrawTriangle(const RGBA& color, const Point& p1, const Point& p2, const Point& p3, bool AA = false, bool GC = false);
+	void FillTriangle(const RGBA& color, Point p1, Point p2, Point p3);
+	void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3); // WIP
 	
 	/* DRAWING FUNCTION OVERLOADS */
 	inline void DrawPoint(const RGBA& color, int x, int y) { DrawPoint(color, (Point){x, y}); }
@@ -55,8 +56,10 @@ public:
 	inline void FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), int x, int y, int width, int height) { FillRectangle(shader, {x, y}, width, height); }
 	inline void DrawCircle(const RGBA& color, int centreX, int centreY, int radius, bool AA = false) { DrawCircle(color, (Point){centreX,centreY}, radius, AA); }
 	inline void FillCircle(const RGBA& color, int centreX, int centreY, int radius, bool AA = false) { FillCircle(color, (Point){centreX,centreY}, radius, AA); }
+	inline void FillCircle(RGBA (*shader)(const Renderer& renderer, int x, int y), int centreX, int centreY, int radius, bool AA = false) { FillCircle(shader, (Point){centreX,centreY}, radius, AA); }
 	inline void DrawTriangle(const RGBA& color, int x1, int y1, int x2, int y2, int x3, int y3, bool AA = false, bool GC = false) { DrawTriangle(color, (Point){x1, y1}, (Point){x2, y2}, (Point){x3, y3}, AA, GC ); }
 	inline void FillTriangle(const RGBA& color, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(color, (Point){x1, y1}, (Point){x2, y2}, (Point){x3, y3} ); }
+	inline void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(shader, (Point){x1, y1}, (Point){x2, y2}, (Point){x3, y3} ); }
 
 	inline void DrawPoint(uint32_t color, const Point& p) { DrawPoint((RGBA){color}, p); }
 	inline void DrawLine(uint32_t color, const Point& start, const Point& end, bool AA = false, bool GC = false) { DrawLine((RGBA){color}, start, end, AA, GC); }
