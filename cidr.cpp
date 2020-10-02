@@ -416,3 +416,75 @@ void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p
 		}
 	}
 }
+void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3) {
+	// sort top most point
+	if(p1.y > p2.y) {
+		std::swap(p1, p2);
+	}
+	if(p2.y > p3.y) {
+		std::swap(p2, p3);
+	}
+	if(p1.y > p2.y) {
+		std::swap(p1, p2);
+	}
+
+	// Shaded pixels for the top triangle
+	std::vector<std::vector<uint32_t>> shadedPixelsTopTri{};
+	// Shaded pixels for the bottom triangle
+	std::vector<std::vector<uint32_t>> shadedPixelsBottomTri{};
+	
+	if(p3.y - p1.y != 0) {
+		float x1 = 0;
+		float x2 = 0;
+
+		// Get the shaded pixels of the top triangle
+		shadedPixelsTopTri.resize(p2.y - p1.y + 1);
+		for (int i = p2.y; i >= p1.y; i--) {
+			x1 = lerp(p1.x, p3.x, (i - p1.y) / (float)(p3.y - p1.y));
+			x2 = lerp(p1.x, p2.x, (i - p1.y) / (float)(p2.y - p1.y));
+			if(x1 > x2) {
+				std::swap(x1, x2);
+			}
+			for (int j = std::round(x1); j < std::round(x2); j++) {				
+				shadedPixelsTopTri[i - p1.y].push_back(RGBtoUINT(shader(*this, j, i)));
+			}
+		}
+		
+		// Get the shaded pixels of the bottom triangle
+		shadedPixelsBottomTri.resize(p3.y - p2.y + 1);
+		for (int i = p2.y; i < p3.y; i++) {
+			x1 = lerp(p1.x, p3.x, (i - p1.y) / (float)(p3.y - p1.y));
+			x2 = lerp(p2.x, p3.x, (i - p2.y) / (float)(p3.y - p2.y));
+			if(x1 > x2) {
+				std::swap(x1, x2);
+			}
+			for (int j = std::round(x1); j < std::round(x2); j++) {
+				shadedPixelsBottomTri[i - p2.y].push_back(RGBtoUINT(shader(*this, j, i)));
+			}
+		}
+		
+		// Copy shaded pixels to render pixels
+		for (int i = p2.y; i >= p1.y; i--)	{
+			x1 = lerp(p1.x, p3.x, (i - p1.y) / (float)(p3.y - p1.y));
+			x2 = lerp(p1.x, p2.x, (i - p1.y) / (float)(p2.y - p1.y));
+			if(x1 > x2) {
+				std::swap(x1, x2);
+			}
+			for (int j = std::round(x1); j < std::round(x2); j++) {				
+				DrawPoint(shadedPixelsTopTri[i - p1.y][j - std::round(x1)], j, i);
+			}
+		}
+		
+		// Get the shaded pixels of the bottom triangle
+		for (int i = p2.y; i < p3.y; i++)	{
+			x1 = lerp(p1.x, p3.x, (i - p1.y) / (float)(p3.y - p1.y));
+			x2 = lerp(p2.x, p3.x, (i - p2.y) / (float)(p3.y - p2.y));
+			if(x1 > x2) {
+				std::swap(x1, x2);
+			}
+			for (int j = std::round(x1); j < std::round(x2); j++) {
+				DrawPoint(shadedPixelsBottomTri[i - p2.y][j - std::round(x1)], j, i);
+			}
+		}
+		}
+}
