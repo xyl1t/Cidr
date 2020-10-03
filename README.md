@@ -22,6 +22,7 @@ Here is a small demo of what you can already do with Cidr
 # Building the demo (Mac only for now)
 In order to build the example shown in the image just get all of the github files, and then run:
 ```bash
+$ mkdir build
 $ make
 clang++ -std=c++17 -I include -O2 -c cidr.cpp -MMD -MF build/cidr.d -o build/cidr.o
 clang++ -std=c++17 -I include -O2 -c color.cpp -MMD -MF build/color.d -o build/color.o

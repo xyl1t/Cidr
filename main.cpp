@@ -188,7 +188,6 @@ int main(int argc, char** argv) {
 		}
 		cidrRend.FillCircle(0x30ee0Aff, 350, 50, 30, true);
 		cidrRend.FillCircle(0x30ee0Aff, 350 + 30*2 + 15, 50, 30, false);
-		
 
 		/* TRIANGLES */
 		cidrRend.FillTriangle(
