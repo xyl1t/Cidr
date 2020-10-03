@@ -108,7 +108,7 @@ void Cidr::Renderer::DrawLine(const Cidr::RGBA& color, const Point& start, const
 }
 
 void Cidr::Renderer::DrawRectangle(const RGBA& color, const Point& location, int width, int height) {
-		// exit if the rectangle is outside of the screen
+	// exit if the rectangle is outside of the screen
 	if(location.x >= this->width) return;
 	if(location.y >= this->height) return;
 	
@@ -133,17 +133,21 @@ void Cidr::Renderer::DrawRectangle(const RGBA& color, const Point& location, int
 	
 	// loop till the itrating value hits the rectangle end or if it goes outside of the screen
 	for(int i = clampedLocation.x + 1; i < clampedLocation.x + clampedWidth; i++) {
-		if(location.y > 0)
+		// top side
+		if(location.y >= 0)
 			DrawPoint(color, i, clampedLocation.y);
-		if(clampedLocation.y + height < this->height)
-			DrawPoint(color, i, clampedLocation.y + height);
+		// bottom side
+		if(clampedLocation.y + height - 1 < this->height)
+			DrawPoint(color, i, clampedLocation.y + height - 1);
 	}
 	// loop till the itrating value hits the rectangle end or if it goes outside of the screen
-	for(int i = clampedLocation.y; i < clampedLocation.y + clampedHeight + 1; i++) {
-		if(location.x > 0)
+	for(int i = clampedLocation.y; i < clampedLocation.y + clampedHeight; i++) {
+		// left side
+		if(location.x >= 0)
 			DrawPoint(color, clampedLocation.x, i);
-		if(clampedLocation.x + width < this->width)
-			DrawPoint(color, clampedLocation.x + width, i);
+		// right side
+		if(clampedLocation.x + width - 1< this->width)
+			DrawPoint(color, clampedLocation.x + width - 1, i);
 	}
 }
 void Cidr::Renderer::FillRectangle(const RGBA& color, const Point& location, int width, int height) {
@@ -210,7 +214,6 @@ void Cidr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int 
 	}
 }
 
-// TODO: implement AA if possible
 void Cidr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
 	if(radius < 1) return;
 	if(radius == 1) DrawPoint(color, centreLocation);
@@ -553,6 +556,10 @@ void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x
 
 void Cidr::Renderer::drawScanLine(uint32_t color, int startX, int endX, int y) {
 	std::fill_n(pixels + getIndex(startX, y), endX - startX, color);
+	// for(int i = startX; i < endX; i++) {
+	// 	// if(GetPixel(i,y).r)
+	// 	DrawPoint(color, i, y);
+	// }
 }
 void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y) {
 	float rStep{(color2.r - color1.r) / (float)(endX - startX)};

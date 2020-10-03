@@ -101,8 +101,8 @@ int main(int argc, char** argv) {
 			SDL_GetMouseState(&mx, &my);
 			mx /= zoom;
 			my /= zoom;
-			mx-=3;
-			my-=3;
+			// mx-=3;
+			// my-=3;
 		}
 
 		/* SELECT SHADER */
@@ -198,12 +198,11 @@ int main(int argc, char** argv) {
 			 0 + 300,  0 + 128,
 			64 + 300, 32 + 128,
 			32 + 300, 64 + 128);
-			
 		cidrRend.DrawTriangle(Cidr::RGB::White, 
 			 0 + 300, 0 + 128,
 			64 + 300,32 + 128,
 			32 + 300,64 + 128, true, true);
-			
+		
 		cidrRend.FillTriangle(
 			Cidr::RGB::Red,
 			Cidr::RGB::Green,
@@ -232,7 +231,7 @@ int main(int argc, char** argv) {
 			360, 215,
 			360 + 64, 215,
 			360 + 32, 215 + 32);
-			
+		
 		/* APPLY SHADER */
 		int shaderSize = 128;
 		if(currentShader != nullptr) {
