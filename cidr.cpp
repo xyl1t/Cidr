@@ -412,43 +412,71 @@ void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p
 		}
 	}
 }
-void Cidr::Renderer::FillTriangle(const RGBA& color1, const RGBA& color2, const RGBA& color3, Point p1, Point p2, Point p3) {
-	// // sort top most point
-	// if(p1.y > p2.y) {
-	// 	std::swap(p1, p2);
-	// }
-	// if(p2.y > p3.y) {
-	// 	std::swap(p2, p3);
-	// }
-	// if(p1.y > p2.y) {
-	// 	std::swap(p1, p2);
-	// }
+void Cidr::Renderer::FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3) {
+	// sort top most point
+	if(p1.y > p2.y) {
+		std::swap(p1, p2);
+		std::swap(color1, color2);
+	}
+	if(p2.y > p3.y) {
+		std::swap(p2, p3);
+		std::swap(color2, color3);
+	}
+	if(p1.y > p2.y) {
+		std::swap(p1, p2);
+		std::swap(color1, color2);
+	}
 
-	// if(p3.y - p1.y != 0) {
-	// 	float x1 = 0;
-	// 	float x2 = 0;
-	// 	for (int i = p2.y; i >= p1.y; i--)	{
-	// 		x1 = lerp(p1.x, p3.x, (i - p1.y) / (float)(p3.y - p1.y));
-	// 		x2 = lerp(p1.x, p2.x, (i - p1.y) / (float)(p2.y - p1.y));
-	// 		if(x1 > x2) {
-	// 			std::swap(x1, x2);
-	// 		}
-	// 		for (int j = std::round(x1); j < std::round(x2); j++) {
-	// 			DrawPoint(color, j, i);
-	// 		}
-	// 	}
+	if(p3.y - p1.y != 0) {
+		float x1 = 0;
+		float x2 = 0;
+		RGBA lerpColorV1{}; // vertical lerp color from side 1
+		RGBA lerpColorV2{}; // vertical lerp color from side 2
 		
-	// 	for (int i = p2.y; i < p3.y; i++)	{
-	// 		x1 = lerp(p1.x, p3.x, (i - p1.y) / (float)(p3.y - p1.y));
-	// 		x2 = lerp(p2.x, p3.x, (i - p2.y) / (float)(p3.y - p2.y));
-	// 		if(x1 > x2) {
-	// 			std::swap(x1, x2);
-	// 		}
-	// 		for (int j = std::round(x1); j < std::round(x2); j++) {
-	// 			DrawPoint(color, j, i);
-	// 		}
-	// 	}
-	// }
+		for (int i = p2.y; i >= p1.y; i--)	{
+			float t1 = (i - p1.y) / (float)(p3.y - p1.y);
+			float t2 = (i - p1.y) / (float)(p2.y - p1.y);
+			x1 = lerp(p1.x, p3.x, t1);
+			x2 = lerp(p1.x, p2.x, t2);
+			
+			lerpColorV1.r = static_cast<uint8_t>(lerp(color1.r, color3.r, t1));
+			lerpColorV1.g = static_cast<uint8_t>(lerp(color1.g, color3.g, t1));
+			lerpColorV1.b = static_cast<uint8_t>(lerp(color1.b, color3.b, t1));
+			lerpColorV1.a = static_cast<uint8_t>(lerp(color1.a, color3.a, t1));
+			lerpColorV2.r = static_cast<uint8_t>(lerp(color1.r, color2.r, t2));
+			lerpColorV2.g = static_cast<uint8_t>(lerp(color1.g, color2.g, t2));
+			lerpColorV2.b = static_cast<uint8_t>(lerp(color1.b, color2.b, t2));
+			lerpColorV2.a = static_cast<uint8_t>(lerp(color1.a, color2.a, t2));
+			
+			if(x1 > x2) {
+				std::swap(x1, x2);
+				std::swap(lerpColorV1, lerpColorV2);
+			}
+			drawScanLine(lerpColorV1, lerpColorV2, std::round(x1), std::round(x2), i);
+		}
+		
+		for (int i = p2.y; i < p3.y; i++)	{
+			float t1 = (i - p1.y) / (float)(p3.y - p1.y);
+			float t2 = (i - p2.y) / (float)(p3.y - p2.y);
+			x1 = lerp(p1.x, p3.x, t1);
+			x2 = lerp(p2.x, p3.x, t2);
+			
+			lerpColorV1.r = static_cast<uint8_t>(lerp(color1.r, color3.r, t1));
+			lerpColorV1.g = static_cast<uint8_t>(lerp(color1.g, color3.g, t1));
+			lerpColorV1.b = static_cast<uint8_t>(lerp(color1.b, color3.b, t1));
+			lerpColorV1.a = static_cast<uint8_t>(lerp(color1.a, color3.a, t1));
+			lerpColorV2.r = static_cast<uint8_t>(lerp(color2.r, color3.r, t2));
+			lerpColorV2.g = static_cast<uint8_t>(lerp(color2.g, color3.g, t2));
+			lerpColorV2.b = static_cast<uint8_t>(lerp(color2.b, color3.b, t2));
+			lerpColorV2.a = static_cast<uint8_t>(lerp(color2.a, color3.a, t2));
+			
+			if(x1 > x2) {
+				std::swap(x1, x2);
+				std::swap(lerpColorV1, lerpColorV2);
+			}
+			drawScanLine(lerpColorV1, lerpColorV2, std::round(x1), std::round(x2), i);
+		}
+	}
 }
 void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3) {
 	// sort top most point
@@ -527,6 +555,16 @@ void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x
 void Cidr::Renderer::drawScanLine(uint32_t color, int startX, int endX, int y) {
 	std::fill_n(pixels + getIndex(startX, y), endX - startX, color);
 }
-void Cidr::Renderer::drawScanLine(uint32_t color1, uint32_t color2, int startX, int endX, int y) {
-	
+void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y) {
+	for (int i = startX; i < endX; i++) {
+		float t = (i - startX) / (float)(endX - startX);
+		RGBA lerpColor {
+			static_cast<uint8_t>(lerp(color1.r, color2.r, t)),
+			static_cast<uint8_t>(lerp(color1.g, color2.g, t)),
+			static_cast<uint8_t>(lerp(color1.b, color2.b, t)),
+			static_cast<uint8_t>(lerp(color1.a, color2.a, t))
+		};
+		
+		DrawPoint(lerpColor, i, y);
+	}
 }

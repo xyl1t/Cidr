@@ -168,14 +168,18 @@ int main(int argc, char** argv) {
 
 
 		/* TRIANGLES */
-		cidrRend.FillTriangle(Cidr::RGB::Maroon, 
+		cidrRend.FillTriangle(
+			Cidr::RGB::Red, 
+			Cidr::RGB::Green, 
+			Cidr::RGB::Blue, 
 			 0 + 300, 0 + 128,
 			64 + 300,32 + 128,
 			32 + 300,64 + 128);
-		cidrRend.DrawTriangle(Cidr::RGB::Red, 
-			 0 + 300, 0 + 128,
-			64 + 300,32 + 128,
-			32 + 300,64 + 128, true);
+			
+		// cidrRend.DrawTriangle(Cidr::RGB::Red, 
+		// 	 0 + 300, 0 + 128,
+		// 	64 + 300,32 + 128,
+		// 	32 + 300,64 + 128, true);
 
 		// cidrRend.DrawLine(0xffffffff, 350, 128, mx, my, true);
 
