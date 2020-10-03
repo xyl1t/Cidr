@@ -2,7 +2,7 @@ PLANED FEATURES (+ -> done, - -> planned)
  + Triangles
  + Quick colors, such as Cidr::RGBA::White
  + Shaders for all shapes
- - Triangles with interpolated color
+ + Triangles with interpolated color
  - Font rendering 
  - Sprites
  - Textured triangles (maybe using sprites?)
