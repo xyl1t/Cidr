@@ -103,8 +103,8 @@ private:
 	inline int getIndex(int x, int y) const {
 		return x + y * width;
 	}
-	void drawScanLine(const RGBA& color, int startX, int endX, int y);
-	void drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y);
+	void drawScanLine(uint32_t color, int startX, int endX, int y);
+	void drawScanLine(uint32_t color1, uint32_t color2, int startX, int endX, int y);
 	
 };
 

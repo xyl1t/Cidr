@@ -399,9 +399,7 @@ void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p
 			if(x1 > x2) {
 				std::swap(x1, x2);
 			}
-			for (int j = std::round(x1); j < std::round(x2); j++) {
-				DrawPoint(color, j, i);
-			}
+			drawScanLine(RGBtoUINT(color), std::round(x1), std::round(x2), i);
 		}
 		
 		for (int i = p2.y; i < p3.y; i++)	{
@@ -410,11 +408,47 @@ void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p
 			if(x1 > x2) {
 				std::swap(x1, x2);
 			}
-			for (int j = std::round(x1); j < std::round(x2); j++) {
-				DrawPoint(color, j, i);
-			}
+			drawScanLine(RGBtoUINT(color), std::round(x1), std::round(x2), i);
 		}
 	}
+}
+void Cidr::Renderer::FillTriangle(const RGBA& color1, const RGBA& color2, const RGBA& color3, Point p1, Point p2, Point p3) {
+	// // sort top most point
+	// if(p1.y > p2.y) {
+	// 	std::swap(p1, p2);
+	// }
+	// if(p2.y > p3.y) {
+	// 	std::swap(p2, p3);
+	// }
+	// if(p1.y > p2.y) {
+	// 	std::swap(p1, p2);
+	// }
+
+	// if(p3.y - p1.y != 0) {
+	// 	float x1 = 0;
+	// 	float x2 = 0;
+	// 	for (int i = p2.y; i >= p1.y; i--)	{
+	// 		x1 = lerp(p1.x, p3.x, (i - p1.y) / (float)(p3.y - p1.y));
+	// 		x2 = lerp(p1.x, p2.x, (i - p1.y) / (float)(p2.y - p1.y));
+	// 		if(x1 > x2) {
+	// 			std::swap(x1, x2);
+	// 		}
+	// 		for (int j = std::round(x1); j < std::round(x2); j++) {
+	// 			DrawPoint(color, j, i);
+	// 		}
+	// 	}
+		
+	// 	for (int i = p2.y; i < p3.y; i++)	{
+	// 		x1 = lerp(p1.x, p3.x, (i - p1.y) / (float)(p3.y - p1.y));
+	// 		x2 = lerp(p2.x, p3.x, (i - p2.y) / (float)(p3.y - p2.y));
+	// 		if(x1 > x2) {
+	// 			std::swap(x1, x2);
+	// 		}
+	// 		for (int j = std::round(x1); j < std::round(x2); j++) {
+	// 			DrawPoint(color, j, i);
+	// 		}
+	// 	}
+	// }
 }
 void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3) {
 	// sort top most point
@@ -487,4 +521,12 @@ void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x
 				(std::round(x2) - std::round(x1)) * sizeof(uint32_t));
 		}
 	}
+}
+
+
+void Cidr::Renderer::drawScanLine(uint32_t color, int startX, int endX, int y) {
+	std::fill_n(pixels + getIndex(startX, y), endX - startX, color);
+}
+void Cidr::Renderer::drawScanLine(uint32_t color1, uint32_t color2, int startX, int endX, int y) {
+	
 }
