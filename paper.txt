@@ -3,8 +3,8 @@ PLANED FEATURES (+ -> done, - -> planned)
  + Quick colors, such as Cidr::RGBA::White
  + Shaders for all shapes
  + Triangles with interpolated color
- - Font rendering 
  - Sprites
+ - Font rendering 
  - Textured triangles (maybe using sprites?)
 
 TODO: 
