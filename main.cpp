@@ -267,7 +267,6 @@ Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y) {
 	finalColor.g = 255 - currentPixel.g;
 	finalColor.b = 255 - currentPixel.b;
 	
-	
 	return finalColor;
 }
 

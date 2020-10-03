@@ -111,6 +111,8 @@ void Cidr::Renderer::DrawRectangle(const RGBA& color, const Point& location, int
 	// exit if the rectangle is outside of the screen
 	if(location.x >= this->width) return;
 	if(location.y >= this->height) return;
+	if(location.x + width - 1 < 0) return;
+	if(location.y + height - 1 < 0) return;
 	
 	// clamp locations
 	Point clampedLocation {location.x, location.y};
