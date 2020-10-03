@@ -1,26 +1,23 @@
 # Cidr
-Cidr (pronounced "Sidr" and stands for "Simple Drawer" or "Simple Drawing") is (supposed to be) a simple library with which you can easily draw elementary stuff (simple geometric shapes, lines, etc and sprites). All it requires is a simple pixel color buffer.
+Cidr (pronounced "Sidr" which stands for "Simple Drawer" or "Simple Drawing") is (supposed to be) a simple library with which you can easily draw elementary stuff (simple geometric shapes, lines, etc and sprites). All it requires is a simple pixel color buffer.
 
-#### At the moment Cidr has the following core features:
- * Lines 
- * Anti-aliased lines
- * Circles
- * Anti-aliased circles
- * Rectangles
- * Shaders (at the moment only for rectangles)
- * and much more™
+#### At the moment Cidr has the following features
+ * Lines (+ anti aliasing)
+ * Circles (+ anti aliasing)
+ * Rectangles 
+ * Triangles 
+ * Shaders for all shapes 
+ * Triangles with interpolated color 
+ * and much more™ 
 
 #### Some planned features include
- * Triangles 
- * Shaders for all shapes
- * Triangles with interpolated color
- * Font rendering 
  * Sprites
+ * Font rendering 
  * Textured triangles
  * Making it header only
 
 Here is a small demo of what you can already do with Cidr
-![Cidr application demo](https://imgur.com/K4kjS5C.jpg)
+![Cidr application demo](https://imgur.com/dlh7JNy.jpg)
 
 # Building the demo (Mac only for now)
 In order to build the example shown in the image just get all of the github files, and then run:
@@ -39,7 +36,7 @@ $ ./build/Cidr
 For now, you'll have to include all of the `.cpp` and `.hpp` (not including `lib/` or `include/`) and copy-paste them into your project. I'm looking forward to making Cidr a header only library near it's final release :)
 
 # Dependencies
-All you need is a compiler that supports C++17!
+All you need is a compiler that supports C++17.
 
 # License 
 This project is licensed under the [MIT License](https://www.tldrlegal.com/l/mit/)
