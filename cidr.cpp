@@ -430,88 +430,51 @@ void Cidr::Renderer::FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p
 	if(p3.y - p1.y != 0) {
 		float x1 = 0;
 		float x2 = 0;
+		RGBA lerpColorV1{}; // vertical lerp color from side 1
+		RGBA lerpColorV2{}; // vertical lerp color from side 2
 		
-		float rLerp1{static_cast<float>(color1.r)};
-		float gLerp1{static_cast<float>(color1.g)};
-		float bLerp1{static_cast<float>(color1.b)};
-		float aLerp1{static_cast<float>(color1.a)};
-		float rStep1{static_cast<float>((color3.r - color1.r) / (float)(p3.y - p1.y))};
-		float gStep1{static_cast<float>((color3.g - color1.g) / (float)(p3.y - p1.y))};
-		float bStep1{static_cast<float>((color3.b - color1.b) / (float)(p3.y - p1.y))};
-		float aStep1{static_cast<float>((color3.a - color1.a) / (float)(p3.y - p1.y))};
-		
-		float rLerp2{static_cast<float>(color1.r)};
-		float gLerp2{static_cast<float>(color1.g)};
-		float bLerp2{static_cast<float>(color1.b)};
-		float aLerp2{static_cast<float>(color1.a)};
-		float rStep2{static_cast<float>((color2.r - color1.r) / (float)(p2.y - p1.y))};
-		float gStep2{static_cast<float>((color2.g - color1.g) / (float)(p2.y - p1.y))};
-		float bStep2{static_cast<float>((color2.b - color1.b) / (float)(p2.y - p1.y))};
-		float aStep2{static_cast<float>((color2.a - color1.a) / (float)(p2.y - p1.y))};
-		
-		for (int i = p1.y; i < p2.y; i++)	{
-			x1 = lerp(p1.x, p3.x, (i - p1.y) / (float)(p3.y - p1.y));
-			x2 = lerp(p1.x, p2.x, (i - p1.y) / (float)(p2.y - p1.y));
+		for (int i = p2.y; i >= p1.y; i--)	{
+			float t1 = (i - p1.y) / (float)(p3.y - p1.y);
+			float t2 = (i - p1.y) / (float)(p2.y - p1.y);
+			x1 = lerp(p1.x, p3.x, t1);
+			x2 = lerp(p1.x, p2.x, t2);
+			
+			lerpColorV1.r = static_cast<uint8_t>(lerp(color1.r, color3.r, t1));
+			lerpColorV1.g = static_cast<uint8_t>(lerp(color1.g, color3.g, t1));
+			lerpColorV1.b = static_cast<uint8_t>(lerp(color1.b, color3.b, t1));
+			lerpColorV1.a = static_cast<uint8_t>(lerp(color1.a, color3.a, t1));
+			lerpColorV2.r = static_cast<uint8_t>(lerp(color1.r, color2.r, t2));
+			lerpColorV2.g = static_cast<uint8_t>(lerp(color1.g, color2.g, t2));
+			lerpColorV2.b = static_cast<uint8_t>(lerp(color1.b, color2.b, t2));
+			lerpColorV2.a = static_cast<uint8_t>(lerp(color1.a, color2.a, t2));
 			
 			if(x1 > x2) {
 				std::swap(x1, x2);
-				std::swap(rLerp1, rLerp2);
-				std::swap(gLerp1, gLerp2);
-				std::swap(bLerp1, bLerp2);
-				std::swap(aLerp1, aLerp2);
+				std::swap(lerpColorV1, lerpColorV2);
 			}
-			drawScanLine(
-				{(uint8_t)rLerp1, (uint8_t)gLerp1, (uint8_t)bLerp1, (uint8_t)aLerp1}, 
-				{(uint8_t)rLerp2, (uint8_t)gLerp2, (uint8_t)bLerp2, (uint8_t)aLerp2}, 
-				std::round(x1), std::round(x2), 
-				i);
-				
-			rLerp1 += rStep1;
-			gLerp1 += gStep1;
-			bLerp1 += bStep1;
-			aLerp1 += aStep1;
-			
-			rLerp2 += rStep2;
-			gLerp2 += gStep2;
-			bLerp2 += bStep2;
-			aLerp2 += aStep2;
+			drawScanLine(lerpColorV1, lerpColorV2, std::round(x1), std::round(x2), i);
 		}
 		
-		rLerp2 = static_cast<float>(color2.r);
-		gLerp2 = static_cast<float>(color2.g);
-		bLerp2 = static_cast<float>(color2.b);
-		aLerp2 = static_cast<float>(color2.a);
-		rStep2 = static_cast<float>((color3.r - color2.r) / (float)(p3.y - p2.y));
-		gStep2 = static_cast<float>((color3.g - color2.g) / (float)(p3.y - p2.y));
-		bStep2 = static_cast<float>((color3.b - color2.b) / (float)(p3.y - p2.y));
-		aStep2 = static_cast<float>((color3.a - color2.a) / (float)(p3.y - p2.y));
-		
-		for (int i = p2.y; i < p3.y; i++) {
-			x1 = lerp(p1.x, p3.x, (i - p1.y) / (float)(p3.y - p1.y));
-			x2 = lerp(p2.x, p3.x, (i - p2.y) / (float)(p3.y - p2.y));
+		for (int i = p2.y; i < p3.y; i++)	{
+			float t1 = (i - p1.y) / (float)(p3.y - p1.y);
+			float t2 = (i - p2.y) / (float)(p3.y - p2.y);
+			x1 = lerp(p1.x, p3.x, t1);
+			x2 = lerp(p2.x, p3.x, t2);
+			
+			lerpColorV1.r = static_cast<uint8_t>(lerp(color1.r, color3.r, t1));
+			lerpColorV1.g = static_cast<uint8_t>(lerp(color1.g, color3.g, t1));
+			lerpColorV1.b = static_cast<uint8_t>(lerp(color1.b, color3.b, t1));
+			lerpColorV1.a = static_cast<uint8_t>(lerp(color1.a, color3.a, t1));
+			lerpColorV2.r = static_cast<uint8_t>(lerp(color2.r, color3.r, t2));
+			lerpColorV2.g = static_cast<uint8_t>(lerp(color2.g, color3.g, t2));
+			lerpColorV2.b = static_cast<uint8_t>(lerp(color2.b, color3.b, t2));
+			lerpColorV2.a = static_cast<uint8_t>(lerp(color2.a, color3.a, t2));
 			
 			if(x1 > x2) {
 				std::swap(x1, x2);
-				std::swap(rLerp1, rLerp2);
-				std::swap(gLerp1, gLerp2);
-				std::swap(bLerp1, bLerp2);
-				std::swap(aLerp1, aLerp2);
+				std::swap(lerpColorV1, lerpColorV2);
 			}
-			drawScanLine(
-				{(uint8_t)rLerp1, (uint8_t)gLerp1, (uint8_t)bLerp1, (uint8_t)aLerp1}, 
-				{(uint8_t)rLerp2, (uint8_t)gLerp2, (uint8_t)bLerp2, (uint8_t)aLerp2}, 
-				std::round(x1), std::round(x2), 
-				i);
-			
-			rLerp1 += rStep1;
-			gLerp1 += gStep1;
-			bLerp1 += bStep1;
-			aLerp1 += aStep1;
-			
-			rLerp2 += rStep2;
-			gLerp2 += gStep2;
-			bLerp2 += bStep2;
-			aLerp2 += aStep2;
+			drawScanLine(lerpColorV1, lerpColorV2, std::round(x1), std::round(x2), i);
 		}
 	}
 }
