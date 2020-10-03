@@ -470,9 +470,9 @@ void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x
 			if(x1 > x2) {
 				std::swap(x1, x2);
 			}
-			for (int j = std::round(x1); j < std::round(x2); j++) {				
-				DrawPoint(shadedPixelsTopTri[i - p1.y][j - std::round(x1)], j, i);
-			}
+			memcpy(pixels + getIndex(std::round(x1), i), 
+				shadedPixelsTopTri[i - p1.y].data(), 
+				(std::round(x2) - std::round(x1)) * sizeof(uint32_t));
 		}
 		
 		// Get the shaded pixels of the bottom triangle
@@ -482,9 +482,9 @@ void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x
 			if(x1 > x2) {
 				std::swap(x1, x2);
 			}
-			for (int j = std::round(x1); j < std::round(x2); j++) {
-				DrawPoint(shadedPixelsBottomTri[i - p2.y][j - std::round(x1)], j, i);
-			}
+			memcpy(pixels + getIndex(std::round(x1), i), 
+				shadedPixelsBottomTri[i - p2.y].data(), 
+				(std::round(x2) - std::round(x1)) * sizeof(uint32_t));
 		}
-		}
+	}
 }
