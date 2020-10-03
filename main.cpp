@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 	
-	int zoom = 2;
+	int zoom = 1;
 
 	const int CANVAS_WIDTH = 600;
 	const int CANVAS_HEIGHT = 480;
@@ -100,7 +100,6 @@ int main(int argc, char** argv) {
 			my-=3;
 		}
 
-
 		// TIMER
 		old = current;
 		current = SDL_GetTicks();
@@ -126,9 +125,9 @@ int main(int argc, char** argv) {
 		cidrRend.FillRectangle(lambda, (Cidr::Point){3, 3}, 256, 256);
 		
 		/* DRAWING THREE TYPES OF LINES */
-		// cidrRend.DrawLine(0x00ff00ff, 64, 64-10, 290, 370-10, true, true);
-		// cidrRend.DrawLine(0x00ff00ff, 64, 64,    290, 370);
-		// cidrRend.DrawLine(0x00ff00ff, 64, 64+10, 290, 370+10, true);
+		cidrRend.DrawLine(0x00ff00ff, 280, 296-10, 460, 370-10, true, true);
+		cidrRend.DrawLine(0x00ff00ff, 280, 296,    460, 370);
+		cidrRend.DrawLine(0x00ff00ff, 280, 296+10, 460, 370+10, true);
 		
 		/* DRAWING FILLED RGB SQUARES */
 		cidrRend.FillRectangle(0xff0000ff, 152,300+5,40,40);
@@ -163,12 +162,11 @@ int main(int argc, char** argv) {
 			currentShader = &hsvHueRotationShader;
 		}
 		if(keyboard[SDLK_3]) {
-			currentShader = &hBlurShader;
+			currentShader = &blurShader;
 		}		
 		if(keyboard[SDLK_9]) {
 			currentShader = &testShader;
 		}
-
 
 		/* TRIANGLES */
 		cidrRend.FillTriangle(
@@ -179,18 +177,15 @@ int main(int argc, char** argv) {
 			64 + 300,32 + 128,
 			32 + 300,64 + 128);
 			
-		// cidrRend.DrawTriangle(Cidr::RGB::Red, 
-		// 	 0 + 300, 0 + 128,
-		// 	64 + 300,32 + 128,
-		// 	32 + 300,64 + 128, true);
-
-		// cidrRend.DrawLine(0xffffffff, 350, 128, mx, my, true);
-
+		cidrRend.DrawTriangle(Cidr::RGB::White, 
+			 0 + 300, 0 + 128,
+			64 + 300,32 + 128,
+			32 + 300,64 + 128, true, true);
 
 		/* APPLY SHADER */
 		int shaderSize = 128;
 		if(currentShader != nullptr) {
-			if(currentShader == &hBlurShader) {
+			if(currentShader == &blurShader) {
 				cidrRend.FillRectangle(&hBlurShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
 				cidrRend.FillRectangle(&vBlurShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
 			}
@@ -200,6 +195,7 @@ int main(int argc, char** argv) {
 			cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
 		}
 		
+		/* UPDATE SCREEN */
 		SDL_UpdateTexture(texture, nullptr, pixels, CANVAS_WIDTH * sizeof(uint32_t));
 		SDL_RenderClear(renderer);
 		SDL_Rect rect1{0,0, CANVAS_WIDTH, CANVAS_HEIGHT};
@@ -251,7 +247,7 @@ Cidr::RGBA hsvHueRotationShader(const Cidr::Renderer& renderer, int x, int y) {
 }
 Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y) {
 	Cidr::RGBA finalColor{};
-	int blurSize = 5;
+	int blurSize = 3;
 	int rTotal{0}, gTotal{0}, bTotal{0};
 	float total = 0;
 	
@@ -278,36 +274,48 @@ Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y) {
 Cidr::RGBA hBlurShader(const Cidr::Renderer& renderer, int x, int y) {
 	Cidr::RGBA finalColor{};
 	
-	int offset = -5;
-	finalColor += renderer.GetPixel(x + offset++, y) * 0.0093f;
-	finalColor += renderer.GetPixel(x + offset++, y) * 0.028002f;
-	finalColor += renderer.GetPixel(x + offset++, y) * 0.065984f;
-	finalColor += renderer.GetPixel(x + offset++, y) * 0.121703f;
-	finalColor += renderer.GetPixel(x + offset++, y) * 0.175713f;
-	finalColor += renderer.GetPixel(x + offset++, y) * 0.198596f;
-	finalColor += renderer.GetPixel(x + offset++, y) * 0.175713f;
-	finalColor += renderer.GetPixel(x + offset++, y) * 0.121703f;
-	finalColor += renderer.GetPixel(x + offset++, y) * 0.065984f;
-	finalColor += renderer.GetPixel(x + offset++, y) * 0.028002f;
-	finalColor += renderer.GetPixel(x + offset++, y) * 0.0093f;
+	int offset = -8;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.000078f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.000489f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.002403f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.009245f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.027835f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.065592f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.12098f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.17467f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.197417f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.17467f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.12098f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.065592f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.027835f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.009245f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.002403f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.000489f;
+	finalColor += renderer.GetPixel(x + offset++, y) * 0.000078f;
 	
 	return finalColor;
 }
 Cidr::RGBA vBlurShader(const Cidr::Renderer& renderer, int x, int y) {
 	Cidr::RGBA finalColor{};
 	
-	int offset = -5;
-	finalColor += renderer.GetPixel(x, y + offset++) * 0.0093f;
-	finalColor += renderer.GetPixel(x, y + offset++) * 0.028002f;
-	finalColor += renderer.GetPixel(x, y + offset++) * 0.065984f;
-	finalColor += renderer.GetPixel(x, y + offset++) * 0.121703f;
-	finalColor += renderer.GetPixel(x, y + offset++) * 0.175713f;
-	finalColor += renderer.GetPixel(x, y + offset++) * 0.198596f;
-	finalColor += renderer.GetPixel(x, y + offset++) * 0.175713f;
-	finalColor += renderer.GetPixel(x, y + offset++) * 0.121703f;
-	finalColor += renderer.GetPixel(x, y + offset++) * 0.065984f;
-	finalColor += renderer.GetPixel(x, y + offset++) * 0.028002f;
-	finalColor += renderer.GetPixel(x, y + offset++) * 0.0093f;
+	int offset = -8;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.000078f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.000489f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.002403f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.009245f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.027835f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.065592f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.12098f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.17467f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.197417f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.17467f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.12098f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.065592f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.027835f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.009245f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.002403f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.000489f;
+	finalColor += renderer.GetPixel(x, y + offset++) * 0.000078f;
 	
 	return finalColor;
 }
@@ -319,7 +327,7 @@ Cidr::RGBA distortionShader(const Cidr::Renderer& renderer, int x, int y) {
 	static double v3{0};
 	v1 = sin(v3);
 	v2 = cos(v3);
-	v3 += 0.000001;
+	v3 += 0.0000015;
 	color = renderer.GetPixel(
 		x + (cos(x / 8.f + v1 * 2 * M_PI)) * 12,
 		y + (sin(y / 6.f + v2 * 2 * M_PI)) * 18
