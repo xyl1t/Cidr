@@ -19,13 +19,6 @@ private:
 	int width {0};
 	int height {0};
 	
-	inline int getIndex(const Point& p) const {
-		return p.x + p.y * width;
-	}
-	inline int getIndex(int x, int y) const {
-		return x + y * width;
-	}
-	
 public:
 	/* CONSTRUCTOR - DESTRUCTOR */
 	Renderer(uint32_t* pixels, int width, int height);
@@ -46,8 +39,8 @@ public:
 	void FillCircle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& centreLocation, int radius, bool AA = false);
 	void DrawTriangle(const RGBA& color, const Point& p1, const Point& p2, const Point& p3, bool AA = false, bool GC = false);
 	void FillTriangle(const RGBA& color, Point p1, Point p2, Point p3);
-	void FillTriangle(const RGBA& color1, const RGBA& color2, const RGBA& color3, Point p1, Point p2, Point p3);
-	void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3); // WIP
+	void FillTriangle(const RGBA& color1, const RGBA& color2, const RGBA& color3, Point p1, Point p2, Point p3); // WIP
+	void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3);
 	
 	/* DRAWING FUNCTION OVERLOADS */
 	inline void DrawPoint(const RGBA& color, int x, int y) { DrawPoint(color, (Point){x, y}); }
@@ -101,6 +94,18 @@ public:
 		if(x < 0 || y < 0 || x >= GetWidth() || y >= GetHeight()) return Cidr::RGBA{};
 		return Cidr::RGBA{pixels[getIndex(x, y)]};
 	}
+	
+	/* UTILITY FUNCTIONS */
+private:
+	inline int getIndex(const Point& p) const {
+		return p.x + p.y * width;
+	}
+	inline int getIndex(int x, int y) const {
+		return x + y * width;
+	}
+	void drawScanLine(const RGBA& color, int startX, int endX, int y);
+	void drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y);
+	
 };
 
 inline RGB alphaBlendColor(const Cidr::RGB& color1, const Cidr::RGB& color2, float alpha) {
