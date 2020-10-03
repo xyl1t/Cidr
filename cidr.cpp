@@ -132,14 +132,14 @@ void Cidr::Renderer::DrawRectangle(const RGBA& color, const Point& location, int
 	int clampedHeight {std::min(this->height - clampedLocation.y, height)};
 	
 	// loop till the itrating value hits the rectangle end or if it goes outside of the screen
-	for(int i = clampedLocation.x; i < clampedLocation.x + clampedWidth; i++) {
+	for(int i = clampedLocation.x + 1; i < clampedLocation.x + clampedWidth; i++) {
 		if(location.y > 0)
 			DrawPoint(color, i, clampedLocation.y);
 		if(clampedLocation.y + height < this->height)
 			DrawPoint(color, i, clampedLocation.y + height);
 	}
 	// loop till the itrating value hits the rectangle end or if it goes outside of the screen
-	for(int i = clampedLocation.y; i < clampedLocation.y + clampedHeight; i++) {
+	for(int i = clampedLocation.y; i < clampedLocation.y + clampedHeight + 1; i++) {
 		if(location.x > 0)
 			DrawPoint(color, clampedLocation.x, i);
 		if(clampedLocation.x + width < this->width)
@@ -550,7 +550,6 @@ void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x
 		}
 	}
 }
-
 
 void Cidr::Renderer::drawScanLine(uint32_t color, int startX, int endX, int y) {
 	std::fill_n(pixels + getIndex(startX, y), endX - startX, color);
