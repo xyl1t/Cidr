@@ -53,9 +53,14 @@ int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 	
-	int zoom = 1;
+	int zoom {1};
 
-	const int CANVAS_WIDTH = 600;
+	if(argc != 1 && std::atoi(argv[1]) >= 1 ) {
+		
+		zoom = std::atoi(argv[1]);
+	}
+	
+	const int CANVAS_WIDTH = 480;
 	const int CANVAS_HEIGHT = 480;
 	const int WINDOW_WIDTH = CANVAS_WIDTH * zoom;
 	const int WINDOW_HEIGHT = CANVAS_HEIGHT * zoom;
@@ -100,7 +105,39 @@ int main(int argc, char** argv) {
 			my-=3;
 		}
 
-		// TIMER
+		/* SELECT SHADER */
+		if(keyboard[SDLK_0]) {
+			currentShader = nullptr;
+		}
+		if(keyboard[SDLK_1]) {
+			currentShader = &distortionShader;
+		}
+		if(keyboard[SDLK_2]) {
+			currentShader = &hsvHueRotationShader;
+		}
+		if(keyboard[SDLK_3]) {
+			currentShader = &blurShader;
+		}
+		if(keyboard[SDLK_4]) {
+			currentShader = &testShader;
+		}
+		if(keyboard[SDLK_5]) {
+			currentShader = nullptr;
+		}
+		if(keyboard[SDLK_6]) {
+			currentShader = nullptr;
+		}
+		if(keyboard[SDLK_7]) {
+			currentShader = nullptr;
+		}
+		if(keyboard[SDLK_8]) {
+			currentShader = nullptr;
+		}
+		if(keyboard[SDLK_9]) {
+			currentShader = nullptr;
+		}
+		
+		/* TIMER */
 		old = current;
 		current = SDL_GetTicks();
 		if(timer > 1000) {
@@ -108,6 +145,8 @@ int main(int argc, char** argv) {
 			timer = 0;
 		}
 		timer += current - old;
+		
+		/*** DRAWING ***/
 		
 		/* CLEARING THE SCREEN*/
 		cidrRend.Clear(0x120F1FFF);
@@ -150,38 +189,50 @@ int main(int argc, char** argv) {
 		cidrRend.FillCircle(0x30ee0Aff, 350, 50, 30, true);
 		cidrRend.FillCircle(0x30ee0Aff, 350 + 30*2 + 15, 50, 30, false);
 		
-		/* SHADER */
-		/* SELECT SHADER */
-		if(keyboard[SDLK_0]) {
-			currentShader = nullptr;
-		}
-		if(keyboard[SDLK_1]) {
-			currentShader = &distortionShader;
-		}
-		if(keyboard[SDLK_2]) {
-			currentShader = &hsvHueRotationShader;
-		}
-		if(keyboard[SDLK_3]) {
-			currentShader = &blurShader;
-		}		
-		if(keyboard[SDLK_9]) {
-			currentShader = &testShader;
-		}
 
 		/* TRIANGLES */
 		cidrRend.FillTriangle(
 			Cidr::RGB::Red, 
 			Cidr::RGB::Green, 
 			Cidr::RGB::Blue, 
-			 0 + 300, 0 + 128,
-			64 + 300,32 + 128,
-			32 + 300,64 + 128);
+			 0 + 300,  0 + 128,
+			64 + 300, 32 + 128,
+			32 + 300, 64 + 128);
 			
 		cidrRend.DrawTriangle(Cidr::RGB::White, 
 			 0 + 300, 0 + 128,
 			64 + 300,32 + 128,
 			32 + 300,64 + 128, true, true);
-
+			
+		cidrRend.FillTriangle(
+			Cidr::RGB::Red,
+			Cidr::RGB::Green,
+			Cidr::RGB::Blue,
+			360, 215,
+			360, 215 + 64,
+			360 + 32, 215 + 32);
+		cidrRend.FillTriangle(
+			Cidr::RGB::Green,
+			Cidr::RGB::Blue,
+			Cidr::RGB::Red,
+			360 + 64, 215,
+			360 + 32, 215 + 32,
+			360 + 64, 215 + 64);
+		cidrRend.FillTriangle(
+			Cidr::RGB::Green,
+			Cidr::RGB::Blue,
+			Cidr::RGB::Red,
+			360, 215 + 64,
+			360 + 32, 215 + 32,
+			360 + 64, 215 + 64);
+		cidrRend.FillTriangle(
+			Cidr::RGB::Red,
+			Cidr::RGB::Green,
+			Cidr::RGB::Blue,
+			360, 215,
+			360 + 64, 215,
+			360 + 32, 215 + 32);
+			
 		/* APPLY SHADER */
 		int shaderSize = 128;
 		if(currentShader != nullptr) {
