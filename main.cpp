@@ -4,42 +4,15 @@
  * Date: 10.9.2020              *
  ********************************/
 
-#include <iostream>
-#include <map>
 #if __has_include("SDL2/SDL.h")
 #include <SDL2/SDL.h>
 #else
 #include <SDL.h>
 #endif
+#include <iostream>
+#include <map>
 #include "cidr.hpp"
 #include <string>
-#include <chrono> // for std::chrono functions
-// using namespace Cidr;
-
-class Timer
-{
-private:
-	// Type aliases to make accessing nested type easier
-	using clock_t = std::chrono::high_resolution_clock;
-	using second_t = std::chrono::duration<double, std::ratio<1> >;
-	
-	std::chrono::time_point<clock_t> m_beg;
- 
-public:
-	Timer() : m_beg(clock_t::now())
-	{
-	}
-	
-	void reset()
-	{
-		m_beg = clock_t::now();
-	}
-	
-	double elapsed() const
-	{
-		return std::chrono::duration_cast<second_t>(clock_t::now() - m_beg).count();
-	}
-};
 
 Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y);
