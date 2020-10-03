@@ -277,7 +277,7 @@ void Cidr::Renderer::FillCircle(const RGBA& color, const Point& centreLocation, 
 				DrawPoint(color, i, (int)y + centreLocation.y);
 				DrawPoint(color, i, (int)-y + centreLocation.y);
 			}
-			else if(AA && i == (int)-x + centreLocation.x) {
+			else {
 				float AAValue1 = 255 * (x - static_cast<int>(x));
 				float AAValue2 = 255 * (1 - (x - static_cast<int>(x)));
 				
@@ -334,12 +334,12 @@ void Cidr::Renderer::FillCircle(RGBA (*shader)(const Renderer& renderer, int x, 
 		shadedPixels.push_back({});	
 		
 		for(int i = (int)-x + centreLocation.x; i < (int)x + centreLocation.x; i++) {
-			if(!AA || (i != (int)-x + centreLocation.x)){
+			if(!AA || (i != (int)-x + centreLocation.x)) {
 				int ni = i - centreLocation.x + radius;
 				DrawPoint(shadedPixels[ni][y + radius], i, (int)y + centreLocation.y);
 				DrawPoint(shadedPixels[ni][-y + radius], i, (int)-y + centreLocation.y);
 			}
-			else if(AA && i == (int)-x + centreLocation.x) {
+			else  {
 				float AAValue1 = 255 * (x - static_cast<int>(x));
 				float AAValue2 = 255 * (1 - (x - static_cast<int>(x)));
 				
