@@ -32,6 +32,12 @@ clang++ -std=c++17 -I include -O2 -c tensorMath.cpp -MMD -MF build/tensorMath.d 
 clang++ -std=c++17 -I include -O2 -L lib -l SDL2-2.0.0 -lm build/cidr.o build/color.o build/main.o build/point.o build/tensorMath.o -o build/Cidr
 $ ./build/Cidr
 ```
+You can pass an integer parameter to the program which will toggle the zoom.
+For example this will launch the program with 2x zoom:
+```bash
+$ ./build/Cidr 2
+```
+In order to switch between shaders, you can press the number keys between 1 and 4 (other number keys will disable the shader).
 
 # Usage
 For now, you'll have to include all of the `.cpp` and `.hpp` (not including `lib/` or `include/`) and copy-paste them into your project. I'm looking forward to making Cidr a header only library near it's final release :)
