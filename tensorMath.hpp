@@ -18,6 +18,9 @@ class vec2 {
 public:
     float x;
     float y;
+	
+	vec2();
+	vec2(float x, float y);
     
     inline float length() {
         return sqrt((x * x) + (y * y));
@@ -43,6 +46,9 @@ public:
     float x;
     float y;
     float z;
+	
+	vec3();
+	vec3(float x, float y, float z);
 
     inline float length() {
         return sqrt((x * x) + (y * y) + (z * z));
@@ -71,6 +77,9 @@ public:
     float y;
     float z;
     float w;
+
+	vec4();
+	vec4(float x, float y, float z, float w);
 
     inline float length() {
         return sqrt((x * x) + (y * y) + (z * z) + (w * w));
@@ -102,7 +111,10 @@ class ivec2 {
 public:
     int x;
     int y;
-    
+	
+	ivec2();
+	ivec2(int x, int y);
+	
     inline float length() {
         return sqrt((x * x) + (y * y));
     }
@@ -128,7 +140,10 @@ public:
     int x;
     int y;
     int z;
-
+	
+	ivec3();
+	ivec3(int x, int y, int z);
+	
     inline float length() {
         return sqrt((x * x) + (y * y) + (z * z));
     }
@@ -157,6 +172,9 @@ public:
     int z;
     int w;
 
+	ivec4();
+	ivec4(int x, int y, int z, int w);
+	
     inline int length() {
         return sqrt((x * x) + (y * y) + (z * z) + (w * w));
     }

@@ -11,7 +11,7 @@ PROJECT := $(BUILDDIR)/$(PROJECTNAME)
 SOURCES := $(wildcard *.cpp)
 OBJS := $(patsubst %.cpp,$(BUILDDIR)/%.o,$(SOURCES))
 CXX := clang++
-CXXFLAGS := -std=c++17 -I include -O2
+CXXFLAGS := -std=c++17 -I include -O2 -Wall
 LDFLAGS := -L lib
 LDLIBS :=  -l SDL2-2.0.0 -lm
 

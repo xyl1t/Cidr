@@ -315,7 +315,7 @@ inline RGB HSLtoRGB(const HSL& colorHSL) {
 	float x = c * (1 - std::abs(std::fmodf((colorHSL.getH()) / 60.f, 2) - 1.f));
 	float m = colorHSL.getL() - c / 2.f;
 	
-	float r, g, b;
+	float r = 0.0, g = 0.0, b = 0.0;
 	if(colorHSL.getH() >= 0 && colorHSL.getH() < 60) {
 		r = c;
 		g = x;
@@ -341,7 +341,7 @@ inline RGB HSLtoRGB(const HSL& colorHSL) {
 		g = 0;
 		b = c;
 	}
-	else if(colorHSL.getH() >= 300 && colorHSL.getH() < 360){
+	else /*if(colorHSL.getH() >= 300 && colorHSL.getH() < 360)*/ {
 		r = c;
 		g = 0;
 		b = x;

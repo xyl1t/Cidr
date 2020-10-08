@@ -43,7 +43,7 @@ public:
 	void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3);
 	
 	/* DRAWING FUNCTION OVERLOADS */
-	inline void DrawPoint(const RGBA& color, int x, int y) { DrawPoint(color, (Point){x, y}); }
+	inline void DrawPoint(const RGBA& color, int x, int y) { DrawPoint(color, Point(x, y)); }
 	inline void DrawLine(const RGBA& color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(color, (Point){x1, y1}, (Point){x2, y2}, AA, GC); }
 	inline void DrawRectangle(const RGBA& color, int x, int y, int width, int height) { DrawRectangle(color, (Point){x,y}, width, height); }
 	inline void FillRectangle(const RGBA& color, int x, int y, int width, int height) { FillRectangle(color, (Point){x,y}, width, height); }

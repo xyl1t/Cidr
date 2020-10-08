@@ -9,6 +9,9 @@
 
 /* tem::vec2 ==================================================== */
 
+tem::vec2::vec2() : x{0}, y{0} { }
+tem::vec2::vec2(float x, float y) : x{x}, y{y} { }
+
 void tem::vec2::setLength(float value) {
     float ratio = value / length();
     x = ratio * x;
@@ -65,6 +68,9 @@ tem::vec2 tem::vec2::operator/(const float other) {
 
 
 /* tem::vec3 =================================================================== */
+
+tem::vec3::vec3() : x{0}, y{0}, z{0} { }
+tem::vec3::vec3(float x, float y, float z) : x{x}, y{y}, z{z} { }
 
 void tem::vec3::setLength(float value) {
     float ratio = value / length();
@@ -134,6 +140,9 @@ tem::vec3 tem::vec3::operator/(const float other) {
 
 /* tem::vec4 =================================================================== */
 
+tem::vec4::vec4() : x{0}, y{0}, z{0}, w{0} { }
+tem::vec4::vec4(float x, float y, float z, float w) : x{x}, y{y}, z{z}, w{w} { }
+
 void tem::vec4::setLength(float value) {
     float ratio = value / length();
     x = ratio * x;
@@ -202,7 +211,10 @@ tem::vec4 tem::vec4::operator/(const float other) {
 
 
 
-/* tem::vec2 ==================================================== */
+/* tem::ivec2 ==================================================== */
+
+tem::ivec2::ivec2() : x{0}, y{0} { }
+tem::ivec2::ivec2(int x, int y) : x{x}, y{y} { }
 
 void tem::ivec2::setLength(int value) {
     float ratio = value / length();
@@ -260,6 +272,9 @@ tem::ivec2 tem::ivec2::operator/(const int other) {
 
 
 /* tem::ivec3 =================================================================== */
+
+tem::ivec3::ivec3() : x{0}, y{0}, z{0} { }
+tem::ivec3::ivec3(int x, int y, int z) : x{x}, y{y}, z{z} { }
 
 void tem::ivec3::setLength(int value) {
     float ratio = value / length();
@@ -328,6 +343,9 @@ tem::ivec3 tem::ivec3::operator/(const int other) {
 
 
 /* tem::ivec4 =================================================================== */
+
+tem::ivec4::ivec4() : x{0}, y{0}, z{0}, w{0} { }
+tem::ivec4::ivec4(int x, int y, int z, int w) : x{x}, y{y}, z{z}, w{w} { }
 
 void tem::ivec4::setLength(int value) {
     float ratio = value / length();
