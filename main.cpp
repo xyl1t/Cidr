@@ -12,6 +12,7 @@
 #include <iostream>
 #include <map>
 #include "cidr.hpp"
+#include "bitmap.hpp"
 #include <string>
 
 Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y);
@@ -23,18 +24,18 @@ Cidr::RGBA distortionShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA grayScaleShader(const Cidr::Renderer& renderer, int x, int y);
 
 int main(int argc, char** argv) {
+	
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 	
 	int zoom {1};
 
 	if(argc != 1 && std::atoi(argv[1]) >= 1 ) {
-		
 		zoom = std::atoi(argv[1]);
 	}
 	
-	const int CANVAS_WIDTH = 480;
-	const int CANVAS_HEIGHT = 480;
+	const int CANVAS_WIDTH = 900;
+	const int CANVAS_HEIGHT = 600;
 	const int WINDOW_WIDTH = CANVAS_WIDTH * zoom;
 	const int WINDOW_HEIGHT = CANVAS_HEIGHT * zoom;
 	
@@ -57,6 +58,7 @@ int main(int argc, char** argv) {
 	uint32_t timer = 0;
 	
 	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
+	Cidr::RGBABitmap bitmap{"./res/sample.jpg"};
 	
 	while(alive) {
 		while(SDL_PollEvent(&event)) {
@@ -203,6 +205,14 @@ int main(int argc, char** argv) {
 			360, 215,
 			360 + 64, 215,
 			360 + 32, 215 + 32);
+		
+		/* IMAGES */
+		for	(int i = 0; i < bitmap.GetWidth(); i++) {
+			for	(int j = 0; j < bitmap.GetHeight(); j++) {
+				cidrRend.DrawPoint(bitmap.GetPixel(i,j), i,j);
+			}
+		}
+		
 		
 		/* APPLY SHADER */
 		int shaderSize = 128;

@@ -10,6 +10,10 @@
 #include <iterator>
 #include <cmath>
 #include <vector>
+#ifndef STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
+#endif
 
 static inline float lerp(float a, float b, float t) {
 	return a + (b - a) * t;
