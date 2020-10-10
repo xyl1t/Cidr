@@ -14,7 +14,7 @@
 namespace Cidr {
 
 struct RGBA;
-	
+
 struct RGB {
 	uint8_t r;
 	uint8_t g;
@@ -23,20 +23,19 @@ struct RGB {
 	RGB();
 	RGB(uint8_t r, uint8_t g, uint8_t b);
 	RGB(uint32_t color);
-	RGB(const RGBA& rgba);
 	
-    RGB& operator+=(const RGB&  that);
-    RGB& operator-=(const RGB&  that);
-    virtual RGB& operator*=(const int that);
-    virtual RGB& operator/=(const int that);
-    virtual RGB& operator*=(const float that);
-    virtual RGB& operator/=(const float that);
-    RGB  operator+ (const RGB&  that) const;
-    RGB  operator- (const RGB&  that) const;
-    RGB  operator* (const int that) const;
-    RGB  operator/ (const int that) const;
-    RGB  operator* (const float that) const;
-    RGB  operator/ (const float that) const;
+	RGB& operator+=(const RGB&  that);
+	RGB& operator-=(const RGB&  that);
+	RGB& operator*=(const int that);
+	RGB& operator/=(const int that);
+	RGB& operator*=(const float that);
+	RGB& operator/=(const float that);
+	RGB  operator+ (const RGB&  that) const;
+	RGB  operator- (const RGB&  that) const;
+	RGB  operator* (const int that) const;
+	RGB  operator/ (const int that) const;
+	RGB  operator* (const float that) const;
+	RGB  operator/ (const float that) const;
 	
 	static const RGB Black;
 	static const RGB Red;
@@ -68,19 +67,18 @@ struct RGBA : RGB {
 		return static_cast<RGB>(*this);
 	}
 	
-	
 	RGBA& operator+=(const RGBA&  that);
-    RGBA& operator-=(const RGBA&  that);
-    virtual RGBA& operator*=(const int that);
-    virtual RGBA& operator/=(const int that);
-    virtual RGBA& operator*=(const float that);
-    virtual RGBA& operator/=(const float that);
-    RGBA  operator+ (const RGBA&  that) const;
-    RGBA  operator- (const RGBA&  that) const;
-    RGBA  operator* (const int that) const;
-    RGBA  operator/ (const int that) const;
-    RGBA  operator* (const float that) const;
-    RGBA  operator/ (const float that) const;
+	RGBA& operator-=(const RGBA&  that);
+	RGBA& operator*=(const int that);
+	RGBA& operator/=(const int that);
+	RGBA& operator*=(const float that);
+	RGBA& operator/=(const float that);
+	RGBA  operator+ (const RGBA&  that) const;
+	RGBA  operator- (const RGBA&  that) const;
+	RGBA  operator* (const int that) const;
+	RGBA  operator/ (const int that) const;
+	RGBA  operator* (const float that) const;
+	RGBA  operator/ (const float that) const;
 };
 
 uint32_t ToColor(uint8_t r = 0, uint8_t g = 0, uint8_t b = 0, uint8_t a = 0xff);
@@ -231,7 +229,7 @@ inline RGB HSVtoRGB(const HSV& colorHSV) {
 	}
 	
 	hh = colorHSV.getH();
-    if(hh >= 360.0) hh = 0.0;
+	if(hh >= 360.0) hh = 0.0;
 	// hh = std::fmod(hh, 360);
 	hh /= 60.f;
 	i = static_cast<int>(hh);
@@ -240,40 +238,40 @@ inline RGB HSVtoRGB(const HSV& colorHSV) {
 	q = colorHSV.getV() * (1.f - (colorHSV.getS() * ff));
 	t = colorHSV.getV() * (1.f - (colorHSV.getS() * (1.f - ff)));
 	
-    switch(i) {
-    case 0:
-        color.r = colorHSV.getV() * 255;
-        color.g = t * 255;
-        color.b = p * 255;
-        break;
-    case 1:
-        color.r = q * 255;
-        color.g = colorHSV.getV() * 255;
-        color.b = p * 255;
-        break;
-    case 2:
-        color.r = p * 255;
-        color.g = colorHSV.getV() * 255;
-        color.b = t * 255;
-        break;
+	switch(i) {
+	case 0:
+		color.r = colorHSV.getV() * 255;
+		color.g = t * 255;
+		color.b = p * 255;
+		break;
+	case 1:
+		color.r = q * 255;
+		color.g = colorHSV.getV() * 255;
+		color.b = p * 255;
+		break;
+	case 2:
+		color.r = p * 255;
+		color.g = colorHSV.getV() * 255;
+		color.b = t * 255;
+		break;
 
-    case 3:
-        color.r = p * 255;
-        color.g = q * 255;
-        color.b = colorHSV.getV() * 255;
-        break;
-    case 4:
-        color.r = t * 255;
-        color.g = p * 255;
-        color.b = colorHSV.getV() * 255;
-        break;
-    case 5:
-    default:
-        color.r = colorHSV.getV() * 255;
-        color.g = p * 255;
-        color.b = q * 255;
-        break;
-    }
+	case 3:
+		color.r = p * 255;
+		color.g = q * 255;
+		color.b = colorHSV.getV() * 255;
+		break;
+	case 4:
+		color.r = t * 255;
+		color.g = p * 255;
+		color.b = colorHSV.getV() * 255;
+		break;
+	case 5:
+	default:
+		color.r = colorHSV.getV() * 255;
+		color.g = p * 255;
+		color.b = q * 255;
+		break;
+	}
 	
 	return color;
 }

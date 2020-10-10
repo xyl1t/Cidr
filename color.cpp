@@ -15,8 +15,6 @@ Cidr::RGB::RGB(uint32_t color)
 	g{static_cast<uint8_t>((color >> 16) & 0xff)}, 
 	b{static_cast<uint8_t>((color >>  8) & 0xff)} {
 }
-Cidr::RGB::RGB(const Cidr::RGBA& rgba) : r{rgba.r}, g{rgba.g}, b{rgba.b} {
-}
 
 Cidr::RGB& Cidr::RGB::operator+=(const RGB& that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r + that.r, 0, 255));
