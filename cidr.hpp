@@ -10,6 +10,7 @@
 #include "color.hpp"
 #include <cmath>
 #include "point.hpp"
+#include "bitmap.hpp"
 
 namespace Cidr {
 	
@@ -41,6 +42,8 @@ public:
 	void FillTriangle(const RGBA& color, Point p1, Point p2, Point p3);
 	void FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3); // WIP
 	void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3);
+	void DrawBitmap(const Bitmap& bitmap, const Point& location, float scale = 1.0f);
+	
 	
 	/* DRAWING FUNCTION OVERLOADS */
 	inline void DrawPoint(const RGBA& color, int x, int y) { DrawPoint(color, Point(x, y)); }

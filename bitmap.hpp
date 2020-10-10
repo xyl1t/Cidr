@@ -35,16 +35,16 @@ public:
 
 	
 	// RGBABitmap(uint32_t* data, int width, int height);
-	inline int GetWidth() {
+	inline int GetWidth() const  {
 		return width;
 	}
-	inline int GetHeight() {
+	inline int GetHeight() const {
 		return height;
 	}
-	inline uint32_t* GetData() {
+	inline uint32_t* GetData() const {
 		return data;
 	}
-	inline RGBA GetPixel(int x, int y) {
+	inline const RGBA& GetPixel(int x, int y) const {
 		return data[x + y * width];
 	}
 	inline void SetPixel(const RGB& value, int x, int y) {

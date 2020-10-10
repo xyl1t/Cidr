@@ -12,7 +12,6 @@
 #include <iostream>
 #include <map>
 #include "cidr.hpp"
-#include "bitmap.hpp"
 #include <string>
 
 Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y);
@@ -58,7 +57,7 @@ int main(int argc, char** argv) {
 	uint32_t timer = 0;
 	
 	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
-	Cidr::RGBABitmap bitmap{"./res/sample.jpg"};
+	Cidr::RGBABitmap bitmap{"./res/test.png"};
 	
 	while(alive) {
 		while(SDL_PollEvent(&event)) {
@@ -207,11 +206,7 @@ int main(int argc, char** argv) {
 			360 + 32, 215 + 32);
 		
 		/* IMAGES */
-		for	(int i = 0; i < bitmap.GetWidth(); i++) {
-			for	(int j = 0; j < bitmap.GetHeight(); j++) {
-				cidrRend.DrawPoint(bitmap.GetPixel(i,j), i,j);
-			}
-		}
+		cidrRend.DrawBitmap(bitmap, {0,0});
 		
 		
 		/* APPLY SHADER */

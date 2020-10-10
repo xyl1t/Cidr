@@ -587,3 +587,13 @@ void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int st
 		aLerp += aStep;
 	}
 }
+void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, const Point& location, float scale) {
+	if(location.x >= width) return;	
+	if(location.y >= height) return;
+	if(location.x + bitmap.GetWidth() < 0) return;
+	if(location.y + bitmap.GetHeight() < 0) return;
+	
+	for(int i = 0; i < bitmap.GetHeight(); i++) {
+		memcpy(pixels + getIndex(location.x, location.y + i), bitmap.GetData() + i * bitmap.GetWidth(), bitmap.GetWidth() * sizeof(uint32_t));
+	}
+}

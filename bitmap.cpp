@@ -21,6 +21,7 @@ Cidr::RGBABitmap::RGBABitmap(const std::string& file) {
 	data = new uint32_t[width * height];
 	for(int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
+			/* this handles the cases where the image is monochrome, rgb or rgba (and maybe other cases, haven't tested) */
 			int offset = 0;
 			data[i + j * width] = 
 				(imageData[(i + j * width) * channels + offset++] << 24) + 
