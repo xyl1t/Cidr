@@ -588,23 +588,45 @@ void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int st
 	}
 }
 void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, Point destLocation, int destWidth, int destHeight, Point srcLocation, int srcWidth, int srcHeight) {
+	// Exit if image is out of bounds of the canvas
 	if(destLocation.x >= width) return;	
 	if(destLocation.y >= height) return;
 	if(destLocation.x + destWidth < 0) return;
 	if(destLocation.y + destHeight < 0) return;
 	
-	
+	// optimzation if image has no scale
 	if(destWidth == srcWidth && destHeight == srcHeight) {
-		for(int i = srcLocation.y; i < srcLocation.y + bitmap.GetHeight() - (bitmap.GetHeight() - destHeight); i++) {
+		/* srcRectangle == destRectangle, I'm only going to use srcRectangle */
+		
+		if(destLocation.x < 0) {
+			srcLocation.x += std::abs(destLocation.x);
+			srcWidth -= std::abs(destLocation.x);
+			destWidth = srcWidth;
+			destLocation.x = 0;
+		}
+		if(destLocation.x + destWidth >= width) {
+			srcWidth += width - (destLocation.x + destWidth);;
+			destWidth = srcWidth;
+		}
+		if(destLocation.y < 0) {
+			srcLocation.y += std::abs(destLocation.y);
+			srcHeight -= std::abs(destLocation.y);
+			destHeight = srcHeight;
+			destLocation.y = 0;
+		}
+		if(destLocation.y + destHeight >= height) {
+			srcHeight += height - (destLocation.y + destHeight);;
+			destHeight += srcHeight;
+		}
+		
+		for(int i = srcLocation.y; i < srcLocation.y + bitmap.GetHeight() - (bitmap.GetHeight() - destHeight); i++) {			
 			memcpy(pixels + getIndex(destLocation.x, destLocation.y + (i - srcLocation.y)), 
-				bitmap.GetData() + (i) * bitmap.GetWidth() + srcLocation.x,
-				(bitmap.GetWidth() - (bitmap.GetWidth() - srcWidth)) * sizeof(uint32_t));
+				bitmap.GetData() + i * bitmap.GetWidth() + srcLocation.x, 
+				(bitmap.GetWidth() - (bitmap.GetWidth() - srcWidth)) * sizeof(uint32_t)); 
 		}
 	} else {
 		float cx = destWidth / (float)srcWidth;
 		float cy = destHeight / (float)srcHeight;
-		
-			
 		
 		for (int i = destLocation.x; i < destLocation.x + destWidth; i++) {
 			for (int j = destLocation.y; j < destLocation.y + destHeight; j++) {
