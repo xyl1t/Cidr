@@ -587,12 +587,12 @@ void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int st
 		aLerp += aStep;
 	}
 }
-void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, const Point& destLocation, int destWidth, int destHeight, const Point& srcLocation, int srcWidth, int srcHeight) {
-	
+void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, Point destLocation, int destWidth, int destHeight, Point srcLocation, int srcWidth, int srcHeight) {
 	if(destLocation.x >= width) return;	
 	if(destLocation.y >= height) return;
 	if(destLocation.x + destWidth < 0) return;
 	if(destLocation.y + destHeight < 0) return;
+	
 	
 	if(destWidth == srcWidth && destHeight == srcHeight) {
 		for(int i = srcLocation.y; i < srcLocation.y + bitmap.GetHeight() - (bitmap.GetHeight() - destHeight); i++) {
@@ -603,6 +603,21 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, const Point& destLocation,
 	} else {
 		float cx = destWidth / (float)srcWidth;
 		float cy = destHeight / (float)srcHeight;
+			
+		if(destLocation.x < 0) {
+			destWidth -= std::abs(destLocation.x);
+			srcLocation.x += std::abs(destLocation.x) / cx;
+			destLocation.x = 0;
+		}
+		if(destLocation.y < 0) {
+			destHeight -= std::abs(destLocation.y);
+			srcLocation.y += std::abs(destLocation.y) / cy;
+			destLocation.y = 0;
+		}
+		if(destLocation.x + destWidth >= width) destWidth -= (destLocation.x + destWidth) - width;
+		if(destLocation.y + destHeight  >= height) destHeight -= (destLocation.y + destHeight) - height;
+		
+			
 		
 		for (int i = destLocation.x; i < destLocation.x + destWidth; i++) {
 			for (int j = destLocation.y; j < destLocation.y + destHeight; j++) {

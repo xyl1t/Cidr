@@ -207,7 +207,7 @@ int main(int argc, char** argv) {
 		
 		/* IMAGES */
 		cidrRend.DrawBitmap(bitmap, 
-			{64,64}, 600, 120, 
+			{mx-200,my-100}, 300, 400, 
 			{200,200}, 250, 250);
 		
 		/* APPLY SHADER */
