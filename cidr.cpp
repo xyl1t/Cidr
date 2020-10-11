@@ -589,13 +589,18 @@ void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int st
 }
 void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, const Point& destLocation, int destWidth, int destHeight, const Point& srcLocation, int srcWidth, int srcHeight) {
 	
-	// if(destWidth == srcWidth && destHeight == srcHeight) {
-	// 	for(int i = srcLocation.y; i < srcLocation.y + bitmap.GetHeight() - (bitmap.GetHeight() - destHeight); i++) {
-	// 		memcpy(pixels + getIndex(destLocation.x, destLocation.y + (i - srcLocation.y)), 
-	// 			bitmap.GetData() + (i) * bitmap.GetWidth() + srcLocation.x,
-	// 			(bitmap.GetWidth() - (bitmap.GetWidth() - srcWidth)) * sizeof(uint32_t));
-	// 	}
-	// } else {
+	if(destLocation.x >= width) return;	
+	if(destLocation.y >= height) return;
+	if(destLocation.x + destWidth < 0) return;
+	if(destLocation.y + destHeight < 0) return;
+	
+	if(destWidth == srcWidth && destHeight == srcHeight) {
+		for(int i = srcLocation.y; i < srcLocation.y + bitmap.GetHeight() - (bitmap.GetHeight() - destHeight); i++) {
+			memcpy(pixels + getIndex(destLocation.x, destLocation.y + (i - srcLocation.y)), 
+				bitmap.GetData() + (i) * bitmap.GetWidth() + srcLocation.x,
+				(bitmap.GetWidth() - (bitmap.GetWidth() - srcWidth)) * sizeof(uint32_t));
+		}
+	} else {
 		float cx = destWidth / (float)srcWidth;
 		float cy = destHeight / (float)srcHeight;
 		
@@ -612,24 +617,5 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, const Point& destLocation,
 				
 			}
 		}
-	// }
-	
-	
-	
-	/*
-	if(location.x >= width) return;	
-	if(location.y >= height) return;
-	if(location.x + bitmap.GetWidth() < 0) return;
-	if(location.y + bitmap.GetHeight() < 0) return;
-	
-	if(scaleX == 1.f && scaleY == 1.f) {
-		for(int i = 0; i < bitmap.GetHeight(); i++) {
-			memcpy(pixels + getIndex(location.x, location.y + i), bitmap.GetData() + i * bitmap.GetWidth(), bitmap.GetWidth() * sizeof(uint32_t));
-		}
 	}
-	
-	if(scaleX < 1.f || scaleY < 1.f) {
-		
-	}
-	*/
 }
