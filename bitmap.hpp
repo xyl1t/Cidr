@@ -44,8 +44,8 @@ public:
 	inline uint32_t* GetData() const {
 		return data;
 	}
-	inline const RGBA& GetPixel(int x, int y) const {
-		return data[x + y * width];
+	inline RGBA GetPixel(int x, int y) const {
+		return (RGBA){data[x + y * width]};
 	}
 	inline void SetPixel(const RGB& value, int x, int y) {
 		data[x + y * width] = RGBtoUINT(value);

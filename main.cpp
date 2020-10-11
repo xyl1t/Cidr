@@ -206,8 +206,9 @@ int main(int argc, char** argv) {
 			360 + 32, 215 + 32);
 		
 		/* IMAGES */
-		cidrRend.DrawBitmap(bitmap, {0,0});
-		
+		cidrRend.DrawBitmap(bitmap, 
+			{64,64}, 600, 120, 
+			{200,200}, 250, 250);
 		
 		/* APPLY SHADER */
 		int shaderSize = 128;

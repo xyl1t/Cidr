@@ -587,13 +587,49 @@ void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int st
 		aLerp += aStep;
 	}
 }
-void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, const Point& location, float scale) {
+void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, const Point& destLocation, int destWidth, int destHeight, const Point& srcLocation, int srcWidth, int srcHeight) {
+	
+	// if(destWidth == srcWidth && destHeight == srcHeight) {
+	// 	for(int i = srcLocation.y; i < srcLocation.y + bitmap.GetHeight() - (bitmap.GetHeight() - destHeight); i++) {
+	// 		memcpy(pixels + getIndex(destLocation.x, destLocation.y + (i - srcLocation.y)), 
+	// 			bitmap.GetData() + (i) * bitmap.GetWidth() + srcLocation.x,
+	// 			(bitmap.GetWidth() - (bitmap.GetWidth() - srcWidth)) * sizeof(uint32_t));
+	// 	}
+	// } else {
+		float cx = destWidth / (float)srcWidth;
+		float cy = destHeight / (float)srcHeight;
+		
+		for (int i = destLocation.x; i < destLocation.x + destWidth; i++) {
+			for (int j = destLocation.y; j < destLocation.y + destHeight; j++) {
+				// DrawPoint(RGBA::Darkgreen, i, j);
+				
+				int ii = i - destLocation.x;
+				int jj = j - destLocation.y;
+				float iii = ii / cx;
+				float jjj = jj / cy;
+				
+				DrawPoint(bitmap.GetPixel(iii + srcLocation.x, jjj + srcLocation.y), i, j);
+				
+			}
+		}
+	// }
+	
+	
+	
+	/*
 	if(location.x >= width) return;	
 	if(location.y >= height) return;
 	if(location.x + bitmap.GetWidth() < 0) return;
 	if(location.y + bitmap.GetHeight() < 0) return;
 	
-	for(int i = 0; i < bitmap.GetHeight(); i++) {
-		memcpy(pixels + getIndex(location.x, location.y + i), bitmap.GetData() + i * bitmap.GetWidth(), bitmap.GetWidth() * sizeof(uint32_t));
+	if(scaleX == 1.f && scaleY == 1.f) {
+		for(int i = 0; i < bitmap.GetHeight(); i++) {
+			memcpy(pixels + getIndex(location.x, location.y + i), bitmap.GetData() + i * bitmap.GetWidth(), bitmap.GetWidth() * sizeof(uint32_t));
+		}
 	}
+	
+	if(scaleX < 1.f || scaleY < 1.f) {
+		
+	}
+	*/
 }
