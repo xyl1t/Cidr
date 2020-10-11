@@ -603,25 +603,12 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, Point destLocation, int de
 	} else {
 		float cx = destWidth / (float)srcWidth;
 		float cy = destHeight / (float)srcHeight;
-			
-		if(destLocation.x < 0) {
-			destWidth -= std::abs(destLocation.x);
-			srcLocation.x += std::abs(destLocation.x) / cx;
-			destLocation.x = 0;
-		}
-		if(destLocation.y < 0) {
-			destHeight -= std::abs(destLocation.y);
-			srcLocation.y += std::abs(destLocation.y) / cy;
-			destLocation.y = 0;
-		}
-		if(destLocation.x + destWidth >= width) destWidth -= (destLocation.x + destWidth) - width;
-		if(destLocation.y + destHeight  >= height) destHeight -= (destLocation.y + destHeight) - height;
 		
 			
 		
 		for (int i = destLocation.x; i < destLocation.x + destWidth; i++) {
 			for (int j = destLocation.y; j < destLocation.y + destHeight; j++) {
-				// DrawPoint(RGBA::Darkgreen, i, j);
+				if(i < 0 || j < 0 || i >= width || j >= height) continue;
 				
 				int ii = i - destLocation.x;
 				int jj = j - destLocation.y;
@@ -629,7 +616,6 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, Point destLocation, int de
 				float jjj = jj / cy;
 				
 				DrawPoint(bitmap.GetPixel(iii + srcLocation.x, jjj + srcLocation.y), i, j);
-				
 			}
 		}
 	}
