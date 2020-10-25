@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
 				static_cast<uint8_t>(y - 3), 
 				static_cast<uint8_t>(255 - (x - 3))};
 		};
-		cidrRend.FillRectangle(lambda, (Cidr::Point){3, 3}, 256, 256);
+		cidrRend.FillRectangle(lambda, (Cidr::Rectangle){3, 3, 256, 256});
 		
 		/* DRAWING THREE TYPES OF LINES */
 		cidrRend.DrawLine(0x00ff00ff, 280, 296-10, 460, 370-10, true, true);
@@ -222,6 +222,8 @@ int main(int argc, char** argv) {
 			}
 			cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
 		}
+		
+		cidrRend.DrawRectangle(Cidr::RGB::Red, {300, 300, 64, 64});
 		
 		/* UPDATE SCREEN */
 		SDL_UpdateTexture(texture, nullptr, pixels, CANVAS_WIDTH * sizeof(uint32_t));
