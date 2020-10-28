@@ -594,6 +594,13 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, Point destLocation, int de
 	if(destLocation.x + destWidth < 0) return;
 	if(destLocation.y + destHeight < 0) return;
 	
+	
+	/* 
+	 * NOTE: maybe make 3 cases
+	 * case 1: dest size == src size
+	 * case 2: dest size > src size
+	 * case 3: dest size < src size
+	 */
 	// optimzation if image has no scale
 	if(destWidth == srcWidth && destHeight == srcHeight) {
 		/* srcRectangle == destRectangle, I'm only going to use srcRectangle */
@@ -632,13 +639,42 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, Point destLocation, int de
 			for (int jDest = destLocation.y; jDest < destLocation.y + destHeight; jDest++) {
 				if(iDest < 0 || jDest < 0 || iDest >= destLocation.x + destWidth || jDest >= destLocation.y + destHeight) continue;
 				
-				int iSrc = (iDest - destLocation.x) / cx + srcLocation.x;
-				int jSrc = (jDest - destLocation.y) / cy + srcLocation.y;
-				
-				if(iSrc < 0 || jSrc < 0 || iSrc >= bitmap.GetWidth() || jSrc >= bitmap.GetHeight()) continue;
-				
-				
-				DrawPoint(bitmap.GetPixel(iSrc, jSrc), iDest, jDest);
+				// TODO: maybe simplyify this later 
+				if(this->ScaleType == ScaleType::Nearest) {
+					int iSrc = (iDest - destLocation.x) / cx + srcLocation.x;
+					int jSrc = (jDest - destLocation.y) / cy + srcLocation.y;
+					
+					if(iSrc < 0 || jSrc < 0 || iSrc >= bitmap.GetWidth() || jSrc >= bitmap.GetHeight()) {
+						// TODO: something should happen here....
+						// see https://learnopengl.com/img/getting-started/texture_wrapping.png
+						
+						DrawPoint(bitmap.GetPixel(
+							std::max(0, std::min(bitmap.GetWidth()-1, iSrc)), 
+							std::max(0, std::min(bitmap.GetHeight()-1, jSrc))), iDest, jDest);
+					} else {
+						DrawPoint(bitmap.GetPixel(iSrc, jSrc), iDest, jDest);
+					}
+				} else { 
+					// TODO: check if downscaling works properly
+					
+					float iSrc = (iDest - destLocation.x) / (float)cx + srcLocation.x - 0.5;
+					float jSrc = (jDest - destLocation.y) / (float)cy + srcLocation.y - 0.5;
+					
+					float iSrcFraction = iSrc - (int)iSrc;
+					float jSrcFraction = jSrc - (int)jSrc;
+					
+					// T - Top, B - Bottom, L - LEFT, R - RIGHT... eg: TL -> Top Left
+					const RGBA& colorTL = bitmap.GetPixel(iSrc,   jSrc);
+					const RGBA& colorBL = bitmap.GetPixel(iSrc,   (jSrc+1 >= bitmap.GetHeight() ? jSrc : jSrc+1));
+					const RGBA& colorTR = bitmap.GetPixel((iSrc+1 >= bitmap.GetWidth() ? iSrc : iSrc+1), jSrc);
+					const RGBA& colorBR = bitmap.GetPixel((iSrc+1 >= bitmap.GetWidth() ? iSrc : iSrc+1), (jSrc+1 >= bitmap.GetHeight() ? jSrc : jSrc+1));
+					
+					RGBA cT { colorTL * (1 - iSrcFraction) + colorTR * iSrcFraction};
+					RGBA cB { colorBL * (1 - iSrcFraction) + colorBR * iSrcFraction};
+					RGBA c { cT * (1 - jSrcFraction) + cB * jSrcFraction };
+					
+					DrawPoint(c, iDest, jDest);
+				}
 			}
 		}
 	}

@@ -98,6 +98,19 @@ public:
 		return Cidr::RGBA{pixels[getIndex(x, y)]};
 	}
 	
+	enum class ScaleType {
+		Nearest,
+		Linear,
+	} ScaleType = ScaleType::Nearest;
+	
+	enum class OutOfBoundsType {
+		Repeat,
+		MirroredRepeat,
+		ClampToEdge,
+		ClampToBorder,
+	} OutOfBoundsType = OutOfBoundsType::ClampToEdge;
+	// TODO: add ClamToBorder colo
+	
 	/* UTILITY FUNCTIONS */
 private:
 	inline int getIndex(const Point& p) const {
