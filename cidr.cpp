@@ -628,16 +628,17 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, Point destLocation, int de
 		float cx = destWidth / (float)srcWidth;
 		float cy = destHeight / (float)srcHeight;
 		
-		for (int i = destLocation.x; i < destLocation.x + destWidth; i++) {
-			for (int j = destLocation.y; j < destLocation.y + destHeight; j++) {
-				if(i < 0 || j < 0 || i >= width || j >= height) continue;
+		for (int iDest = destLocation.x; iDest < destLocation.x + destWidth; iDest++) {
+			for (int jDest = destLocation.y; jDest < destLocation.y + destHeight; jDest++) {
+				if(iDest < 0 || jDest < 0 || iDest >= destLocation.x + destWidth || jDest >= destLocation.y + destHeight) continue;
 				
-				int ii = i - destLocation.x;
-				int jj = j - destLocation.y;
-				float iii = ii / cx;
-				float jjj = jj / cy;
+				int iSrc = (iDest - destLocation.x) / cx + srcLocation.x;
+				int jSrc = (jDest - destLocation.y) / cy + srcLocation.y;
 				
-				DrawPoint(bitmap.GetPixel(iii + srcLocation.x, jjj + srcLocation.y), i, j);
+				if(iSrc < 0 || jSrc < 0 || iSrc >= bitmap.GetWidth() || jSrc >= bitmap.GetHeight()) continue;
+				
+				
+				DrawPoint(bitmap.GetPixel(iSrc, jSrc), iDest, jDest);
 			}
 		}
 	}
