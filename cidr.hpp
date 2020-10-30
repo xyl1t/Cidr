@@ -43,7 +43,7 @@ public:
 	void FillTriangle(const RGBA& color, Point p1, Point p2, Point p3);
 	void FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3); // WIP
 	void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3);
-	void DrawBitmap(const Bitmap& bitmap, Point destLocation, int destWidth, int destHeight, Point srcLocation, int srcWidth, int srcHeight);
+	void DrawBitmap(const Bitmap& bitmap, FPoint destLocation, int destWidth, int destHeight, FPoint srcLocation, int srcWidth, int srcHeight);
 	
 	/* DRAWING FUNCTION OVERLOADS */
 	inline void DrawPoint(const RGBA& color, int x, int y) { DrawPoint(color, Point(x, y)); }
@@ -108,8 +108,8 @@ public:
 		MirroredRepeat,
 		ClampToEdge,
 		ClampToBorder,
-	} OutOfBoundsType = OutOfBoundsType::ClampToEdge;
-	// TODO: add ClamToBorder colo
+	} OutOfBoundsType = OutOfBoundsType::ClampToBorder;
+	RGBA ClampToBorderColor {};
 	
 	/* UTILITY FUNCTIONS */
 private:
