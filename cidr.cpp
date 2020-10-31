@@ -634,21 +634,19 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, FPoint destLocation, int d
 				float iSrc = (iDest - destLocation.x) / (float)cx + srcLocation.x;
 				float jSrc = (jDest - destLocation.y) / (float)cy + srcLocation.y;
 				
-				
 				// TODO: maybe simplyify this later 
 				if(this->ScaleType == ScaleType::Nearest) {
 					if(iSrc < 0 || jSrc < 0 || iSrc >= bitmap.GetWidth() || jSrc >= bitmap.GetHeight()) {
-						// TODO: something should happen here....
-						// see https://learnopengl.com/Getting-started/Textures
 						switch(OutOfBoundsType) {
 							case OutOfBoundsType::Repeat: {
-								DrawPoint(bitmap.GetPixel(
-									std::fmod(bitmap.GetWidth() * std::ceil(std::abs(iSrc) / bitmap.GetWidth()) + iSrc, bitmap.GetWidth()), 
-									std::fmod(bitmap.GetHeight() * std::ceil(std::abs(jSrc) / bitmap.GetHeight()) + jSrc, bitmap.GetHeight())), iDest, jDest);
+								int x { (int)iSrc % bitmap.GetWidth() + ((iSrc < 0) * (bitmap.GetWidth()-1))};
+								int y { (int)jSrc % bitmap.GetHeight() + ((jSrc < 0) * (bitmap.GetHeight()-1))};
+								
+								DrawPoint(bitmap.GetPixel(x, y), iDest, jDest);
 							} break;
 							case OutOfBoundsType::MirroredRepeat: {
-								int x = std::fmod(bitmap.GetWidth() * std::ceil(std::abs(iSrc) / bitmap.GetWidth()) + iSrc, bitmap.GetWidth());
-								int y = std::fmod(bitmap.GetHeight() * std::ceil(std::abs(jSrc) / bitmap.GetHeight()) + jSrc, bitmap.GetHeight());
+								int x { (int)iSrc % bitmap.GetWidth() + ((iSrc < 0) * (bitmap.GetWidth()-1))};
+								int y { (int)jSrc % bitmap.GetHeight() + ((jSrc < 0) * (bitmap.GetHeight()-1))};
 								if((int)(iSrc / bitmap.GetWidth() + (iSrc < 0 ? 0 : 1)) % 2 == 0) 
 									x = bitmap.GetWidth() - 1 - x;
 								if((int)(jSrc / bitmap.GetHeight() + (jSrc < 0 ? 0 : 1)) % 2 == 0) 
