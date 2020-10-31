@@ -13,6 +13,7 @@
 #include <map>
 #include "cidr.hpp"
 #include <string>
+#include "timer.hpp"
 
 Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y);
@@ -55,11 +56,29 @@ int main(int argc, char** argv) {
 	uint32_t current = SDL_GetTicks();
 	uint32_t old = 0;
 	uint32_t timer = 0;
+
 	
 	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
-	Cidr::RGBABitmap bitmap{"./res/test.png"};
+	Cidr::RGBABitmap bitmap{"./res/pureTest.png"};
 	
+	
+	float val1{};
+	float val2{};
+	float val3{};
+	float val4{};
+	Timer t {};
 	while(alive) {
+		/* TIMER */
+		old = current;
+		current = t.elapsed();
+		if(timer > 1000) {
+			std::cout << "ms: " << (current - old) / 1000000.f << '\n';
+			timer = 0;
+		}
+		timer += (current - old) / 1000000.f;
+		
+		
+		/* EVENTS */
 		while(SDL_PollEvent(&event)) {
 			if(event.type == SDL_QUIT) {
 				alive = false;
@@ -96,29 +115,40 @@ int main(int argc, char** argv) {
 			currentShader = &testShader;
 		}
 		if(keyboard[SDLK_5]) {
+			cidrRend.OutOfBoundsType = Cidr::Renderer::OutOfBoundsType::Repeat;
 			currentShader = nullptr;
 		}
 		if(keyboard[SDLK_6]) {
+			cidrRend.OutOfBoundsType = Cidr::Renderer::OutOfBoundsType::MirroredRepeat;
 			currentShader = nullptr;
 		}
 		if(keyboard[SDLK_7]) {
+			cidrRend.OutOfBoundsType = Cidr::Renderer::OutOfBoundsType::ClampToBorder;
 			currentShader = nullptr;
 		}
 		if(keyboard[SDLK_8]) {
+			cidrRend.OutOfBoundsType = Cidr::Renderer::OutOfBoundsType::ClampToEdge;
 			currentShader = nullptr;
 		}
 		if(keyboard[SDLK_9]) {
 			currentShader = nullptr;
 		}
-		
-		/* TIMER */
-		old = current;
-		current = SDL_GetTicks();
-		if(timer > 1000) {
-			std::cout << "ms: " << current - old << '\n';
-			timer = 0;
+		if(keyboard[SDLK_UP]) {
+			val1 += 1;
 		}
-		timer += current - old;
+		if(keyboard[SDLK_DOWN]) {
+			val1 -= 1;
+		}
+		if(keyboard[SDLK_LEFT]) {
+			val2 -= 1;
+		}
+		if(keyboard[SDLK_RIGHT]) {
+			val2 += 1;
+		}
+		
+		// std::cout << "val1: " << val1 << std::endl;
+		// std::cout << "val2: " << val2 << std::endl;
+
 		
 		/*** DRAWING ***/
 		
@@ -204,11 +234,23 @@ int main(int argc, char** argv) {
 			360, 215,
 			360 + 64, 215,
 			360 + 32, 215 + 32);
+
 		
 		/* IMAGES */
+		cidrRend.ScaleType = Cidr::Renderer::ScaleType::Nearest;
+		cidrRend.ClampToBorderColor = Cidr::RGB::Maroon;
+		int destWidth = 256;
+		int destHeight = 256;
 		cidrRend.DrawBitmap(bitmap, 
-			{mx-250/2,my-250/2}, 250, 250, 
-			{200,200}, 250, 250);
+			{(float)mx-destWidth/2,(float)my-destHeight/2}, destWidth, destHeight, 
+			{val2/10.f, -val1/10.f}, bitmap.GetWidth(), bitmap.GetHeight());
+		// cidrRend.DrawRectangle(Cidr::RGB::White, (float)mx-destWidth/2,(float)my-destHeight/2, destWidth, destHeight);
+		
+		// cidrRend.ScaleType = Cidr::Renderer::ScaleType::Linear;
+		// cidrRend.DrawBitmap(bitmap, 
+		// 	{mx,my}, 256, 256, 
+		// 	{0,0}, 16, 16);
+
 		
 		/* APPLY SHADER */
 		int shaderSize = 128;
@@ -222,8 +264,6 @@ int main(int argc, char** argv) {
 			}
 			cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
 		}
-		
-		cidrRend.DrawRectangle(Cidr::RGB::Red, {300, 300, 64, 64});
 		
 		/* UPDATE SCREEN */
 		SDL_UpdateTexture(texture, nullptr, pixels, CANVAS_WIDTH * sizeof(uint32_t));
