@@ -587,6 +587,7 @@ void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int st
 		aLerp += aStep;
 	}
 }
+// TODO: fix this mess
 void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, FPoint destLocation, int destWidth, int destHeight, FPoint srcLocation, int srcWidth, int srcHeight) {
 	// Exit if image is out of bounds of the canvas
 	if(destLocation.x >= width) return;	
@@ -639,8 +640,6 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, FPoint destLocation, int d
 				int fooX = 0;
 				int fooY = 0;
 				
-				float originaliSrc {iSrc};
-				float originaljSrc {jSrc};
 				float x {iSrc};
 				float y {jSrc};
 				

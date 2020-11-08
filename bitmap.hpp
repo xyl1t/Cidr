@@ -32,7 +32,6 @@ public:
 	RGBABitmap& operator=(const RGBABitmap& other);
 	RGBABitmap(RGBABitmap&& other) noexcept;
 	RGBABitmap& operator=(RGBABitmap&& other) noexcept;
-
 	
 	// RGBABitmap(uint32_t* data, int width, int height);
 	inline int GetWidth() const  {
@@ -53,6 +52,7 @@ public:
 };
 
 class RGBBitmap {
+private:
 	/* Individual pixels of the bitmap */
 	uint32_t* data{nullptr};
 	/* Width of the bitmap */
@@ -60,8 +60,29 @@ class RGBBitmap {
 	/* Height of the bitmap */
 	int height{0};
 	
-	inline RGB GetPixel(int x, int y) {
-		return data[x + y * width];
+public:
+	RGBBitmap(int width, int height);
+	RGBBitmap(uint32_t* source, int sourceWidth, int sourceHeight);
+	RGBBitmap(const std::string& file);
+	~RGBBitmap();
+
+	// copy constructor/assignment
+	RGBBitmap(const RGBBitmap& other);
+	RGBBitmap& operator=(const RGBBitmap& other);
+	RGBBitmap(RGBBitmap&& other) noexcept;
+	RGBBitmap& operator=(RGBBitmap&& other) noexcept;
+	
+	inline int GetWidth() const  {
+		return width;
+	}
+	inline int GetHeight() const {
+		return height;
+	}
+	inline uint32_t* GetData() const {
+		return data;
+	}
+	inline RGB GetPixel(int x, int y) const {
+		return (RGBA){data[x + y * width]};
 	}
 	inline void SetPixel(const RGB& value, int x, int y) {
 		data[x + y * width] = RGBtoUINT(value);
@@ -69,12 +90,34 @@ class RGBBitmap {
 };
 
 class MonochromeBitmap {
+private:
 	/* Individual pixels of the bitmap */
 	uint8_t* data{nullptr};
 	/* Width of the bitmap */
 	int width{0};
 	/* Height of the bitmap */
 	int height{0};
+public:
+	MonochromeBitmap(int width, int height);
+	MonochromeBitmap(uint8_t* source, int sourceWidth, int sourceHeight);
+	MonochromeBitmap(const std::string& file);
+	~MonochromeBitmap();
+
+	// copy constructor/assignment
+	MonochromeBitmap(const MonochromeBitmap& other);
+	MonochromeBitmap& operator=(const MonochromeBitmap& other);
+	MonochromeBitmap(MonochromeBitmap&& other) noexcept;
+	MonochromeBitmap& operator=(MonochromeBitmap&& other) noexcept;
+
+	inline int GetWidth() const  {
+		return width;
+	}
+	inline int GetHeight() const {
+		return height;
+	}
+	inline uint8_t* GetData() const {
+		return data;
+	}
 	
 	inline uint8_t GetPixel(int x, int y) {
 		return data[x + y * width];
