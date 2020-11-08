@@ -87,7 +87,7 @@ public:
 		return width;
 	}
 	inline int GetHeight() const {
-		return width;
+		return height;
 	}
 	inline Cidr::RGBA GetPixel(const Point& p) const {
 		if(p.x < 0 || p.y < 0 || p.x >= GetWidth() || p.y >= GetHeight()) return Cidr::RGBA{};
