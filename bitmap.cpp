@@ -166,14 +166,14 @@ Cidr::MonochromeBitmap::MonochromeBitmap(const std::string& file) {
 					data[i + j * width] = imageData[i + j * width];
 				} else {
 					RGB color {
-						(imageData[(i + j * width) * channels + 0] << 24),
-						(imageData[(i + j * width) * channels + 1] << 16),
-						(imageData[(i + j * width) * channels + 2] <<  8),
+						(uint8_t)((imageData[(i + j * width) * channels + 0] << 24)),
+						(uint8_t)((imageData[(i + j * width) * channels + 1] << 16)),
+						(uint8_t)((imageData[(i + j * width) * channels + 2] <<  8)),
 					};
 					uint8_t monochromeColor {
-						color.r * 0.2126 + color.b * 0.7152 + color.g * 0.0722,
+						(uint8_t)(color.r * 0.2126 + color.b * 0.7152 + color.g * 0.0722),
 					};
-					data[i + j * width] = monochromeColor;
+					data[i + j * width] = (uint8_t)monochromeColor;
 				}
 			}
 		}
