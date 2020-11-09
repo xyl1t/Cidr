@@ -7,6 +7,8 @@
 #include "bitmap.hpp"
 #include <stb/stb_image.h>
 
+
+
 /* RGBABitmap *******************************************************************************/
 
 Cidr::RGBABitmap::RGBABitmap(int width, int height) : 
@@ -160,7 +162,19 @@ Cidr::MonochromeBitmap::MonochromeBitmap(const std::string& file) {
 			for (int j = 0; j < height; j++) {
 				// TODO: make monochrome bitmap even if source image is not monochrome.
 				// see: https://stackoverflow.com/q/596216/10187214
-				data[i + j * width] = imageData[(i + j * width) * channels];
+				if(channels == 1) {
+					data[i + j * width] = imageData[i + j * width];
+				} else {
+					RGB color {
+						(imageData[(i + j * width) * channels + 0] << 24),
+						(imageData[(i + j * width) * channels + 1] << 16),
+						(imageData[(i + j * width) * channels + 2] <<  8),
+					};
+					uint8_t monochromeColor {
+						color.r * 0.2126 + color.b * 0.7152 + color.g * 0.0722,
+					};
+					data[i + j * width] = monochromeColor;
+				}
 			}
 		}
 		stbi_image_free(imageData);
