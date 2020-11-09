@@ -24,7 +24,6 @@ Cidr::RGBA distortionShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA grayScaleShader(const Cidr::Renderer& renderer, int x, int y);
 
 int main(int argc, char** argv) {
-	
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 	
@@ -56,15 +55,13 @@ int main(int argc, char** argv) {
 	uint32_t current = SDL_GetTicks();
 	uint32_t old = 0;
 	uint32_t timer = 0;
-
 	
 	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
 	Cidr::RGBABitmap bitmap{"./res/pureTest.png"};
 	
-	
 	float val1{};
-	float val2{};
 	float val3{};
+	float val2{};
 	float val4{};
 	Timer t {};
 	while(alive) {
@@ -72,7 +69,7 @@ int main(int argc, char** argv) {
 		old = current;
 		current = t.elapsed();
 		if(timer > 1000) {
-			std::cout << "ms: " << (current - old) / 1000000.f << '\n';
+			// std::cout << "ms: " << (current - old) / 1000000.f << '\n';
 			timer = 0;
 		}
 		timer += (current - old) / 1000000.f;
@@ -99,9 +96,6 @@ int main(int argc, char** argv) {
 		}
 
 		/* SELECT SHADER */
-		if(keyboard[SDLK_0]) {
-			currentShader = nullptr;
-		}
 		if(keyboard[SDLK_1]) {
 			currentShader = &distortionShader;
 		}
@@ -131,6 +125,11 @@ int main(int argc, char** argv) {
 			currentShader = nullptr;
 		}
 		if(keyboard[SDLK_9]) {
+			cidrRend.ScaleType = Cidr::Renderer::ScaleType::Nearest;
+			currentShader = nullptr;
+		}
+		if(keyboard[SDLK_0]) {
+			cidrRend.ScaleType = Cidr::Renderer::ScaleType::Linear;
 			currentShader = nullptr;
 		}
 		if(keyboard[SDLK_UP]) {
@@ -237,13 +236,13 @@ int main(int argc, char** argv) {
 
 		
 		/* IMAGES */
-		cidrRend.ScaleType = Cidr::Renderer::ScaleType::Nearest;
-		cidrRend.ClampToBorderColor = Cidr::RGB::Maroon;
-		int destWidth = 256;
-		int destHeight = 256;
+		cidrRend.ClampToBorderColor = Cidr::RGB::Gray;
+		//  cidrRend.OutOfBoundsType = Cidr::Renderer::OutOfBoundsType::Repeat;
+		int destWidth = bitmap.GetWidth() * 16;
+		int destHeight = bitmap.GetWidth() * 16;
 		cidrRend.DrawBitmap(bitmap, 
 			{(float)mx-destWidth/2,(float)my-destHeight/2}, destWidth, destHeight, 
-			{val2/10.f, -val1/10.f}, bitmap.GetWidth(), bitmap.GetHeight());
+			{val2/4.f, -val1/4.f}, bitmap.GetWidth(), bitmap.GetHeight());
 		// cidrRend.DrawRectangle(Cidr::RGB::White, (float)mx-destWidth/2,(float)my-destHeight/2, destWidth, destHeight);
 		
 		// cidrRend.ScaleType = Cidr::Renderer::ScaleType::Linear;
