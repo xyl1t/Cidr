@@ -43,7 +43,7 @@ public:
 	void FillTriangle(const RGBA& color, Point p1, Point p2, Point p3);
 	void FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3); // WIP
 	void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3);
-	void DrawBitmap(const Bitmap& bitmap, Point destLocation, int destWidth, int destHeight, Point srcLocation, int srcWidth, int srcHeight);
+	void DrawBitmap(const Bitmap& bitmap, FPoint destLocation, int destWidth, int destHeight, FPoint srcLocation, int srcWidth, int srcHeight);
 	
 	/* DRAWING FUNCTION OVERLOADS */
 	inline void DrawPoint(const RGBA& color, int x, int y) { DrawPoint(color, Point(x, y)); }
@@ -87,7 +87,7 @@ public:
 		return width;
 	}
 	inline int GetHeight() const {
-		return width;
+		return height;
 	}
 	inline Cidr::RGBA GetPixel(const Point& p) const {
 		if(p.x < 0 || p.y < 0 || p.x >= GetWidth() || p.y >= GetHeight()) return Cidr::RGBA{};
@@ -97,6 +97,19 @@ public:
 		if(x < 0 || y < 0 || x >= GetWidth() || y >= GetHeight()) return Cidr::RGBA{};
 		return Cidr::RGBA{pixels[getIndex(x, y)]};
 	}
+	
+	enum class ScaleType {
+		Nearest,
+		Linear,
+	} ScaleType = ScaleType::Nearest;
+	
+	enum class OutOfBoundsType {
+		Repeat,
+		MirroredRepeat,
+		ClampToEdge,
+		ClampToBorder,
+	} OutOfBoundsType = OutOfBoundsType::ClampToBorder;
+	RGBA ClampToBorderColor {};
 	
 	/* UTILITY FUNCTIONS */
 private:

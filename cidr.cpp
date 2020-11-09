@@ -587,13 +587,14 @@ void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int st
 		aLerp += aStep;
 	}
 }
-void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, Point destLocation, int destWidth, int destHeight, Point srcLocation, int srcWidth, int srcHeight) {
+// TODO: fix this mess
+void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, FPoint destLocation, int destWidth, int destHeight, FPoint srcLocation, int srcWidth, int srcHeight) {
 	// Exit if image is out of bounds of the canvas
 	if(destLocation.x >= width) return;	
 	if(destLocation.y >= height) return;
 	if(destLocation.x + destWidth < 0) return;
 	if(destLocation.y + destHeight < 0) return;
-	
+		
 	// optimzation if image has no scale
 	if(destWidth == srcWidth && destHeight == srcHeight) {
 		/* srcRectangle == destRectangle, I'm only going to use srcRectangle */
@@ -621,23 +622,139 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, Point destLocation, int de
 		
 		for(int i = srcLocation.y; i < srcLocation.y + bitmap.GetHeight() - (bitmap.GetHeight() - destHeight); i++) {			
 			memcpy(pixels + getIndex(destLocation.x, destLocation.y + (i - srcLocation.y)), 
-				bitmap.GetData() + i * bitmap.GetWidth() + srcLocation.x, 
+				bitmap.GetData() + i * bitmap.GetWidth() + (int)srcLocation.x, 
 				(bitmap.GetWidth() - (bitmap.GetWidth() - srcWidth)) * sizeof(uint32_t)); 
 		}
 	} else {
 		float cx = destWidth / (float)srcWidth;
 		float cy = destHeight / (float)srcHeight;
 		
-		for (int i = destLocation.x; i < destLocation.x + destWidth; i++) {
-			for (int j = destLocation.y; j < destLocation.y + destHeight; j++) {
-				if(i < 0 || j < 0 || i >= width || j >= height) continue;
+		for (int iDest = destLocation.x; iDest < destLocation.x + destWidth; iDest++) {
+			for (int jDest = destLocation.y; jDest < destLocation.y + destHeight; jDest++) {
+				if(iDest < 0 || jDest < 0 || iDest >= GetWidth() || jDest >= GetHeight()) 
+					continue;
 				
-				int ii = i - destLocation.x;
-				int jj = j - destLocation.y;
-				float iii = ii / cx;
-				float jjj = jj / cy;
+				float iSrc = (iDest - destLocation.x) / (float)cx + srcLocation.x;
+				float jSrc = (jDest - destLocation.y) / (float)cy + srcLocation.y;
+
+				int fooX = 0;
+				int fooY = 0;
 				
-				DrawPoint(bitmap.GetPixel(iii + srcLocation.x, jjj + srcLocation.y), i, j);
+				float x {iSrc};
+				float y {jSrc};
+				
+				if(iSrc < 0 || jSrc < 0 || iSrc >= bitmap.GetWidth() || jSrc >= bitmap.GetHeight()) {
+					switch(OutOfBoundsType) {
+						case OutOfBoundsType::Repeat: {
+							x = std::fmod((bitmap.GetWidth() * ((int)std::abs(x) / bitmap.GetWidth() + 1) + x), bitmap.GetWidth());
+							y = std::fmod((bitmap.GetHeight() * ((int)std::abs(y) / bitmap.GetHeight() + 1) + y), bitmap.GetHeight());
+						} break;
+						case OutOfBoundsType::MirroredRepeat: {
+							// x = (int)iSrc % bitmap.GetWidth() + ((iSrc < 0) * (bitmap.GetWidth()-1));
+							// y = (int)jSrc % bitmap.GetHeight() + ((jSrc < 0) * (bitmap.GetHeight()-1));
+							// x = std::fmod(((float)bitmap.GetWidth() * (int)(std::abs(iSrc) / bitmap.GetWidth() + 1) + iSrc), bitmap.GetWidth());
+							// y = std::fmod(((float)bitmap.GetHeight() * (int)(std::abs(jSrc) / bitmap.GetHeight() + 1) + jSrc), bitmap.GetHeight());
+
+							// if((int)(abs(iSrc) / (bitmap.GetWidth()) + (iSrc < 0 ? 0 : 1)) % 2 == 0) {
+							// 	x = bitmap.GetWidth() - x;
+							// 	if(x < 0) x = 0;
+							// 	if(x >= bitmap.GetWidth()) x = bitmap.GetWidth() - 1;
+							// }
+							// if(((int)(abs(jSrc) / (bitmap.GetHeight())) ) % 2 == 0) {
+							// 	y = bitmap.GetHeight() - y;
+							// 	if(y < 0) y = 0;
+							// 	if(y >= bitmap.GetWidth()) y = bitmap.GetWidth() - 1;
+							// }
+							const auto mod = [](const float a, const float n) noexcept
+							{
+								return std::fmod((std::fmod(a, n) + n), n);
+							};
+							const auto mirror = [](const float a) noexcept
+							{
+								return a >= 0.f ? a : -(1 + a);
+							};
+							const auto mirrored_repeat_x = [&](const float x) noexcept {
+								return (bitmap.GetWidth() - 1) - mirror(mod(x, 2 * bitmap.GetWidth()) - bitmap.GetWidth());
+							};
+							const auto mirrored_repeat_y = [&](const float y) noexcept {
+								return (bitmap.GetHeight() - 1) - mirror(mod(y, 2 * bitmap.GetHeight()) - bitmap.GetHeight());
+							};
+							
+							x = mirrored_repeat_x(x);
+							y = mirrored_repeat_y(y);
+							
+							// HACK: this + 0.001f will be problematic prob later! 
+							fooX = (int)((iSrc+0.00001f) / bitmap.GetWidth()) % 2 + (iSrc < 0 ? 1 : 0);
+							fooY = (int)((jSrc+0.00001f) / bitmap.GetHeight()) % 2 + (jSrc < 0 ? 1 : 0);
+						} break;
+						case OutOfBoundsType::ClampToEdge: {
+							if(ScaleType == ScaleType::Nearest) {
+								x = std::fmax(0, std::fmin(bitmap.GetWidth()-1, iSrc));
+								y = std::fmax(0, std::fmin(bitmap.GetHeight()-1, jSrc));
+							} else {
+								x = std::fmax(0, std::fmin(bitmap.GetWidth(), iSrc));
+								y = std::fmax(0, std::fmin(bitmap.GetHeight(), jSrc));
+							}
+						} break;
+						
+						// NOTE: basically OutOfBoundsType::ClampToBorder, but it kinda looks guly
+						// to make a case for it and continue skip to the next iteration.... idk
+						default: {
+							DrawPoint(ClampToBorderColor, iDest, jDest);
+							continue;
+						}
+					}
+				} 
+				// static uint64_t timer = 0;				
+				// if(timer / 100000.f > 1 && iDest == destLocation.x && jDest == destLocation.y) {
+				// 	std::cout << "iSrc: " << iSrc << "; jSrc: " << jSrc << std::endl;
+				// 	std::cout << "x: " << x << "; y: " << y << std::endl;
+				// 	std::cout << (((int)iSrc / bitmap.GetWidth()) % 2) << std::endl;
+				// 	timer = 0;
+				// }
+				// timer++;
+				iSrc = x;
+				jSrc = y;
+
+				
+				// TODO: maybe simplyify this later 
+				if(this->ScaleType == ScaleType::Nearest) {
+					if(fooX) 
+						iSrc = ceil(iSrc);
+					if(fooY) 
+						jSrc = ceil(jSrc);
+					DrawPoint(bitmap.GetPixel(iSrc, jSrc), iDest, jDest);
+				} else { 
+					// TODO: cheßck if downscaling works properly
+					// NOTE: subtract 0.5 in order to put the point in the centre of the pixel
+					
+					if(fooX) iSrc += 0.5;
+					else 	 iSrc -= 0.5;
+					if(fooY) jSrc += 0.5;
+					else 	 jSrc -= 0.5;
+					
+					if(iSrc < 0) iSrc = 0;
+					if(iSrc >= bitmap.GetWidth()) iSrc = bitmap.GetWidth() - 1;
+					if(jSrc < 0) jSrc = 0;
+					if(jSrc >= bitmap.GetHeight()) jSrc = bitmap.GetHeight() - 1;
+
+					float iSrcFraction = (iSrc) - (int)iSrc;
+					float jSrcFraction = (jSrc) - (int)jSrc;
+					
+					const RGBA& colorTL = bitmap.GetPixel(iSrc, jSrc);
+					const RGBA& colorBL = bitmap.GetPixel(iSrc, (jSrc+1 >= bitmap.GetHeight() ? jSrc : jSrc + 1));
+					const RGBA& colorTR = bitmap.GetPixel((iSrc+1 >= bitmap.GetWidth() ? iSrc : iSrc + 1), jSrc);
+					const RGBA& colorBR = bitmap.GetPixel((iSrc+1 >= bitmap.GetWidth() ? iSrc : iSrc + 1), (jSrc+1 >= bitmap.GetHeight() ? jSrc : jSrc + 1));
+					
+					RGBA cT { colorTL * (1 - iSrcFraction) + colorTR * iSrcFraction };
+					RGBA cB { colorBL * (1 - iSrcFraction) + colorBR * iSrcFraction };
+					RGBA c {
+						cT * (1 - jSrcFraction) + 
+						cB * jSrcFraction 
+					};
+					
+					DrawPoint(c, iDest, jDest);
+				}
 			}
 		}
 	}
