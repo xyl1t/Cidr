@@ -684,8 +684,8 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, FPoint destLocation, int d
 							y = mirrored_repeat_y(y);
 							
 							// HACK: this + 0.001f will be problematic prob later! 
-							fooX = (int)((iSrc+0.00001f) / bitmap.GetWidth()) % 2 + (iSrc < 0 ? 1 : 0);
-							fooY = (int)((jSrc+0.00001f) / bitmap.GetHeight()) % 2 + (jSrc < 0 ? 1 : 0);
+							fooX = (int)((iSrc + (iSrc < 0 ? 1/(cx*cx) : 0)) / bitmap.GetWidth()) % 2 + (iSrc < 0 ? 1 : 0);
+							fooY = (int)((jSrc + (jSrc < 0 ? 1/(cy*cy) : 0)) / bitmap.GetHeight()) % 2 + (jSrc < 0 ? 1 : 0);
 						} break;
 						case OutOfBoundsType::ClampToEdge: {
 							if(ScaleType == ScaleType::Nearest) {
