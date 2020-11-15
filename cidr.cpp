@@ -588,54 +588,54 @@ void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int st
 	}
 }
 // TODO: fix this mess
-void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, FRectangle destRect, FRectangle srcRect) {
+void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, int destWidth, int destHeight, float srcX, float srcY, int srcWidth, int srcHeight) {
 	// Exit if image is out of bounds of the canvas
-	if(destRect.x >= width) return;	
-	if(destRect.y >= height) return;
-	if(destRect.x + destRect.width < 0) return;
-	if(destRect.y + destRect.height < 0) return;
+	if(destX >= width) return;	
+	if(destY >= height) return;
+	if(destX + destWidth < 0) return;
+	if(destY + destHeight < 0) return;
 		
 	// optimzation if image has no scale
-	if(destRect.width == srcRect.width && destRect.height == srcRect.height) {
+	if(destWidth == srcWidth && destHeight == srcHeight) {
 		/* srcRectangle == destRectangle, I'm only going to use srcRectangle */
 		
-		if(destRect.x < 0) {
-			srcRect.x += std::abs(destRect.x);
-			srcRect.width -= std::abs(destRect.x);
-			destRect.width = srcRect.width;
-			destRect.x = 0;
+		if(destX < 0) {
+			srcX += std::abs(destX);
+			srcWidth -= std::abs(destX);
+			destWidth = srcWidth;
+			destX = 0;
 		}
-		if(destRect.x + destRect.width >= width) {
-			srcRect.width += width - (destRect.x + destRect.width);;
-			destRect.width = srcRect.width;
+		if(destX + destWidth >= width) {
+			srcWidth += width - (destX + destWidth);;
+			destWidth = srcWidth;
 		}
-		if(destRect.y < 0) {
-			srcRect.y += std::abs(destRect.y);
-			srcRect.height -= std::abs(destRect.y);
-			destRect.height = srcRect.height;
-			destRect.y = 0;
+		if(destY < 0) {
+			srcY += std::abs(destY);
+			srcHeight -= std::abs(destY);
+			destHeight = srcHeight;
+			destY = 0;
 		}
-		if(destRect.y + destRect.height >= height) {
-			srcRect.height += height - (destRect.y + destRect.height);;
-			destRect.height += srcRect.height;
+		if(destY + destHeight >= height) {
+			srcHeight += height - (destY + destHeight);;
+			destHeight += srcHeight;
 		}
 		
-		for(int i = srcRect.y; i < srcRect.y + bitmap.GetHeight() - (bitmap.GetHeight() - destRect.height); i++) {			
-			memcpy(pixels + getIndex(destRect.x, destRect.y + (i - srcRect.y)), 
-				bitmap.GetData() + i * bitmap.GetWidth() + (int)srcRect.x, 
-				(bitmap.GetWidth() - (bitmap.GetWidth() - srcRect.width)) * sizeof(uint32_t)); 
+		for(int i = srcY; i < srcY + bitmap.GetHeight() - (bitmap.GetHeight() - destHeight); i++) {			
+			memcpy(pixels + getIndex(destX, destY + (i - srcY)), 
+				bitmap.GetData() + i * bitmap.GetWidth() + (int)srcX, 
+				(bitmap.GetWidth() - (bitmap.GetWidth() - srcWidth)) * sizeof(uint32_t)); 
 		}
 	} else {
-		float cx = destRect.width / (float)srcRect.width;
-		float cy = destRect.height / (float)srcRect.height;
+		float cx = destWidth / (float)srcWidth;
+		float cy = destHeight / (float)srcHeight;
 		
-		for (int iDest = destRect.x; iDest < destRect.x + destRect.width; iDest++) {
-			for (int jDest = destRect.y; jDest < destRect.y + destRect.height; jDest++) {
+		for (int iDest = destX; iDest < destX + destWidth; iDest++) {
+			for (int jDest = destY; jDest < destY + destHeight; jDest++) {
 				if(iDest < 0 || jDest < 0 || iDest >= GetWidth() || jDest >= GetHeight()) 
 					continue;
 				
-				float iSrc = (iDest - destRect.x) / (float)cx + srcRect.x;
-				float jSrc = (jDest - destRect.y) / (float)cy + srcRect.y;
+				float iSrc = (iDest - destX) / (float)cx + srcX;
+				float jSrc = (jDest - destY) / (float)cy + srcY;
 
 				int fooX = 0;
 				int fooY = 0;
@@ -706,7 +706,7 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, FRectangle destRect, FRect
 					}
 				} 
 				// static uint64_t timer = 0;				
-				// if(timer / 100000.f > 1 && iDest == destRect.x && jDest == destRect.y) {
+				// if(timer / 100000.f > 1 && iDest == destX && jDest == destY) {
 				// 	std::cout << "iSrc: " << iSrc << "; jSrc: " << jSrc << std::endl;
 				// 	std::cout << "x: " << x << "; y: " << y << std::endl;
 				// 	std::cout << (((int)iSrc / bitmap.GetWidth()) % 2) << std::endl;
