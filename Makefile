@@ -16,7 +16,9 @@ LDFLAGS := -L lib
 LDLIBS :=  -l SDL2-2.0.0 -lm
 
 ### Phony targets ###
-.PHONY: all clean
+.PHONY: all multi clean
+multi: 
+	$(MAKE) -j8 all
 all: $(PROJECT)
 
 # Include mostly header dependencies 
@@ -30,7 +32,7 @@ $(PROJECT) : $(OBJS)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) $^ -o $@ 
 
 # Compile .o files
-$(BUILDDIR)/%.o : %.cpp # ugly, AND DOESN'T WORK
+$(BUILDDIR)/%.o : %.cpp # ugly
 	$(CXX) $(CXXFLAGS) -c $< $(DEPFLAGS) -o $@
 	
 # clean build
