@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 		old = current;
 		current = t.elapsed();
 		if(timer > 1000) {
-			// std::cout << "ms: " << (current - old) / 1000000.f << '\n';
+			std::cout << "ms: " << (current - old) / 1000000.f << '\n';
 			timer = 0;
 		}
 		timer += (current - old) / 1000000.f;
@@ -145,17 +145,15 @@ int main(int argc, char** argv) {
 			val2 += 1;
 		}
 		
-		// std::cout << "val1: " << val1 << std::endl;
-		// std::cout << "val2: " << val2 << std::endl;
-
-		
 		/*** DRAWING ***/
 		
 		/* CLEARING THE SCREEN*/
 		cidrRend.Clear(0x120F1FFF);
 		
+		
 		/* DRAWING A LINE TO THE CURSOR */
 		// cidrRend.DrawLine({0, 0xff, 0}, 0, 0, mx, my, true);
+		
 		
 		/* DRAWING A COLORFUL RECTANGLE USING A SHADER */
 		auto lambda = [](const Cidr::Renderer& renderer, int x, int y) -> Cidr::RGBA {
@@ -166,15 +164,18 @@ int main(int argc, char** argv) {
 		};
 		cidrRend.FillRectangle(lambda, (Cidr::Rectangle){3, 3, 256, 256});
 		
+		
 		/* DRAWING THREE TYPES OF LINES */
-		cidrRend.DrawLine(0x00ff00ff, 280, 296-10, 460, 370-10, true, true);
-		cidrRend.DrawLine(0x00ff00ff, 280, 296,    460, 370);
-		cidrRend.DrawLine(0x00ff00ff, 280, 296+10, 460, 370+10, true);
+		cidrRend.DrawLine(0x00ff00ff, 280, 230-10, 460, 270-10, true, true);
+		cidrRend.DrawLine(0x00ff00ff, 280, 230,    460, 270);
+		cidrRend.DrawLine(0x00ff00ff, 280, 230+10, 460, 270+10, true);
+		
 		
 		/* DRAWING FILLED RGB SQUARES */
 		cidrRend.FillRectangle(0xff0000ff, 152,300+5,40,40);
 		cidrRend.FillRectangle(0x00ff00ff, 172,320+5,40,40);
 		cidrRend.FillRectangle(0x0000ffff, 192,340+5,40,40);
+		
 		
 		/* CIRCLES */
 		cidrRend.DrawCircle(0x23ff10ff, 192, 340, 50);
@@ -191,6 +192,7 @@ int main(int argc, char** argv) {
 		}
 		cidrRend.FillCircle(0x30ee0Aff, 350, 50, 30, true);
 		cidrRend.FillCircle(0x30ee0Aff, 350 + 30*2 + 15, 50, 30, false);
+
 
 		/* TRIANGLES */
 		cidrRend.FillTriangle(
@@ -209,46 +211,40 @@ int main(int argc, char** argv) {
 			Cidr::RGB::Red,
 			Cidr::RGB::Green,
 			Cidr::RGB::Blue,
-			360, 215,
-			360, 215 + 64,
-			360 + 32, 215 + 32);
+			390, 		128,
+			390, 		128 + 64,
+			390 + 32, 	128 + 32);
 		cidrRend.FillTriangle(
 			Cidr::RGB::Green,
 			Cidr::RGB::Blue,
 			Cidr::RGB::Red,
-			360 + 64, 215,
-			360 + 32, 215 + 32,
-			360 + 64, 215 + 64);
+			390 + 64, 	128,
+			390 + 32, 	128 + 32,
+			390 + 64, 	128 + 64);
 		cidrRend.FillTriangle(
 			Cidr::RGB::Green,
 			Cidr::RGB::Blue,
 			Cidr::RGB::Red,
-			360, 215 + 64,
-			360 + 32, 215 + 32,
-			360 + 64, 215 + 64);
+			390, 		128 + 64,
+			390 + 32, 	128 + 32,
+			390 + 64, 	128 + 64);
 		cidrRend.FillTriangle(
 			Cidr::RGB::Red,
 			Cidr::RGB::Green,
 			Cidr::RGB::Blue,
-			360, 215,
-			360 + 64, 215,
-			360 + 32, 215 + 32);
+			390, 		128,
+			390 + 64, 	128,
+			390 + 32, 	128 + 32);
 
 		
 		/* IMAGES */
 		cidrRend.ClampToBorderColor = Cidr::RGB::Gray;
 		//  cidrRend.OutOfBoundsType = Cidr::Renderer::OutOfBoundsType::Repeat;
-		int destWidth = bitmap.GetWidth() * 16;
-		int destHeight = bitmap.GetWidth() * 16;
+		int destWidth = bitmap.GetWidth() * 6;
+		int destHeight = bitmap.GetWidth() * 6;
 		cidrRend.DrawBitmap(bitmap, 
-			{(float)mx-destWidth/2,(float)my-destHeight/2}, destWidth, destHeight, 
-			{val2/4.f, -val1/4.f}, bitmap.GetWidth(), bitmap.GetHeight());
-		// cidrRend.DrawRectangle(Cidr::RGB::White, (float)mx-destWidth/2,(float)my-destHeight/2, destWidth, destHeight);
-		
-		// cidrRend.ScaleType = Cidr::Renderer::ScaleType::Linear;
-		// cidrRend.DrawBitmap(bitmap, 
-		// 	{mx,my}, 256, 256, 
-		// 	{0,0}, 16, 16);
+			(float)360-destWidth/2,(float)340-destHeight/2, destWidth, destHeight, 
+			val2/4.f, -val1/4.f, bitmap.GetWidth(), bitmap.GetHeight());
 
 		
 		/* APPLY SHADER */
