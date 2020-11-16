@@ -247,6 +247,10 @@ int main(int argc, char** argv) {
 			val2/4.f, -val1/4.f, bitmap.GetWidth(), bitmap.GetHeight());
 
 		
+		
+		/* TEXT */
+		cidrRend.DrawText("Aa_Bb_Cc_123", mx, my - 16, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGB::Black, 1, 1);
+		
 		/* APPLY SHADER */
 		int shaderSize = 128;
 		if(currentShader != nullptr) {

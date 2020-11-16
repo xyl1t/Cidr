@@ -30,6 +30,8 @@ struct RGB {
 	RGB& operator/=(const int that);
 	RGB& operator*=(const float that);
 	RGB& operator/=(const float that);
+	bool operator==(const RGB&  that) const;
+	bool operator!=(const RGB&  that) const;
 	RGB  operator+ (const RGB&  that) const;
 	RGB  operator- (const RGB&  that) const;
 	RGB  operator* (const int that) const;
@@ -67,12 +69,16 @@ struct RGBA : RGB {
 		return static_cast<RGB>(*this);
 	}
 	
+	static const RGBA Transparent;
+	
 	RGBA& operator+=(const RGBA&  that);
 	RGBA& operator-=(const RGBA&  that);
 	RGBA& operator*=(const int that);
 	RGBA& operator/=(const int that);
 	RGBA& operator*=(const float that);
 	RGBA& operator/=(const float that);
+	bool operator==(const RGBA&  that) const;
+	bool operator!=(const RGBA&  that) const;
 	RGBA  operator+ (const RGBA&  that) const;
 	RGBA  operator- (const RGBA&  that) const;
 	RGBA  operator* (const int that) const;
