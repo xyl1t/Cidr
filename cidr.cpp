@@ -759,3 +759,44 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, 
 		}
 	}
 }
+
+void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
+	// TODO: load the font as binary or smth
+	std::string path = "res/raster-fonts/ibmFont8x16.png";
+	static Bitmap fontBitmap {path};
+	
+	constexpr int fontSizeWidth = 8;
+	constexpr int fontSizeHeight = 16;
+	const int charsRows = fontBitmap.GetWidth() / fontSizeWidth;
+	const int charsCols = fontBitmap.GetHeight() / fontSizeHeight;
+	
+	for (int letterCount = 0; letterCount < text.size(); letterCount++) {
+		const unsigned char& letter = text[letterCount];
+		if(letter < 0 || letter > 255) continue;
+		
+		int letterX = letter % charsCols;
+		int letterY = letter / charsRows;
+		
+		for (int i = 0; i < fontSizeWidth; i++) {
+			for (int j = 0; j < fontSizeHeight; j++) {
+				const RGB& letterPixel = fontBitmap.GetPixel(letterX * fontSizeWidth + i, letterY * fontSizeHeight + j);
+				
+				int subX = x + letterCount * (fontSizeWidth) + i;
+				int subY = y + j;
+				
+				if(subX >= GetWidth() || subY >= GetHeight() || 
+				   subX < 0 || subY < 0)
+				   continue;
+				
+				if(letterPixel == RGB::Black && bColor != RGBA::Transparent && GetPixel(subX, subY) != shadowColor && shadowColor == RGBA::Transparent) {
+					DrawPoint(bColor, subX, subY);
+				} else if(letterPixel == RGB::White){
+					DrawPoint(fColor, subX, subY);
+					if(shadowColor != RGBA::Transparent && GetPixel(subX + shadowOffsetX, subY + shadowOffsetY) != fColor) {
+						DrawPoint(shadowColor, subX + shadowOffsetX, subY + shadowOffsetY);
+					}
+				}
+			}
+		}
+	}
+}
