@@ -37,7 +37,8 @@ void Cidr::Renderer::Clear(uint32_t color) {
 }
 
 void Cidr::Renderer::DrawPoint(const Cidr::RGBA& color, const Point& p) {
-	pixels[getIndex(p.x, p.y)] = RGBtoUINT(color);
+	if(color.a != 0)
+		pixels[getIndex(p.x, p.y)] = RGBtoUINT(color);
 }
 
 // TODO: Add clipping
@@ -386,6 +387,122 @@ void Cidr::Renderer::DrawTriangle(const RGBA& color, const Point& p1, const Poin
 	DrawLine(color, p1, p2, AA, GC);
 	DrawLine(color, p2, p3, AA, GC);
 	DrawLine(color, p3, p1, AA, GC);
+}
+void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, Point p1, Point p2, Point p3) {
+	// sort top most point
+	if(p1.y > p2.y) {
+		std::swap(p1, p2);
+		std::swap(tp1, tp2);
+	}
+	if(p2.y > p3.y) {
+		std::swap(p2, p3);
+		std::swap(tp2, tp3);
+	}
+	if(p1.y > p2.y) {
+		std::swap(p1, p2);
+		std::swap(tp1, tp2);
+	}
+
+	if(p3.y - p1.y != 0) {
+		float x1 = 0;
+		float x2 = 0;
+		FPoint lerpCoordV1{}; // vertical lerp coord from side 1
+		FPoint lerpCoordV2{}; // vertical lerp coord from side 2
+		
+		for (int i = p2.y; i >= p1.y; i--)	{
+			float t1 = (i - p1.y) / (float)(p3.y - p1.y);
+			float t2 = (i - p1.y) / (float)(p2.y - p1.y);
+			x1 = lerp(p1.x, p3.x, t1);
+			x2 = lerp(p1.x, p2.x, t2);
+			
+			lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+			lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+			
+			lerpCoordV2.x = lerp(tp1.x, tp2.x, t2);
+			lerpCoordV2.y = lerp(tp1.y, tp2.y, t2);
+			
+			if(x1 > x2) {
+				std::swap(x1, x2);
+				std::swap(lerpCoordV1, lerpCoordV2);
+			}
+			// TODO: Draw bitmap pixels
+			// drawScanLine(lerpColorV1, lerpColorV2, std::round(x1), std::round(x2), i);
+			/*
+			float rStep{(color2.r - color1.r) / (float)(endX - startX)};
+			float gStep{(color2.g - color1.g) / (float)(endX - startX)};
+			float bStep{(color2.b - color1.b) / (float)(endX - startX)};
+			float aStep{(color2.a - color1.a) / (float)(endX - startX)};
+			
+			float rLerp{static_cast<float>(color1.r)};
+			float gLerp{static_cast<float>(color1.g)};
+			float bLerp{static_cast<float>(color1.b)};
+			float aLerp{static_cast<float>(color1.a)};
+			
+			for (int i = startX; i < endX; i++) {
+				DrawPoint({(uint8_t)rLerp, (uint8_t)gLerp, (uint8_t)bLerp, (uint8_t)aLerp}, i, y);
+				
+				rLerp += rStep;
+				gLerp += gStep;
+				bLerp += bStep;
+				aLerp += aStep;
+			}
+			*/
+			float startX = std::round(x1);
+			float endX = std::round(x2);
+			
+			float xStep{(lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX)};
+			float yStep{(lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX)};
+			
+			float xLerp{lerpCoordV1.x};
+			float yLerp{lerpCoordV1.y};
+			
+			for (int j = startX; j < endX; j++) {
+				const RGBA& texel = texture.GetPixel(xLerp * texture.GetWidth(), yLerp * texture.GetHeight());
+				DrawPoint(texel, j, i);
+				
+				xLerp += xStep;
+				yLerp += yStep;
+			}
+		}
+		
+		for (int i = p2.y; i < p3.y; i++)	{
+			float t1 = (i - p1.y) / (float)(p3.y - p1.y);
+			float t2 = (i - p2.y) / (float)(p3.y - p2.y);
+			x1 = lerp(p1.x, p3.x, t1);
+			x2 = lerp(p2.x, p3.x, t2);
+			
+			
+			lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+			lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+			
+			lerpCoordV2.x = lerp(tp2.x, tp3.x, t2);
+			lerpCoordV2.y = lerp(tp2.y, tp3.y, t2);
+			
+			if(x1 > x2) {
+				std::swap(x1, x2);
+				std::swap(lerpCoordV1, lerpCoordV2);
+			}
+			
+			// drawScanLine(lerpColorV1, lerpColorV2, std::round(x1), std::round(x2), i);
+			
+			float startX = std::round(x1);
+			float endX = std::round(x2);
+			
+			float xStep{(lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX)};
+			float yStep{(lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX)};
+			
+			float xLerp{static_cast<float>(lerpCoordV1.x)};
+			float yLerp{static_cast<float>(lerpCoordV1.y)};
+			
+			for (int j = std::round(startX); j < std::round(endX); j++) {
+				const RGBA& texel = texture.GetPixel(xLerp * texture.GetWidth(), yLerp * texture.GetHeight());
+				DrawPoint(texel, j, i);
+				
+				xLerp += xStep;
+				yLerp += yStep;
+			}
+		}
+	}
 }
 void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p3) {
 	// sort top most point

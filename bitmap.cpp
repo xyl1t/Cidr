@@ -6,7 +6,7 @@
 
 #include "bitmap.hpp"
 #include <stb/stb_image.h>
-
+#include <stdexcept>
 
 
 /* RGBABitmap *******************************************************************************/
@@ -36,6 +36,8 @@ Cidr::RGBABitmap::RGBABitmap(const std::string& file) {
 			}
 		}
 		stbi_image_free(imageData);
+	} else {
+		throw std::runtime_error("Cidr: Bitmap not found in given path");
 	}
 }
 
