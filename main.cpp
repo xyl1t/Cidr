@@ -58,6 +58,8 @@ int main(int argc, char** argv) {
 	
 	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
 	Cidr::RGBABitmap bitmap{"./res/pureTest.png"};
+	Cidr::Bitmap triangleTexture{"./res/boxTexture.jpg"};
+	
 	
 	float val1{};
 	float val3{};
@@ -236,6 +238,14 @@ int main(int argc, char** argv) {
 			390 + 64, 	128,
 			390 + 32, 	128 + 32);
 
+		// cidrRend.DrawTriangle(triangleTexture, 
+		// 	0, 1,
+		// 	0.5, 0,
+		// 	1, 1,
+		// 	50, 300,
+		// 	mx, my,
+		// 	300, 350);
+		
 		
 		/* IMAGES */
 		cidrRend.ClampToBorderColor = Cidr::RGB::Gray;
@@ -246,11 +256,34 @@ int main(int argc, char** argv) {
 			(float)360-destWidth/2,(float)340-destHeight/2, destWidth, destHeight, 
 			val2/4.f, -val1/4.f, bitmap.GetWidth(), bitmap.GetHeight());
 
+
+		/* TEXTURED TRIANGLE */
+		Cidr::Point p1{mx, my};
+		Cidr::Point p2{128, 400};
+		Cidr::Point p3{400, 400};
+		Cidr::Point p4{400, 128};
+		Cidr::Point pInBetween {(p1.x + p2.x + p3.x + p4.x) / 4, (p1.y + p2.y + p3.y + p4.y) / 4};
+		
+		cidrRend.DrawTriangle(triangleTexture, 
+			0, 0,
+			0, 1,
+			1, 1,
+			p1.x, p1.y,
+			p2.x, p2.y,
+			p3.x, p3.y);
+		cidrRend.DrawTriangle(triangleTexture, 
+			0, 0,
+			1, 1,
+			1, 0,
+			p1.x, p1.y,
+			p3.x, p3.y,
+			p4.x, p4.y);
 		
 		
 		/* TEXT */
-		cidrRend.DrawText("Aa_Bb_Cc_123", mx, my - 16, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGB::Black, 1, 1);
+		cidrRend.DrawText("<two textured triangles>", pInBetween.x - (8 * 24 / 2), pInBetween.y - 10, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGB::Black, 1, 1);
 		
+				
 		/* APPLY SHADER */
 		int shaderSize = 128;
 		if(currentShader != nullptr) {

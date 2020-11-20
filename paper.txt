@@ -9,6 +9,7 @@ PLANED FEATURES (+ -> done, - -> planned)
  - Textured triangles (maybe using sprites?)
 
 TODO: 
+ * out of bounds function for textures and images
  * add point like rectangle struct
  * Line clipping (https://lodev.org/cgtutor/lineclipping.html)
  * Make functions that transforms two points into a centre point and radius (for circles)

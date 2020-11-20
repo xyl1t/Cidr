@@ -425,43 +425,24 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 				std::swap(x1, x2);
 				std::swap(lerpCoordV1, lerpCoordV2);
 			}
-			// TODO: Draw bitmap pixels
-			// drawScanLine(lerpColorV1, lerpColorV2, std::round(x1), std::round(x2), i);
-			/*
-			float rStep{(color2.r - color1.r) / (float)(endX - startX)};
-			float gStep{(color2.g - color1.g) / (float)(endX - startX)};
-			float bStep{(color2.b - color1.b) / (float)(endX - startX)};
-			float aStep{(color2.a - color1.a) / (float)(endX - startX)};
 			
-			float rLerp{static_cast<float>(color1.r)};
-			float gLerp{static_cast<float>(color1.g)};
-			float bLerp{static_cast<float>(color1.b)};
-			float aLerp{static_cast<float>(color1.a)};
+			float startX = x1;
+			float endX = x2;
 			
-			for (int i = startX; i < endX; i++) {
-				DrawPoint({(uint8_t)rLerp, (uint8_t)gLerp, (uint8_t)bLerp, (uint8_t)aLerp}, i, y);
-				
-				rLerp += rStep;
-				gLerp += gStep;
-				bLerp += bStep;
-				aLerp += aStep;
-			}
-			*/
-			float startX = std::round(x1);
-			float endX = std::round(x2);
+			// float xStep{(lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX)};
+			// float yStep{(lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX)};
 			
-			float xStep{(lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX)};
-			float yStep{(lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX)};
-			
-			float xLerp{lerpCoordV1.x};
-			float yLerp{lerpCoordV1.y};
+			float xLerp{};
+			float yLerp{};
 			
 			for (int j = startX; j < endX; j++) {
+				xLerp = lerp(lerpCoordV1.x, lerpCoordV2.x, (j - (int)startX) / (endX - startX));
+				yLerp = lerp(lerpCoordV1.y, lerpCoordV2.y, (j - (int)startX) / (endX - startX));
+				
 				const RGBA& texel = texture.GetPixel(xLerp * texture.GetWidth(), yLerp * texture.GetHeight());
 				DrawPoint(texel, j, i);
-				
-				xLerp += xStep;
-				yLerp += yStep;
+				// xLerp += xStep;
+				// yLerp += yStep;
 			}
 		}
 		
@@ -483,23 +464,23 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 				std::swap(lerpCoordV1, lerpCoordV2);
 			}
 			
-			// drawScanLine(lerpColorV1, lerpColorV2, std::round(x1), std::round(x2), i);
+			float startX = x1;
+			float endX = x2;
 			
-			float startX = std::round(x1);
-			float endX = std::round(x2);
+			// float xStep{(lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX)};
+			// float yStep{(lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX)};
 			
-			float xStep{(lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX)};
-			float yStep{(lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX)};
+			float xLerp{};
+			float yLerp{};
 			
-			float xLerp{static_cast<float>(lerpCoordV1.x)};
-			float yLerp{static_cast<float>(lerpCoordV1.y)};
-			
-			for (int j = std::round(startX); j < std::round(endX); j++) {
+			for (int j = startX; j < endX; j++) {
+				xLerp = lerp(lerpCoordV1.x, lerpCoordV2.x, (j - (int)startX) / (endX - startX));
+				yLerp = lerp(lerpCoordV1.y, lerpCoordV2.y, (j - (int)startX) / (endX - startX));
+				
 				const RGBA& texel = texture.GetPixel(xLerp * texture.GetWidth(), yLerp * texture.GetHeight());
 				DrawPoint(texel, j, i);
-				
-				xLerp += xStep;
-				yLerp += yStep;
+				// xLerp += xStep;
+				// yLerp += yStep;
 			}
 		}
 	}
