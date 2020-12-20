@@ -409,7 +409,7 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 		FPoint lerpCoordV1{}; // vertical lerp coord from side 1
 		FPoint lerpCoordV2{}; // vertical lerp coord from side 2
 		
-		for (int i = p2.y; i >= p1.y; i--)	{
+		for (int i = p1.y; i < p2.y; i++)	{
 			float t1 = (i - p1.y) / (float)(p3.y - p1.y);
 			float t2 = (i - p1.y) / (float)(p2.y - p1.y);
 			x1 = lerp(p1.x, p3.x, t1);
@@ -426,23 +426,36 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 				std::swap(lerpCoordV1, lerpCoordV2);
 			}
 			
-			float startX = x1;
-			float endX = x2;
+			int startX = x1;
+			int endX = x2;
 			
-			// float xStep{(lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX)};
-			// float yStep{(lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX)};
+			float xStep{(lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX)};
+			float yStep{(lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX)};
 			
-			float xLerp{};
-			float yLerp{};
+			float xLerp{lerpCoordV1.x};
+			float yLerp{lerpCoordV1.y};
 			
 			for (int j = startX; j < endX; j++) {
-				xLerp = lerp(lerpCoordV1.x, lerpCoordV2.x, (j - (int)startX) / (endX - startX));
-				yLerp = lerp(lerpCoordV1.y, lerpCoordV2.y, (j - (int)startX) / (endX - startX));
+				float clampedXLerp {};
+				float clampedYLerp {};
 				
-				const RGBA& texel = texture.GetPixel(xLerp * texture.GetWidth(), yLerp * texture.GetHeight());
-				DrawPoint(texel, j, i);
-				// xLerp += xStep;
-				// yLerp += yStep;
+				if(lerpCoordV1.x > lerpCoordV2.x) {
+					clampedXLerp = ceil(xLerp * (texture.GetWidth() - 1));
+					clampedYLerp = ceil(yLerp * (texture.GetHeight() - 1));
+				} else {
+					clampedXLerp = xLerp * (texture.GetWidth());
+					clampedYLerp = yLerp * (texture.GetHeight());
+				}
+				
+				if(!clampCoords(clampedXLerp, clampedYLerp, texture.GetWidth(), texture.GetHeight()) && OutOfBoundsType == OutOfBoundsType::ClampToBorder) {
+					DrawPoint(ClampToBorderColor, j, i);
+				} else {
+					const RGBA& texel = texture.GetPixel(clampedXLerp, clampedYLerp);
+					DrawPoint(texel, j, i);
+				}
+				
+				xLerp += xStep;
+				yLerp += yStep;
 			}
 		}
 		
@@ -451,7 +464,6 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 			float t2 = (i - p2.y) / (float)(p3.y - p2.y);
 			x1 = lerp(p1.x, p3.x, t1);
 			x2 = lerp(p2.x, p3.x, t2);
-			
 			
 			lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
 			lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
@@ -464,23 +476,36 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 				std::swap(lerpCoordV1, lerpCoordV2);
 			}
 			
-			float startX = x1;
-			float endX = x2;
+			int startX = x1;
+			int endX = x2;
 			
-			// float xStep{(lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX)};
-			// float yStep{(lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX)};
+			float xStep{(lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX)};
+			float yStep{(lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX)};
 			
-			float xLerp{};
-			float yLerp{};
+			float xLerp{lerpCoordV1.x};
+			float yLerp{lerpCoordV1.y};
 			
 			for (int j = startX; j < endX; j++) {
-				xLerp = lerp(lerpCoordV1.x, lerpCoordV2.x, (j - (int)startX) / (endX - startX));
-				yLerp = lerp(lerpCoordV1.y, lerpCoordV2.y, (j - (int)startX) / (endX - startX));
+				float clampedXLerp {};
+				float clampedYLerp {};
 				
-				const RGBA& texel = texture.GetPixel(xLerp * texture.GetWidth(), yLerp * texture.GetHeight());
-				DrawPoint(texel, j, i);
-				// xLerp += xStep;
-				// yLerp += yStep;
+				if(lerpCoordV1.x > lerpCoordV2.x) {
+					clampedXLerp = ceil(xLerp * (texture.GetWidth() - 1));
+					clampedYLerp = ceil(yLerp * (texture.GetHeight() - 1));
+				} else {
+					clampedXLerp = xLerp * (texture.GetWidth());
+					clampedYLerp = yLerp * (texture.GetHeight());
+				}
+				
+				if(!clampCoords(clampedXLerp, clampedYLerp, texture.GetWidth(), texture.GetHeight()) && OutOfBoundsType == OutOfBoundsType::ClampToBorder) {
+					DrawPoint(ClampToBorderColor, j, i);
+				} else {
+					const RGBA& texel = texture.GetPixel(clampedXLerp, clampedYLerp);
+					DrawPoint(texel, j, i);
+				}
+
+				xLerp += xStep;
+				yLerp += yStep;
 			}
 		}
 	}
@@ -741,68 +766,17 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, 
 				float x {iSrc};
 				float y {jSrc};
 				
-				if(iSrc < 0 || jSrc < 0 || iSrc >= bitmap.GetWidth() || jSrc >= bitmap.GetHeight()) {
-					switch(OutOfBoundsType) {
-						case OutOfBoundsType::Repeat: {
-							x = std::fmod((bitmap.GetWidth() * ((int)std::abs(x) / bitmap.GetWidth() + 1) + x), bitmap.GetWidth());
-							y = std::fmod((bitmap.GetHeight() * ((int)std::abs(y) / bitmap.GetHeight() + 1) + y), bitmap.GetHeight());
-						} break;
-						case OutOfBoundsType::MirroredRepeat: {
-							// x = (int)iSrc % bitmap.GetWidth() + ((iSrc < 0) * (bitmap.GetWidth()-1));
-							// y = (int)jSrc % bitmap.GetHeight() + ((jSrc < 0) * (bitmap.GetHeight()-1));
-							// x = std::fmod(((float)bitmap.GetWidth() * (int)(std::abs(iSrc) / bitmap.GetWidth() + 1) + iSrc), bitmap.GetWidth());
-							// y = std::fmod(((float)bitmap.GetHeight() * (int)(std::abs(jSrc) / bitmap.GetHeight() + 1) + jSrc), bitmap.GetHeight());
-
-							// if((int)(abs(iSrc) / (bitmap.GetWidth()) + (iSrc < 0 ? 0 : 1)) % 2 == 0) {
-							// 	x = bitmap.GetWidth() - x;
-							// 	if(x < 0) x = 0;
-							// 	if(x >= bitmap.GetWidth()) x = bitmap.GetWidth() - 1;
-							// }
-							// if(((int)(abs(jSrc) / (bitmap.GetHeight())) ) % 2 == 0) {
-							// 	y = bitmap.GetHeight() - y;
-							// 	if(y < 0) y = 0;
-							// 	if(y >= bitmap.GetWidth()) y = bitmap.GetWidth() - 1;
-							// }
-							const auto mod = [](const float a, const float n) noexcept
-							{
-								return std::fmod((std::fmod(a, n) + n), n);
-							};
-							const auto mirror = [](const float a) noexcept
-							{
-								return a >= 0.f ? a : -(1 + a);
-							};
-							const auto mirrored_repeat_x = [&](const float x) noexcept {
-								return (bitmap.GetWidth() - 1) - mirror(mod(x, 2 * bitmap.GetWidth()) - bitmap.GetWidth());
-							};
-							const auto mirrored_repeat_y = [&](const float y) noexcept {
-								return (bitmap.GetHeight() - 1) - mirror(mod(y, 2 * bitmap.GetHeight()) - bitmap.GetHeight());
-							};
-							
-							x = mirrored_repeat_x(x);
-							y = mirrored_repeat_y(y);
-							
-							// HACK: this + 0.001f will be problematic prob later! 
-							fooX = (int)((iSrc + (iSrc < 0 ? 1/(cx*cx) : 0)) / bitmap.GetWidth()) % 2 + (iSrc < 0 ? 1 : 0);
-							fooY = (int)((jSrc + (jSrc < 0 ? 1/(cy*cy) : 0)) / bitmap.GetHeight()) % 2 + (jSrc < 0 ? 1 : 0);
-						} break;
-						case OutOfBoundsType::ClampToEdge: {
-							if(ScaleType == ScaleType::Nearest) {
-								x = std::fmax(0, std::fmin(bitmap.GetWidth()-1, iSrc));
-								y = std::fmax(0, std::fmin(bitmap.GetHeight()-1, jSrc));
-							} else {
-								x = std::fmax(0, std::fmin(bitmap.GetWidth(), iSrc));
-								y = std::fmax(0, std::fmin(bitmap.GetHeight(), jSrc));
-							}
-						} break;
-						
-						// NOTE: basically OutOfBoundsType::ClampToBorder, but it kinda looks guly
-						// to make a case for it and continue skip to the next iteration.... idk
-						default: {
-							DrawPoint(ClampToBorderColor, iDest, jDest);
-							continue;
-						}
+				bool isInBounds = clampCoords(x, y, bitmap.GetWidth(), bitmap.GetHeight());
+				if(!isInBounds) {
+					if(OutOfBoundsType == OutOfBoundsType::MirroredRepeat) {
+						fooX = (int)((iSrc + (iSrc < 0 ? 1/(cx*cx) : 0)) / bitmap.GetWidth()) % 2 + (iSrc < 0 ? 1 : 0);
+						fooY = (int)((jSrc + (jSrc < 0 ? 1/(cy*cy) : 0)) / bitmap.GetHeight()) % 2 + (jSrc < 0 ? 1 : 0);
 					}
-				} 
+					else if(OutOfBoundsType == OutOfBoundsType::ClampToBorder) {
+						DrawPoint(ClampToBorderColor, iDest, jDest);
+						continue;
+					}
+				}
 				// static uint64_t timer = 0;				
 				// if(timer / 100000.f > 1 && iDest == destX && jDest == destY) {
 				// 	std::cout << "iSrc: " << iSrc << "; jSrc: " << jSrc << std::endl;
@@ -890,11 +864,59 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const R
 					DrawPoint(bColor, subX, subY);
 				} else if(letterPixel == RGB::White){
 					DrawPoint(fColor, subX, subY);
-					if(shadowColor != RGBA::Transparent && GetPixel(subX + shadowOffsetX, subY + shadowOffsetY) != fColor) {
+					if(shadowColor != RGBA::Transparent) {
 						DrawPoint(shadowColor, subX + shadowOffsetX, subY + shadowOffsetY);
 					}
 				}
 			}
 		}
 	}
+}
+
+/* UTILILTY FUNCTIONS */
+bool Cidr::Renderer::clampCoords(float& x, float& y, int width, int height) {
+	// NOTE: return true if coordinates are in bound of bitmap size
+	if(x >= 0 && y >= 0 && x < width && y < height) return true;
+
+	switch(OutOfBoundsType) {
+		case OutOfBoundsType::Repeat: {
+			x = std::fmod((width * ((int)std::abs(x) / width + 1) + x), width);
+			y = std::fmod((height * ((int)std::abs(y) / height + 1) + y), height);
+		} break;
+		case OutOfBoundsType::MirroredRepeat: {
+			const auto mod = [](const float a, const float n) noexcept
+			{
+				return std::fmod((std::fmod(a, n) + n), n);
+			};
+			const auto mirror = [](const float a) noexcept
+			{
+				return a >= 0.f ? a : -(1 + a);
+			};
+			const auto mirrored_repeat_x = [&](const float x) noexcept {
+				return (width - 1) - mirror(mod(x, 2 * width) - width);
+			};
+			const auto mirrored_repeat_y = [&](const float y) noexcept {
+				return (height - 1) - mirror(mod(y, 2 * height) - height);
+			};
+			
+			x = mirrored_repeat_x(x);
+			y = mirrored_repeat_y(y);
+			
+			// HACK: this + 0.001f will be problematic prob later! 
+		} break;
+		case OutOfBoundsType::ClampToEdge: {
+			if(ScaleType == ScaleType::Nearest) {
+				x = std::fmax(0, std::fmin(width-1, x));
+				y = std::fmax(0, std::fmin(height-1, y));
+			} else {
+				x = std::fmax(0, std::fmin(width, x));
+				y = std::fmax(0, std::fmin(height, y));
+			}
+		} break;
+		
+		// NOTE: basically OutOfBoundsType::ClampToBorder case
+		default:;
+	}
+	// NOTE: return false if coordinates are out of bounds of the bitmap	
+	return false;
 }

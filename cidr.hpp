@@ -118,8 +118,8 @@ public:
 	} OutOfBoundsType = OutOfBoundsType::ClampToBorder;
 	RGBA ClampToBorderColor {};
 	
-	/* UTILITY FUNCTIONS */
 private:
+	/* UTILITY FUNCTIONS */
 	inline int getIndex(const Point& p) const {
 		return p.x + p.y * width;
 	}
@@ -128,6 +128,7 @@ private:
 	}
 	void drawScanLine(uint32_t color, int startX, int endX, int y);
 	void drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y);
+	bool clampCoords(float& x, float& y, int width, int height);
 	
 };
 

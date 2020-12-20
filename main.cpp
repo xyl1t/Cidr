@@ -22,6 +22,10 @@ Cidr::RGBA vBlurShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA hsvHueRotationShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA distortionShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA grayScaleShader(const Cidr::Renderer& renderer, int x, int y);
+#include <cinttypes>
+#include <utility>
+#include <vector>
+#include <cstdio>
 
 int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -151,6 +155,8 @@ int main(int argc, char** argv) {
 		
 		/* CLEARING THE SCREEN*/
 		cidrRend.Clear(0x120F1FFF);
+		// cidrRend.Clear(Cidr::RGB::Navy);
+		// cidrRend.Clear(Cidr::RGB::Black);
 		
 		
 		/* DRAWING A LINE TO THE CURSOR */
@@ -197,6 +203,17 @@ int main(int argc, char** argv) {
 
 
 		/* TRIANGLES */
+		// cidrRend.FillTriangle(
+		// 	Cidr::RGB::Red, 
+		// 	Cidr::RGB::Green, 
+		// 	Cidr::RGB::Blue, 
+		// 	mx-5,  my-5,
+		// 	64 + 260, 64 + 128,
+		// 	32 + 260, 32 + 128);
+		// cidrRend.DrawTriangle(Cidr::RGB::White, 
+		// 	mx-5,  my-5,
+		// 	64 + 260, 64 + 128,
+		// 	32 + 260, 32 + 128);
 		cidrRend.FillTriangle(
 			Cidr::RGB::Red, 
 			Cidr::RGB::Green, 
@@ -256,22 +273,44 @@ int main(int argc, char** argv) {
 			(float)360-destWidth/2,(float)340-destHeight/2, destWidth, destHeight, 
 			val2/4.f, -val1/4.f, bitmap.GetWidth(), bitmap.GetHeight());
 
+		
+		// float left   = 1.0;
+		// float right  = 0.0;
+		// float top    = 1.0;
+		// float bottom = 0.0;
+		
+		// for(int i = 0; i < mx - 500; i++) {
+		// 	for(int j = 0; j < my - 250; j++) {
+		// 		float t = i / (float)(mx - 500);
+		// 		float d = j / (float)(my - 250);
+				
+		// 		float val = (1 - t) * left + t * right;
+		// 		val *= (bitmap.GetWidth() - 1);
+		// 		val = ceil(val);
+				
+		// 		float val2 = (1 - d) * top + d * bottom;
+		// 		val2 *= (bitmap.GetHeight() - 1);
+		// 		val2 = ceil(val2);
+				
+		// 		cidrRend.DrawPoint(bitmap.GetPixel(val, val2), i + 500, j + 250);
+		// 	}
+		// }
 
 		/* TEXTURED TRIANGLE */
 		Cidr::Point p1{mx, my};
-		Cidr::Point p2{128, 400};
-		Cidr::Point p3{400, 400};
-		Cidr::Point p4{400, 128};
+		Cidr::Point p2{mx, 350};
+		Cidr::Point p3{450, 350};
+		Cidr::Point p4{450, my};
 		Cidr::Point pInBetween {(p1.x + p2.x + p3.x + p4.x) / 4, (p1.y + p2.y + p3.y + p4.y) / 4};
 		
-		cidrRend.DrawTriangle(triangleTexture, 
+		cidrRend.DrawTriangle(bitmap, 
 			0, 0,
 			0, 1,
 			1, 1,
 			p1.x, p1.y,
 			p2.x, p2.y,
 			p3.x, p3.y);
-		cidrRend.DrawTriangle(triangleTexture, 
+		cidrRend.DrawTriangle(bitmap, 
 			0, 0,
 			1, 1,
 			1, 0,
@@ -281,7 +320,7 @@ int main(int argc, char** argv) {
 		
 		
 		/* TEXT */
-		cidrRend.DrawText("<two textured triangles>", pInBetween.x - (8 * 24 / 2), pInBetween.y - 10, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGB::Black, 1, 1);
+		// cidrRend.DrawText("<two textured triangles>", pInBetween.x - (8 * 24 / 2), pInBetween.y - 10, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGB::Black, 1, 1);
 		
 				
 		/* APPLY SHADER */
@@ -436,3 +475,16 @@ Cidr::RGBA distortionShader(const Cidr::Renderer& renderer, int x, int y) {
 
 	return color;
 }
+
+
+
+
+
+/*
+
+dawud
+
+
+
+
+*/
