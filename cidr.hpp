@@ -108,7 +108,7 @@ public:
 	enum class ScaleType {
 		Nearest,
 		Linear,
-	} ScaleType = ScaleType::Nearest;
+	} ScaleType = ScaleType::Linear;
 	
 	enum class OutOfBoundsType {
 		Repeat,

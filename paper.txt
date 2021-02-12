@@ -6,7 +6,7 @@ PLANED FEATURES (+ -> done, - -> planned)
  + alpha blending color
  + Sprites
  + Font rendering 
- - Textured triangles (maybe using sprites?)
+ + Textured triangles (maybe using sprites?)
 
 TODO: 
  * out of bounds function for textures and images

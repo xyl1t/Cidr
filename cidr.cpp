@@ -402,7 +402,7 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 		std::swap(p1, p2);
 		std::swap(tp1, tp2);
 	}
-
+	
 	if(p3.y - p1.y != 0) {
 		float x1 = 0;
 		float x2 = 0;
@@ -439,19 +439,50 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 				float clampedXLerp {};
 				float clampedYLerp {};
 				
-				if(lerpCoordV1.x > lerpCoordV2.x) {
-					clampedXLerp = ceil(xLerp * (texture.GetWidth() - 1));
-					clampedYLerp = ceil(yLerp * (texture.GetHeight() - 1));
-				} else {
-					clampedXLerp = xLerp * (texture.GetWidth());
-					clampedYLerp = yLerp * (texture.GetHeight());
-				}
+				// if(lerpCoordV1.x > lerpCoordV2.x) {
+				// 	clampedXLerp = ceil(xLerp * (texture.GetWidth() - 1));
+				// 	clampedYLerp = ceil(yLerp * (texture.GetHeight() - 1));
+				// } else {
+					// HACK: ehhhhh the - 0.0001 is gonna be a problem later probably
+					clampedXLerp = xLerp * texture.GetWidth();
+					clampedYLerp = yLerp * texture.GetHeight();
+				// }
 				
 				if(!clampCoords(clampedXLerp, clampedYLerp, texture.GetWidth(), texture.GetHeight()) && OutOfBoundsType == OutOfBoundsType::ClampToBorder) {
 					DrawPoint(ClampToBorderColor, j, i);
 				} else {
-					const RGBA& texel = texture.GetPixel(clampedXLerp, clampedYLerp);
-					DrawPoint(texel, j, i);
+					if(ScaleType == ScaleType::Nearest) {
+						DrawPoint(texture.GetPixel(clampedXLerp, clampedYLerp), j, i);
+					} else {
+						clampedXLerp -= 0.5;
+						clampedYLerp -= 0.5;
+						
+						auto clamp = [](float x, int low, int high) -> float {
+							if(x < low) return low;
+							else if(x > high) return high;
+							return x;
+						};
+						
+						clampedXLerp = clamp(clampedXLerp, 0, texture.GetWidth()-1);
+						clampedYLerp = clamp(clampedYLerp, 0, texture.GetHeight()-1);
+						
+						const RGBA& texel_tl = texture.GetPixel(clamp(clampedXLerp,   0, texture.GetWidth()-1), clamp(clampedYLerp,   0, texture.GetHeight()-1));
+						const RGBA& texel_tr = texture.GetPixel(clamp(clampedXLerp+1, 0, texture.GetWidth()-1), clamp(clampedYLerp,   0, texture.GetHeight()-1));
+						const RGBA& texel_bl = texture.GetPixel(clamp(clampedXLerp,   0, texture.GetWidth()-1), clamp(clampedYLerp+1, 0, texture.GetHeight()-1));
+						const RGBA& texel_br = texture.GetPixel(clamp(clampedXLerp+1, 0, texture.GetWidth()-1), clamp(clampedYLerp+1, 0, texture.GetHeight()-1));
+						
+						float diffx = clampedXLerp - (int)clampedXLerp;
+						float diffy = clampedYLerp - (int)clampedYLerp;
+						
+						RGBA cT { texel_tl * (1 - diffx) + texel_tr * diffx };
+						RGBA cB { texel_bl * (1 - diffx) + texel_br * diffx };
+						RGBA texel {
+							cT * (1 - diffy)  + 
+							cB * diffy
+						};
+						
+						DrawPoint(texel, j, i);
+					}
 				}
 				
 				xLerp += xStep;
@@ -479,8 +510,12 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 			int startX = x1;
 			int endX = x2;
 			
-			float xStep{(lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX)};
-			float yStep{(lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX)};
+			float xStep{};
+			float yStep{};
+			if(endX - startX) {
+				xStep = (lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX);
+				yStep = (lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX);
+			}
 			
 			float xLerp{lerpCoordV1.x};
 			float yLerp{lerpCoordV1.y};
@@ -489,20 +524,50 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 				float clampedXLerp {};
 				float clampedYLerp {};
 				
-				if(lerpCoordV1.x > lerpCoordV2.x) {
-					clampedXLerp = ceil(xLerp * (texture.GetWidth() - 1));
-					clampedYLerp = ceil(yLerp * (texture.GetHeight() - 1));
-				} else {
-					clampedXLerp = xLerp * (texture.GetWidth());
-					clampedYLerp = yLerp * (texture.GetHeight());
-				}
+				// if(lerpCoordV1.x > lerpCoordV2.x) {
+				// 	clampedXLerp = ceil(xLerp * (texture.GetWidth() - 1));
+				// 	clampedYLerp = ceil(yLerp * (texture.GetHeight() - 1));
+				// } else {
+					// HACK: ehhhhh the - 0.0001 is gonna be a problem later probably
+					clampedXLerp = xLerp * texture.GetWidth();
+					clampedYLerp = yLerp * texture.GetHeight();
+				// }
 				
 				if(!clampCoords(clampedXLerp, clampedYLerp, texture.GetWidth(), texture.GetHeight()) && OutOfBoundsType == OutOfBoundsType::ClampToBorder) {
 					DrawPoint(ClampToBorderColor, j, i);
 				} else {
-					const RGBA& texel = texture.GetPixel(clampedXLerp, clampedYLerp);
-					DrawPoint(texel, j, i);
+					if(ScaleType == ScaleType::Nearest) {
+						DrawPoint(texture.GetPixel(clampedXLerp, clampedYLerp), j, i);
+					} else {
+						clampedXLerp -= 0.5;
+						clampedYLerp -= 0.5;
+						if(clampedXLerp < 0) clampedXLerp = 0;
+						if(clampedYLerp < 0) clampedYLerp = 0;
+						auto clamp = [](float x, int low, int high) -> float {
+							if(x < low) return low;
+							else if(x > high) return high;
+							return x;
+						};
+						
+						const RGBA& texel_tl = texture.GetPixel(clamp(clampedXLerp,   0, texture.GetWidth()-1), clamp(clampedYLerp,   0, texture.GetHeight()-1));
+						const RGBA& texel_tr = texture.GetPixel(clamp(clampedXLerp+1, 0, texture.GetWidth()-1), clamp(clampedYLerp,   0, texture.GetHeight()-1));
+						const RGBA& texel_bl = texture.GetPixel(clamp(clampedXLerp,   0, texture.GetWidth()-1), clamp(clampedYLerp+1, 0, texture.GetHeight()-1));
+						const RGBA& texel_br = texture.GetPixel(clamp(clampedXLerp+1, 0, texture.GetWidth()-1), clamp(clampedYLerp+1, 0, texture.GetHeight()-1));
+						
+						float diffx = clampedXLerp - (int)clampedXLerp;
+						float diffy = clampedYLerp - (int)clampedYLerp;
+						
+						RGBA cT { texel_tl * (1 - diffx) + texel_tr * diffx };
+						RGBA cB { texel_bl * (1 - diffx) + texel_br * diffx };
+						RGBA texel {
+							cT * (1 - diffy)  + 
+							cB * diffy
+						};
+						
+						DrawPoint(texel, j, i);
+					}
 				}
+
 
 				xLerp += xStep;
 				yLerp += yStep;
