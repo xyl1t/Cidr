@@ -23,14 +23,6 @@
 
 #include "cidr.hpp"
 
-// #include "bitmap.cpp"
-// #include "renderer.cpp"
-// #include "color.cpp"
-// #include "point.cpp"
-// #include "rectangle.cpp"
-// #include "tensorMath.cpp"
-// #include "font.cpp"
-
 Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA hBlurShader(const Cidr::Renderer& renderer, int x, int y);
@@ -43,10 +35,10 @@ int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 	
-	int zoom {1};
+	float zoom {1};
 
 	if(argc != 1 && std::atoi(argv[1]) >= 1 ) {
-		zoom = std::atoi(argv[1]);
+		zoom = std::atof(argv[1]);
 	}
 	
 	const int CANVAS_WIDTH = 500;
@@ -69,6 +61,7 @@ int main(int argc, char** argv) {
 	std::map<int, bool> keyboard;
 	int mx, my;
 	bool showText = true;
+	constexpr int shaderSize = 128;
 	uint32_t current = SDL_GetTicks();
 	uint32_t old = 0;
 	uint32_t timer = 0;
@@ -76,28 +69,6 @@ int main(int argc, char** argv) {
 	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
 	Cidr::Bitmap bitmap{"./res/pureTest.png"};
 	Cidr::Bitmap triangleTexture{"./res/treeImg.png"};
-	// Cidr::Bitmap font {"./res/raster-fonts/ibmFont8x12.png"};
-	// std::ofstream fout ( "./res/raster-fonts/ibmFont8x12.dat", std::ios::binary );
-	// auto getCoordX = [](int val, int width) {
-	// 	return val % width;
-	// };
-	// auto getCoordY = [](int val, int width) {
-	// 	return val / width;
-	// };
-	// for(int i = 0; i < font.GetWidth() * font.GetHeight(); i+=8) {
-	// 	uint8_t c = 
-	// 		((font.GetPixel(getCoordX(i + 0, font.GetWidth()), getCoordY(i + 0, font.GetWidth())).r > 0) << 0) + 
-	// 		((font.GetPixel(getCoordX(i + 1, font.GetWidth()), getCoordY(i + 1, font.GetWidth())).r > 0) << 1) +
-	// 		((font.GetPixel(getCoordX(i + 2, font.GetWidth()), getCoordY(i + 2, font.GetWidth())).r > 0) << 2) +
-	// 		((font.GetPixel(getCoordX(i + 3, font.GetWidth()), getCoordY(i + 3, font.GetWidth())).r > 0) << 3) +
-	// 		((font.GetPixel(getCoordX(i + 4, font.GetWidth()), getCoordY(i + 4, font.GetWidth())).r > 0) << 4) +
-	// 		((font.GetPixel(getCoordX(i + 5, font.GetWidth()), getCoordY(i + 5, font.GetWidth())).r > 0) << 5) +
-	// 		((font.GetPixel(getCoordX(i + 6, font.GetWidth()), getCoordY(i + 6, font.GetWidth())).r > 0) << 6) +
-	// 		((font.GetPixel(getCoordX(i + 7, font.GetWidth()), getCoordY(i + 7, font.GetWidth())).r > 0) << 7);
-		
-	// 	fout.write((const char*)&c, sizeof(c));
-	// }
-	
 	
 	float val1{};
 	float val2{};
@@ -195,8 +166,6 @@ int main(int argc, char** argv) {
 		
 		/* CLEARING THE SCREEN*/
 		cidrRend.Clear(0x120F1FFF);
-		// cidrRend.Clear(Cidr::RGB::Navy);
-		// cidrRend.Clear(Cidr::RGB::Black);
 		
 		
 		/* DRAWING A LINE TO THE CURSOR */
@@ -243,17 +212,6 @@ int main(int argc, char** argv) {
 
 
 		/* TRIANGLES */
-		// cidrRend.FillTriangle(
-		// 	Cidr::RGB::Red, 
-		// 	Cidr::RGB::Green, 
-		// 	Cidr::RGB::Blue, 
-		// 	mx-5,  my-5,
-		// 	64 + 260, 64 + 128,
-		// 	32 + 260, 32 + 128);
-		// cidrRend.DrawTriangle(Cidr::RGB::White, 
-		// 	mx-5,  my-5,
-		// 	64 + 260, 64 + 128,
-		// 	32 + 260, 32 + 128);
 		cidrRend.FillTriangle(
 			Cidr::RGB::Red, 
 			Cidr::RGB::Green, 
@@ -294,14 +252,6 @@ int main(int argc, char** argv) {
 			400, 		128,
 			400 + 64, 	128,
 			400 + 32, 	128 + 32);
-
-		// cidrRend.DrawTriangle(triangleTexture, 
-		// 	0, 1,
-		// 	0.5, 0,
-		// 	1, 1,
-		// 	50, 300,
-		// 	mx, my,
-		// 	300, 350);
 		
 		
 		/* IMAGES */
@@ -314,10 +264,6 @@ int main(int argc, char** argv) {
 
 
 		/* TEXTURED TRIANGLE */
-		// Cidr::Point p1{350, 300};
-		// Cidr::Point p2{350, 400};
-		// Cidr::Point p3{450, 400};
-		// Cidr::Point p4{450, 300};
 		Cidr::Point p1{32, 48};
 		Cidr::Point p2{32, 256};
 		Cidr::Point p3{256-32, 256};
@@ -349,6 +295,10 @@ int main(int argc, char** argv) {
 			cidrRend.DrawText("lines", 365, 220, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
 			cidrRend.DrawText("combinations", 80, 270, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
 			cidrRend.DrawText("images", 335, 270, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			if(currentShader != nullptr) {
+				std::string shaderText = "shader";
+				cidrRend.DrawText(shaderText, mx-shaderSize - (Cidr::Fonts::Raster8x16.GetFontWidth() * shaderText.length()) / 2 + shaderSize/2, my-shaderSize-Cidr::Fonts::Raster8x16.GetFontHeight(), Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			}
 		}
 		
 		int seed = 6123434;
@@ -377,7 +327,6 @@ int main(int argc, char** argv) {
 		}
 		
 		/* APPLY SHADER */
-		int shaderSize = 128;
 		if(currentShader != nullptr) {
 			if(currentShader == &blurShader) {
 				cidrRend.FillRectangle(&hBlurShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
@@ -528,16 +477,3 @@ Cidr::RGBA distortionShader(const Cidr::Renderer& renderer, int x, int y) {
 
 	return color;
 }
-
-
-
-
-
-/*
-
-dawud
-
-
-
-
-*/
