@@ -1,4 +1,4 @@
-PLANED FEATURES (+ -> done, - -> planned)
+PLANED FEATURES (+: done, -: planned)
  + Triangles
  + Quick colors, such as Cidr::RGBA::White
  + Shaders for all shapes
@@ -6,9 +6,10 @@ PLANED FEATURES (+ -> done, - -> planned)
  + alpha blending color
  + Sprites
  + Font rendering 
- - Textured triangles (maybe using sprites?)
+ + Textured triangles (maybe using sprites?)
 
 TODO: 
+ * out of bounds function for textures and images
  * add point like rectangle struct
  * Line clipping (https://lodev.org/cgtutor/lineclipping.html)
  * Make functions that transforms two points into a centre point and radius (for circles)

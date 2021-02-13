@@ -4,6 +4,9 @@
  * Date: 11.10.2020				*
  ********************************/
 
+#ifndef CIDR_RECTANGLE_HPP
+#define CIDR_RECTANGLE_HPP
+
 namespace Cidr {
 
 struct FRectangle;
@@ -27,3 +30,5 @@ struct FRectangle {
 };
 
 }
+
+#endif 

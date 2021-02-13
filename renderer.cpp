@@ -1,10 +1,10 @@
 /********************************
  * Project: Cidr                *
- * File: cidr.cpp               *
+ * File: renderer.cpp           *
  * Date: 10.9.2020              *
  ********************************/
 
-#include "cidr.hpp"
+#include "renderer.hpp"
 #include <cstring>
 #include <algorithm>
 #include <iterator>
@@ -23,7 +23,6 @@ Cidr::Renderer::Renderer(uint32_t* pixels, int width, int height)
 	: pixels{pixels}, 
 	width{width}, 
 	height{height} {
-	
 }
 
 void Cidr::Renderer::Clear() {
@@ -37,7 +36,8 @@ void Cidr::Renderer::Clear(uint32_t color) {
 }
 
 void Cidr::Renderer::DrawPoint(const Cidr::RGBA& color, const Point& p) {
-	pixels[getIndex(p.x, p.y)] = RGBtoUINT(color);
+	if(color.a != 0)
+		pixels[getIndex(p.x, p.y)] = RGBtoUINT(color);
 }
 
 // TODO: Add clipping
@@ -387,6 +387,199 @@ void Cidr::Renderer::DrawTriangle(const RGBA& color, const Point& p1, const Poin
 	DrawLine(color, p2, p3, AA, GC);
 	DrawLine(color, p3, p1, AA, GC);
 }
+void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, Point p1, Point p2, Point p3) {
+	// sort top most point
+	if(p1.y > p2.y) {
+		std::swap(p1, p2);
+		std::swap(tp1, tp2);
+	}
+	if(p2.y > p3.y) {
+		std::swap(p2, p3);
+		std::swap(tp2, tp3);
+	}
+	if(p1.y > p2.y) {
+		std::swap(p1, p2);
+		std::swap(tp1, tp2);
+	}
+	
+	if(p3.y - p1.y != 0) {
+		float x1 = 0;
+		float x2 = 0;
+		FPoint lerpCoordV1{}; // vertical lerp coord from side 1
+		FPoint lerpCoordV2{}; // vertical lerp coord from side 2
+		
+		for (int i = p1.y; i < p2.y; i++)	{
+			float t1 = (i - p1.y) / (float)(p3.y - p1.y);
+			float t2 = (i - p1.y) / (float)(p2.y - p1.y);
+			x1 = lerp(p1.x, p3.x, t1);
+			x2 = lerp(p1.x, p2.x, t2);
+			
+			lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+			lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+			
+			lerpCoordV2.x = lerp(tp1.x, tp2.x, t2);
+			lerpCoordV2.y = lerp(tp1.y, tp2.y, t2);
+			
+			if(x1 > x2) {
+				std::swap(x1, x2);
+				std::swap(lerpCoordV1, lerpCoordV2);
+			}
+			
+			int startX = x1;
+			int endX = x2;
+			
+			float xStep{};
+			float yStep{};
+			
+			if(endX - startX != 0) {
+				xStep = (lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX);
+				yStep = (lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX);
+			}
+				
+			float xLerp{lerpCoordV1.x};
+			float yLerp{lerpCoordV1.y};
+			
+			
+			for (int j = startX; j < endX; j++) {
+				float clampedXLerp {};
+				float clampedYLerp {};
+				
+				// if(lerpCoordV1.x > lerpCoordV2.x) {
+				// 	clampedXLerp = ceil(xLerp * (texture.GetWidth() - 1));
+				// 	clampedYLerp = ceil(yLerp * (texture.GetHeight() - 1));
+				// } else {
+					clampedXLerp = xLerp * texture.GetWidth();
+					clampedYLerp = yLerp * texture.GetHeight();
+				// }
+				
+				if(!clampCoords(clampedXLerp, clampedYLerp, texture.GetWidth(), texture.GetHeight()) && OutOfBoundsType == OutOfBoundsType::ClampToBorder) {
+					DrawPoint(ClampToBorderColor, j, i);
+				} else {
+					if(ScaleType == ScaleType::Nearest) {
+						DrawPoint(texture.GetPixel(clampedXLerp, clampedYLerp), j, i);
+					} else {
+						clampedXLerp -= 0.5;
+						clampedYLerp -= 0.5;
+						
+						auto clamp = [](float x, int low, int high) -> float {
+							if(x < low) return low;
+							else if(x > high) return high;
+							return x;
+						};
+						
+						clampedXLerp = clamp(clampedXLerp, 0, texture.GetWidth()-1);
+						clampedYLerp = clamp(clampedYLerp, 0, texture.GetHeight()-1);
+						
+						const RGBA& texel_tl = texture.GetPixel(clamp(clampedXLerp,   0, texture.GetWidth()-1), clamp(clampedYLerp,   0, texture.GetHeight()-1));
+						const RGBA& texel_tr = texture.GetPixel(clamp(clampedXLerp+1, 0, texture.GetWidth()-1), clamp(clampedYLerp,   0, texture.GetHeight()-1));
+						const RGBA& texel_bl = texture.GetPixel(clamp(clampedXLerp,   0, texture.GetWidth()-1), clamp(clampedYLerp+1, 0, texture.GetHeight()-1));
+						const RGBA& texel_br = texture.GetPixel(clamp(clampedXLerp+1, 0, texture.GetWidth()-1), clamp(clampedYLerp+1, 0, texture.GetHeight()-1));
+						
+						float diffx = clampedXLerp - (int)clampedXLerp;
+						float diffy = clampedYLerp - (int)clampedYLerp;
+						
+						RGBA cT { texel_tl * (1 - diffx) + texel_tr * diffx };
+						RGBA cB { texel_bl * (1 - diffx) + texel_br * diffx };
+						RGBA texel {
+							cT * (1 - diffy)  + 
+							cB * diffy
+						};
+						
+						DrawPoint(texel, j, i);
+					}
+				}
+				
+				xLerp += xStep;
+				yLerp += yStep;
+			}
+		}
+		
+		for (int i = p2.y; i < p3.y; i++)	{
+			float t1 = (i - p1.y) / (float)(p3.y - p1.y);
+			float t2 = (i - p2.y) / (float)(p3.y - p2.y);
+			x1 = lerp(p1.x, p3.x, t1);
+			x2 = lerp(p2.x, p3.x, t2);
+			
+			lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+			lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+			
+			lerpCoordV2.x = lerp(tp2.x, tp3.x, t2);
+			lerpCoordV2.y = lerp(tp2.y, tp3.y, t2);
+			
+			if(x1 > x2) {
+				std::swap(x1, x2);
+				std::swap(lerpCoordV1, lerpCoordV2);
+			}
+			
+			int startX = x1;
+			int endX = x2;
+			
+			float xStep{};
+			float yStep{};
+			if(endX - startX) {
+				xStep = (lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX);
+				yStep = (lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX);
+			}
+				
+			float xLerp{lerpCoordV1.x};
+			float yLerp{lerpCoordV1.y};
+			
+			for (int j = startX; j < endX; j++) {
+				float clampedXLerp {};
+				float clampedYLerp {};
+				
+				// if(lerpCoordV1.x > lerpCoordV2.x) {
+				// 	clampedXLerp = ceil(xLerp * (texture.GetWidth() - 1));
+				// 	clampedYLerp = ceil(yLerp * (texture.GetHeight() - 1));
+				// } else {
+					clampedXLerp = xLerp * texture.GetWidth();
+					clampedYLerp = yLerp * texture.GetHeight();
+				// }
+				
+				if(!clampCoords(clampedXLerp, clampedYLerp, texture.GetWidth(), texture.GetHeight()) && OutOfBoundsType == OutOfBoundsType::ClampToBorder) {
+					DrawPoint(ClampToBorderColor, j, i);
+				} else {
+					if(ScaleType == ScaleType::Nearest) {
+						DrawPoint(texture.GetPixel(clampedXLerp, clampedYLerp), j, i);
+					} else {
+						clampedXLerp -= 0.5;
+						clampedYLerp -= 0.5;
+						
+						auto clamp = [](float x, int low, int high) -> float {
+							if(x < low) return low;
+							else if(x > high) return high;
+							return x;
+						};
+						
+						clampedXLerp = clamp(clampedXLerp, 0, texture.GetWidth() - 1);
+						clampedYLerp = clamp(clampedYLerp, 0, texture.GetHeight() - 1);
+						
+						const RGBA& texel_tl = texture.GetPixel(clamp(clampedXLerp,   0, texture.GetWidth()-1), clamp(clampedYLerp,   0, texture.GetHeight()-1));
+						const RGBA& texel_tr = texture.GetPixel(clamp(clampedXLerp+1, 0, texture.GetWidth()-1), clamp(clampedYLerp,   0, texture.GetHeight()-1));
+						const RGBA& texel_bl = texture.GetPixel(clamp(clampedXLerp,   0, texture.GetWidth()-1), clamp(clampedYLerp+1, 0, texture.GetHeight()-1));
+						const RGBA& texel_br = texture.GetPixel(clamp(clampedXLerp+1, 0, texture.GetWidth()-1), clamp(clampedYLerp+1, 0, texture.GetHeight()-1));
+						
+						float diffx = clampedXLerp - (int)clampedXLerp;
+						float diffy = clampedYLerp - (int)clampedYLerp;
+						
+						RGBA cT { texel_tl * (1 - diffx) + texel_tr * diffx };
+						RGBA cB { texel_bl * (1 - diffx) + texel_br * diffx };
+						RGBA texel {
+							cT * (1 - diffy)  + 
+							cB * diffy
+						};
+						
+						DrawPoint(texel, j, i);
+					}
+				}
+
+
+				xLerp += xStep;
+				yLerp += yStep;
+			}
+		}
+	}
+}
 void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p3) {
 	// sort top most point
 	if(p1.y > p2.y) {
@@ -643,68 +836,17 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, 
 				float x {iSrc};
 				float y {jSrc};
 				
-				if(iSrc < 0 || jSrc < 0 || iSrc >= bitmap.GetWidth() || jSrc >= bitmap.GetHeight()) {
-					switch(OutOfBoundsType) {
-						case OutOfBoundsType::Repeat: {
-							x = std::fmod((bitmap.GetWidth() * ((int)std::abs(x) / bitmap.GetWidth() + 1) + x), bitmap.GetWidth());
-							y = std::fmod((bitmap.GetHeight() * ((int)std::abs(y) / bitmap.GetHeight() + 1) + y), bitmap.GetHeight());
-						} break;
-						case OutOfBoundsType::MirroredRepeat: {
-							// x = (int)iSrc % bitmap.GetWidth() + ((iSrc < 0) * (bitmap.GetWidth()-1));
-							// y = (int)jSrc % bitmap.GetHeight() + ((jSrc < 0) * (bitmap.GetHeight()-1));
-							// x = std::fmod(((float)bitmap.GetWidth() * (int)(std::abs(iSrc) / bitmap.GetWidth() + 1) + iSrc), bitmap.GetWidth());
-							// y = std::fmod(((float)bitmap.GetHeight() * (int)(std::abs(jSrc) / bitmap.GetHeight() + 1) + jSrc), bitmap.GetHeight());
-
-							// if((int)(abs(iSrc) / (bitmap.GetWidth()) + (iSrc < 0 ? 0 : 1)) % 2 == 0) {
-							// 	x = bitmap.GetWidth() - x;
-							// 	if(x < 0) x = 0;
-							// 	if(x >= bitmap.GetWidth()) x = bitmap.GetWidth() - 1;
-							// }
-							// if(((int)(abs(jSrc) / (bitmap.GetHeight())) ) % 2 == 0) {
-							// 	y = bitmap.GetHeight() - y;
-							// 	if(y < 0) y = 0;
-							// 	if(y >= bitmap.GetWidth()) y = bitmap.GetWidth() - 1;
-							// }
-							const auto mod = [](const float a, const float n) noexcept
-							{
-								return std::fmod((std::fmod(a, n) + n), n);
-							};
-							const auto mirror = [](const float a) noexcept
-							{
-								return a >= 0.f ? a : -(1 + a);
-							};
-							const auto mirrored_repeat_x = [&](const float x) noexcept {
-								return (bitmap.GetWidth() - 1) - mirror(mod(x, 2 * bitmap.GetWidth()) - bitmap.GetWidth());
-							};
-							const auto mirrored_repeat_y = [&](const float y) noexcept {
-								return (bitmap.GetHeight() - 1) - mirror(mod(y, 2 * bitmap.GetHeight()) - bitmap.GetHeight());
-							};
-							
-							x = mirrored_repeat_x(x);
-							y = mirrored_repeat_y(y);
-							
-							// HACK: this + 0.001f will be problematic prob later! 
-							fooX = (int)((iSrc + (iSrc < 0 ? 1/(cx*cx) : 0)) / bitmap.GetWidth()) % 2 + (iSrc < 0 ? 1 : 0);
-							fooY = (int)((jSrc + (jSrc < 0 ? 1/(cy*cy) : 0)) / bitmap.GetHeight()) % 2 + (jSrc < 0 ? 1 : 0);
-						} break;
-						case OutOfBoundsType::ClampToEdge: {
-							if(ScaleType == ScaleType::Nearest) {
-								x = std::fmax(0, std::fmin(bitmap.GetWidth()-1, iSrc));
-								y = std::fmax(0, std::fmin(bitmap.GetHeight()-1, jSrc));
-							} else {
-								x = std::fmax(0, std::fmin(bitmap.GetWidth(), iSrc));
-								y = std::fmax(0, std::fmin(bitmap.GetHeight(), jSrc));
-							}
-						} break;
-						
-						// NOTE: basically OutOfBoundsType::ClampToBorder, but it kinda looks guly
-						// to make a case for it and continue skip to the next iteration.... idk
-						default: {
-							DrawPoint(ClampToBorderColor, iDest, jDest);
-							continue;
-						}
+				bool isInBounds = clampCoords(x, y, bitmap.GetWidth(), bitmap.GetHeight());
+				if(!isInBounds) {
+					if(OutOfBoundsType == OutOfBoundsType::MirroredRepeat) {
+						fooX = (int)((iSrc + (iSrc < 0 ? 1/(cx*cx) : 0)) / bitmap.GetWidth()) % 2 + (iSrc < 0 ? 1 : 0);
+						fooY = (int)((jSrc + (jSrc < 0 ? 1/(cy*cy) : 0)) / bitmap.GetHeight()) % 2 + (jSrc < 0 ? 1 : 0);
 					}
-				} 
+					else if(OutOfBoundsType == OutOfBoundsType::ClampToBorder) {
+						DrawPoint(ClampToBorderColor, iDest, jDest);
+						continue;
+					}
+				}
 				// static uint64_t timer = 0;				
 				// if(timer / 100000.f > 1 && iDest == destX && jDest == destY) {
 				// 	std::cout << "iSrc: " << iSrc << "; jSrc: " << jSrc << std::endl;
@@ -760,15 +902,11 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, 
 	}
 }
 
-void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
-	// TODO: load the font as binary or smth
-	std::string path = "res/raster-fonts/ibmFont8x16.png";
-	static Bitmap fontBitmap {path};
-	
-	constexpr int fontSizeWidth = 8;
-	constexpr int fontSizeHeight = 16;
-	const int charsRows = fontBitmap.GetWidth() / fontSizeWidth;
-	const int charsCols = fontBitmap.GetHeight() / fontSizeHeight;
+void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const Font& font, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
+	int fontSizeWidth = font.GetFontWidth();
+	int fontSizeHeight = font.GetFontHeight();
+	int charsRows = font.GetFontSheetWidth() / fontSizeWidth;
+	int charsCols = font.GetFontSheetHeight() / fontSizeHeight;
 	
 	for (int letterCount = 0; letterCount < text.size(); letterCount++) {
 		const unsigned char& letter = text[letterCount];
@@ -779,7 +917,7 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const R
 		
 		for (int i = 0; i < fontSizeWidth; i++) {
 			for (int j = 0; j < fontSizeHeight; j++) {
-				const RGB& letterPixel = fontBitmap.GetPixel(letterX * fontSizeWidth + i, letterY * fontSizeHeight + j);
+				const RGB& letterPixel = font.GetPixel(letterX * fontSizeWidth + i, letterY * fontSizeHeight + j);
 				
 				int subX = x + letterCount * (fontSizeWidth) + i;
 				int subY = y + j;
@@ -788,15 +926,63 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const R
 				   subX < 0 || subY < 0)
 				   continue;
 				
-				if(letterPixel == RGB::Black && bColor != RGBA::Transparent && GetPixel(subX, subY) != shadowColor && shadowColor == RGBA::Transparent) {
+				if(letterPixel == RGB::Black && bColor != RGBA::Transparent && GetPixel(subX, subY) != shadowColor) {
 					DrawPoint(bColor, subX, subY);
 				} else if(letterPixel == RGB::White){
 					DrawPoint(fColor, subX, subY);
-					if(shadowColor != RGBA::Transparent && GetPixel(subX + shadowOffsetX, subY + shadowOffsetY) != fColor) {
+					if(font.GetPixel(letterX * fontSizeWidth + i + shadowOffsetX, letterY * fontSizeHeight + j + shadowOffsetY) == RGB::Black) {
 						DrawPoint(shadowColor, subX + shadowOffsetX, subY + shadowOffsetY);
 					}
 				}
 			}
 		}
 	}
+}
+
+/* UTILILTY FUNCTIONS */
+bool Cidr::Renderer::clampCoords(float& x, float& y, int width, int height) {
+	// NOTE: return true if coordinates are in bound of bitmap size
+	if(x >= 0 && y >= 0 && x < width && y < height) return true;
+
+	switch(OutOfBoundsType) {
+		case OutOfBoundsType::Repeat: {
+			x = std::fmod((width * ((int)std::abs(x) / width + 1) + x), width);
+			y = std::fmod((height * ((int)std::abs(y) / height + 1) + y), height);
+		} break;
+		case OutOfBoundsType::MirroredRepeat: {
+			const auto mod = [](const float a, const float n) noexcept
+			{
+				return std::fmod((std::fmod(a, n) + n), n);
+			};
+			const auto mirror = [](const float a) noexcept
+			{
+				return a >= 0.f ? a : -(1 + a);
+			};
+			const auto mirrored_repeat_x = [&](const float x) noexcept {
+				return (width - 1) - mirror(mod(x, 2 * width) - width);
+			};
+			const auto mirrored_repeat_y = [&](const float y) noexcept {
+				return (height - 1) - mirror(mod(y, 2 * height) - height);
+			};
+			
+			x = mirrored_repeat_x(x);
+			y = mirrored_repeat_y(y);
+			
+			// HACK: this + 0.001f will be problematic prob later! 
+		} break;
+		case OutOfBoundsType::ClampToEdge: {
+			if(ScaleType == ScaleType::Nearest) {
+				x = std::fmax(0, std::fmin(width-1, x));
+				y = std::fmax(0, std::fmin(height-1, y));
+			} else {
+				x = std::fmax(0, std::fmin(width, x));
+				y = std::fmax(0, std::fmin(height, y));
+			}
+		} break;
+		
+		// NOTE: basically OutOfBoundsType::ClampToBorder case
+		default:;
+	}
+	// NOTE: return false if coordinates are out of bounds of the bitmap	
+	return false;
 }
