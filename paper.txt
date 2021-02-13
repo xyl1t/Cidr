@@ -1,4 +1,4 @@
-PLANED FEATURES (+ -> done, - -> planned)
+PLANED FEATURES (+: done, -: planned)
  + Triangles
  + Quick colors, such as Cidr::RGBA::White
  + Shaders for all shapes

@@ -5,6 +5,7 @@
  ********************************/
 
 #include "color.hpp"
+#include <algorithm>
 
 Cidr::RGB::RGB() : r{0}, g{0}, b{0} {
 }
@@ -171,6 +172,7 @@ Cidr::RGBA Cidr::RGBA::operator+(const RGBA& that) const {
 		static_cast<uint8_t>(std::clamp(this->r + that.r, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g + that.g, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b + that.b, 0, 255)),
+		this->a,
 	};
 }
 Cidr::RGBA Cidr::RGBA::operator-(const RGBA& that) const {
@@ -178,6 +180,7 @@ Cidr::RGBA Cidr::RGBA::operator-(const RGBA& that) const {
 		static_cast<uint8_t>(std::clamp(this->r - that.r, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g - that.g, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b - that.b, 0, 255)),
+		this->a,
 	};
 }
 Cidr::RGBA Cidr::RGBA::operator*(const int that) const {
@@ -185,6 +188,7 @@ Cidr::RGBA Cidr::RGBA::operator*(const int that) const {
 		static_cast<uint8_t>(std::clamp(this->r * that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g * that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b * that, 0, 255)),
+		this->a,
 	};
 }
 Cidr::RGBA Cidr::RGBA::operator/(const int that) const {
@@ -192,6 +196,7 @@ Cidr::RGBA Cidr::RGBA::operator/(const int that) const {
 		static_cast<uint8_t>(std::clamp(this->r / that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g / that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b / that, 0, 255)),
+		this->a,
 	};
 }
 Cidr::RGBA Cidr::RGBA::operator*(const float that) const {
@@ -199,6 +204,7 @@ Cidr::RGBA Cidr::RGBA::operator*(const float that) const {
 		static_cast<uint8_t>(std::clamp(this->r * that, 0.f, 255.f)),
 		static_cast<uint8_t>(std::clamp(this->g * that, 0.f, 255.f)),
 		static_cast<uint8_t>(std::clamp(this->b * that, 0.f, 255.f)),
+		this->a,
 	};
 }
 Cidr::RGBA Cidr::RGBA::operator/(const float that) const {
@@ -206,6 +212,7 @@ Cidr::RGBA Cidr::RGBA::operator/(const float that) const {
 		static_cast<uint8_t>(std::clamp(this->r / that, 0.f, 255.f)),
 		static_cast<uint8_t>(std::clamp(this->g / that, 0.f, 255.f)),
 		static_cast<uint8_t>(std::clamp(this->b / that, 0.f, 255.f)),
+		this->a,
 	};
 }
 

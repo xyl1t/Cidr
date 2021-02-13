@@ -1,10 +1,10 @@
 /********************************
  * Project: Cidr                *
- * File: cidr.cpp               *
+ * File: renderer.cpp           *
  * Date: 10.9.2020              *
  ********************************/
 
-#include "cidr.hpp"
+#include "renderer.hpp"
 #include <cstring>
 #include <algorithm>
 #include <iterator>
@@ -23,7 +23,6 @@ Cidr::Renderer::Renderer(uint32_t* pixels, int width, int height)
 	: pixels{pixels}, 
 	width{width}, 
 	height{height} {
-	
 }
 
 void Cidr::Renderer::Clear() {
@@ -429,11 +428,17 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 			int startX = x1;
 			int endX = x2;
 			
-			float xStep{(lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX)};
-			float yStep{(lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX)};
+			float xStep{};
+			float yStep{};
 			
+			if(endX - startX != 0) {
+				xStep = (lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX);
+				yStep = (lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX);
+			}
+				
 			float xLerp{lerpCoordV1.x};
 			float yLerp{lerpCoordV1.y};
+			
 			
 			for (int j = startX; j < endX; j++) {
 				float clampedXLerp {};
@@ -443,7 +448,6 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 				// 	clampedXLerp = ceil(xLerp * (texture.GetWidth() - 1));
 				// 	clampedYLerp = ceil(yLerp * (texture.GetHeight() - 1));
 				// } else {
-					// HACK: ehhhhh the - 0.0001 is gonna be a problem later probably
 					clampedXLerp = xLerp * texture.GetWidth();
 					clampedYLerp = yLerp * texture.GetHeight();
 				// }
@@ -516,7 +520,7 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 				xStep = (lerpCoordV2.x - lerpCoordV1.x) / (float)(endX - startX);
 				yStep = (lerpCoordV2.y - lerpCoordV1.y) / (float)(endX - startX);
 			}
-			
+				
 			float xLerp{lerpCoordV1.x};
 			float yLerp{lerpCoordV1.y};
 			
@@ -528,7 +532,6 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 				// 	clampedXLerp = ceil(xLerp * (texture.GetWidth() - 1));
 				// 	clampedYLerp = ceil(yLerp * (texture.GetHeight() - 1));
 				// } else {
-					// HACK: ehhhhh the - 0.0001 is gonna be a problem later probably
 					clampedXLerp = xLerp * texture.GetWidth();
 					clampedYLerp = yLerp * texture.GetHeight();
 				// }
@@ -541,13 +544,15 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 					} else {
 						clampedXLerp -= 0.5;
 						clampedYLerp -= 0.5;
-						if(clampedXLerp < 0) clampedXLerp = 0;
-						if(clampedYLerp < 0) clampedYLerp = 0;
+						
 						auto clamp = [](float x, int low, int high) -> float {
 							if(x < low) return low;
 							else if(x > high) return high;
 							return x;
 						};
+						
+						clampedXLerp = clamp(clampedXLerp, 0, texture.GetWidth() - 1);
+						clampedYLerp = clamp(clampedYLerp, 0, texture.GetHeight() - 1);
 						
 						const RGBA& texel_tl = texture.GetPixel(clamp(clampedXLerp,   0, texture.GetWidth()-1), clamp(clampedYLerp,   0, texture.GetHeight()-1));
 						const RGBA& texel_tr = texture.GetPixel(clamp(clampedXLerp+1, 0, texture.GetWidth()-1), clamp(clampedYLerp,   0, texture.GetHeight()-1));
@@ -897,15 +902,11 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, 
 	}
 }
 
-void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
-	// TODO: load the font as binary or smth
-	std::string path = "res/raster-fonts/ibmFont8x16.png";
-	static Bitmap fontBitmap {path};
-	
-	constexpr int fontSizeWidth = 8;
-	constexpr int fontSizeHeight = 16;
-	const int charsRows = fontBitmap.GetWidth() / fontSizeWidth;
-	const int charsCols = fontBitmap.GetHeight() / fontSizeHeight;
+void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const Font& font, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
+	int fontSizeWidth = font.GetFontWidth();
+	int fontSizeHeight = font.GetFontHeight();
+	int charsRows = font.GetFontSheetWidth() / fontSizeWidth;
+	int charsCols = font.GetFontSheetHeight() / fontSizeHeight;
 	
 	for (int letterCount = 0; letterCount < text.size(); letterCount++) {
 		const unsigned char& letter = text[letterCount];
@@ -916,7 +917,7 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const R
 		
 		for (int i = 0; i < fontSizeWidth; i++) {
 			for (int j = 0; j < fontSizeHeight; j++) {
-				const RGB& letterPixel = fontBitmap.GetPixel(letterX * fontSizeWidth + i, letterY * fontSizeHeight + j);
+				const RGB& letterPixel = font.GetPixel(letterX * fontSizeWidth + i, letterY * fontSizeHeight + j);
 				
 				int subX = x + letterCount * (fontSizeWidth) + i;
 				int subY = y + j;
@@ -925,11 +926,11 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const R
 				   subX < 0 || subY < 0)
 				   continue;
 				
-				if(letterPixel == RGB::Black && bColor != RGBA::Transparent && GetPixel(subX, subY) != shadowColor && shadowColor == RGBA::Transparent) {
+				if(letterPixel == RGB::Black && bColor != RGBA::Transparent && GetPixel(subX, subY) != shadowColor) {
 					DrawPoint(bColor, subX, subY);
 				} else if(letterPixel == RGB::White){
 					DrawPoint(fColor, subX, subY);
-					if(shadowColor != RGBA::Transparent) {
+					if(font.GetPixel(letterX * fontSizeWidth + i + shadowOffsetX, letterY * fontSizeHeight + j + shadowOffsetY) == RGB::Black) {
 						DrawPoint(shadowColor, subX + shadowOffsetX, subY + shadowOffsetY);
 					}
 				}

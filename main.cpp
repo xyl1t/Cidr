@@ -11,9 +11,25 @@
 #endif
 #include <iostream>
 #include <map>
-#include "cidr.hpp"
+#include "renderer.hpp"
 #include <string>
 #include "timer.hpp"
+
+#include <cinttypes>
+#include <utility>
+#include <vector>
+#include <cstdio>
+#include <fstream>
+
+#include "cidr.hpp"
+
+// #include "bitmap.cpp"
+// #include "renderer.cpp"
+// #include "color.cpp"
+// #include "point.cpp"
+// #include "rectangle.cpp"
+// #include "tensorMath.cpp"
+// #include "font.cpp"
 
 Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y);
@@ -22,10 +38,6 @@ Cidr::RGBA vBlurShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA hsvHueRotationShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA distortionShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA grayScaleShader(const Cidr::Renderer& renderer, int x, int y);
-#include <cinttypes>
-#include <utility>
-#include <vector>
-#include <cstdio>
 
 int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -37,8 +49,8 @@ int main(int argc, char** argv) {
 		zoom = std::atoi(argv[1]);
 	}
 	
-	const int CANVAS_WIDTH = 900;
-	const int CANVAS_HEIGHT = 600;
+	const int CANVAS_WIDTH = 500;
+	const int CANVAS_HEIGHT = 500;
 	const int WINDOW_WIDTH = CANVAS_WIDTH * zoom;
 	const int WINDOW_HEIGHT = CANVAS_HEIGHT * zoom;
 	
@@ -56,19 +68,41 @@ int main(int argc, char** argv) {
 	bool alive = true;
 	std::map<int, bool> keyboard;
 	int mx, my;
+	bool showText = true;
 	uint32_t current = SDL_GetTicks();
 	uint32_t old = 0;
 	uint32_t timer = 0;
 	
 	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
-	Cidr::RGBABitmap bitmap{"./res/pureTest.png"};
-	Cidr::Bitmap triangleTexture{"./res/boxTexture.jpg"};
+	Cidr::Bitmap bitmap{"./res/pureTest.png"};
+	Cidr::Bitmap triangleTexture{"./res/treeImg.png"};
+	// Cidr::Bitmap font {"./res/raster-fonts/ibmFont8x12.png"};
+	// std::ofstream fout ( "./res/raster-fonts/ibmFont8x12.dat", std::ios::binary );
+	// auto getCoordX = [](int val, int width) {
+	// 	return val % width;
+	// };
+	// auto getCoordY = [](int val, int width) {
+	// 	return val / width;
+	// };
+	// for(int i = 0; i < font.GetWidth() * font.GetHeight(); i+=8) {
+	// 	uint8_t c = 
+	// 		((font.GetPixel(getCoordX(i + 0, font.GetWidth()), getCoordY(i + 0, font.GetWidth())).r > 0) << 0) + 
+	// 		((font.GetPixel(getCoordX(i + 1, font.GetWidth()), getCoordY(i + 1, font.GetWidth())).r > 0) << 1) +
+	// 		((font.GetPixel(getCoordX(i + 2, font.GetWidth()), getCoordY(i + 2, font.GetWidth())).r > 0) << 2) +
+	// 		((font.GetPixel(getCoordX(i + 3, font.GetWidth()), getCoordY(i + 3, font.GetWidth())).r > 0) << 3) +
+	// 		((font.GetPixel(getCoordX(i + 4, font.GetWidth()), getCoordY(i + 4, font.GetWidth())).r > 0) << 4) +
+	// 		((font.GetPixel(getCoordX(i + 5, font.GetWidth()), getCoordY(i + 5, font.GetWidth())).r > 0) << 5) +
+	// 		((font.GetPixel(getCoordX(i + 6, font.GetWidth()), getCoordY(i + 6, font.GetWidth())).r > 0) << 6) +
+	// 		((font.GetPixel(getCoordX(i + 7, font.GetWidth()), getCoordY(i + 7, font.GetWidth())).r > 0) << 7);
+		
+	// 	fout.write((const char*)&c, sizeof(c));
+	// }
 	
 	
 	float val1{};
-	float val3{};
 	float val2{};
-	float val4{};
+	// float val3{};
+	// float val4{};
 	Timer t {};
 	while(alive) {
 		/* TIMER */
@@ -150,6 +184,12 @@ int main(int argc, char** argv) {
 		if(keyboard[SDLK_RIGHT]) {
 			val2 += 1;
 		}
+		if(keyboard[SDLK_t]) {
+			showText = false;
+		}
+		if(keyboard[SDLK_t] && keyboard[SDLK_LSHIFT]) {
+			showText = true;
+		}
 		
 		/*** DRAWING ***/
 		
@@ -198,8 +238,8 @@ int main(int argc, char** argv) {
 			}
 			cidrRend.FillCircle(color, 64, 340, (circlesCount - i) / (float)circlesCount * 50, true);
 		}
-		cidrRend.FillCircle(0x30ee0Aff, 350, 50, 30, true);
-		cidrRend.FillCircle(0x30ee0Aff, 350 + 30*2 + 15, 50, 30, false);
+		cidrRend.FillCircle(0x30ee0Aff, 345, 64, 30, true);
+		cidrRend.FillCircle(0x30ee0Aff, 345 + 30*2 + 15, 64, 30, false);
 
 
 		/* TRIANGLES */
@@ -218,42 +258,42 @@ int main(int argc, char** argv) {
 			Cidr::RGB::Red, 
 			Cidr::RGB::Green, 
 			Cidr::RGB::Blue, 
-			 0 + 300,  0 + 128,
-			64 + 300, 32 + 128,
-			32 + 300, 64 + 128);
+			 0 + 310,  0 + 128,
+			64 + 310, 32 + 128,
+			32 + 310, 64 + 128);
 		cidrRend.DrawTriangle(Cidr::RGB::White, 
-			 0 + 300, 0 + 128,
-			64 + 300,32 + 128,
-			32 + 300,64 + 128, true, true);
+			 0 + 310, 0 + 128,
+			64 + 310,32 + 128,
+			32 + 310,64 + 128, true, true);
 		
 		cidrRend.FillTriangle(
 			Cidr::RGB::Red,
 			Cidr::RGB::Green,
 			Cidr::RGB::Blue,
-			390, 		128,
-			390, 		128 + 64,
-			390 + 32, 	128 + 32);
+			400, 		128,
+			400, 		128 + 64,
+			400 + 32, 	128 + 32);
 		cidrRend.FillTriangle(
 			Cidr::RGB::Green,
 			Cidr::RGB::Blue,
 			Cidr::RGB::Red,
-			390 + 64, 	128,
-			390 + 32, 	128 + 32,
-			390 + 64, 	128 + 64);
+			400 + 64, 	128,
+			400 + 32, 	128 + 32,
+			400 + 64, 	128 + 64);
 		cidrRend.FillTriangle(
 			Cidr::RGB::Green,
 			Cidr::RGB::Blue,
 			Cidr::RGB::Red,
-			390, 		128 + 64,
-			390 + 32, 	128 + 32,
-			390 + 64, 	128 + 64);
+			400, 		128 + 64,
+			400 + 32, 	128 + 32,
+			400 + 64, 	128 + 64);
 		cidrRend.FillTriangle(
 			Cidr::RGB::Red,
 			Cidr::RGB::Green,
 			Cidr::RGB::Blue,
-			390, 		128,
-			390 + 64, 	128,
-			390 + 32, 	128 + 32);
+			400, 		128,
+			400 + 64, 	128,
+			400 + 32, 	128 + 32);
 
 		// cidrRend.DrawTriangle(triangleTexture, 
 		// 	0, 1,
@@ -266,51 +306,32 @@ int main(int argc, char** argv) {
 		
 		/* IMAGES */
 		cidrRend.ClampToBorderColor = Cidr::RGB::Gray;
-		//  cidrRend.OutOfBoundsType = Cidr::Renderer::OutOfBoundsType::Repeat;
 		int destWidth = bitmap.GetWidth() * 6;
 		int destHeight = bitmap.GetWidth() * 6;
 		cidrRend.DrawBitmap(bitmap, 
 			(float)360-destWidth/2,(float)340-destHeight/2, destWidth, destHeight, 
 			val2/4.f, -val1/4.f, bitmap.GetWidth(), bitmap.GetHeight());
 
-		
-		// float left   = 1.0;
-		// float right  = 0.0;
-		// float top    = 1.0;
-		// float bottom = 0.0;
-		
-		// for(int i = 0; i < mx - 500; i++) {
-		// 	for(int j = 0; j < my - 250; j++) {
-		// 		float t = i / (float)(mx - 500);
-		// 		float d = j / (float)(my - 250);
-				
-		// 		float val = (1 - t) * left + t * right;
-		// 		val *= (bitmap.GetWidth() - 1);
-		// 		val = ceil(val);
-				
-		// 		float val2 = (1 - d) * top + d * bottom;
-		// 		val2 *= (bitmap.GetHeight() - 1);
-		// 		val2 = ceil(val2);
-				
-		// 		cidrRend.DrawPoint(bitmap.GetPixel(val, val2), i + 500, j + 250);
-		// 	}
-		// }
 
 		/* TEXTURED TRIANGLE */
-		Cidr::Point p1{mx, my};
-		Cidr::Point p2{mx, 400};
-		Cidr::Point p3{450, 400};
-		Cidr::Point p4{450, my};
+		// Cidr::Point p1{350, 300};
+		// Cidr::Point p2{350, 400};
+		// Cidr::Point p3{450, 400};
+		// Cidr::Point p4{450, 300};
+		Cidr::Point p1{32, 48};
+		Cidr::Point p2{32, 256};
+		Cidr::Point p3{256-32, 256};
+		Cidr::Point p4{256-32, 48};
 		Cidr::Point pInBetween {(p1.x + p2.x + p3.x + p4.x) / 4, (p1.y + p2.y + p3.y + p4.y) / 4};
 		
-		cidrRend.DrawTriangle(bitmap, 
+		cidrRend.DrawTriangle(triangleTexture, 
 			0 + val2/100.f, 0 - val1/100.f,
 			0 + val2/100.f, 1 - val1/100.f,
 			1 + val2/100.f, 1 - val1/100.f,
 			p1.x, p1.y,
 			p2.x, p2.y,
 			p3.x, p3.y);
-		cidrRend.DrawTriangle(bitmap, 
+		cidrRend.DrawTriangle(triangleTexture, 
 			0 + val2/100.f, 0 - val1/100.f,
 			1 + val2/100.f, 1 - val1/100.f,
 			1 + val2/100.f, 0 - val1/100.f,
@@ -320,9 +341,41 @@ int main(int argc, char** argv) {
 		
 		
 		/* TEXT */
-		// cidrRend.DrawText("<two textured triangles>", pInBetween.x - (8 * 24 / 2), pInBetween.y - 10, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGB::Black, 1, 1);
+		if(showText) {
+			cidrRend.DrawText("textured triangles", pInBetween.x - (8 * 18 / 2), pInBetween.y - 32, Cidr::Fonts::Raster8x16, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGB::Black, 1, 1);
+			cidrRend.DrawText("shaded rectangle", 64, 16, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("balls", 365, 16, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("triangles", 350, 110, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("lines", 365, 220, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("combinations", 80, 270, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("images", 335, 270, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+		}
 		
-				
+		int seed = 6123434;
+		auto getRandomColor = [&seed](int min = 0, int max = 255) -> Cidr::RGBA {
+			seed += 3489;
+			return Cidr::RGBA{(uint8_t)std::clamp(seed*2378%255, min, max), (uint8_t)std::clamp(seed*899%255, min, max), (uint8_t)std::clamp(seed*328%255,min,max)};
+		};
+		
+		//#0CD848 nicegreen 
+		
+		int wordCount = 0;
+		for(const std::string& word : {	"Lorem", "ipsum", "dolor", "sit", "amet,", "consectetur", "adipiscing", "elit,"	}) {
+			cidrRend.DrawText(word, 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420, Cidr::Fonts::Raster8x16, 
+				getRandomColor(128, 255), getRandomColor(0, 64), Cidr::RGBA::Black, 1, 1);
+			wordCount += word.length();
+			cidrRend.DrawText(" ", 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420);
+			wordCount++;
+		}
+		wordCount = 0;
+		for(const std::string& word : { "sed", "do", "eiusmod", "tempor", "incididunt", "labore", "et", "dolore", "aliqua." }) {
+			cidrRend.DrawText(word, 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420 + Cidr::Fonts::Raster8x16.GetFontHeight(), Cidr::Fonts::Raster8x16, 
+				getRandomColor(128, 255), getRandomColor(0, 64), Cidr::RGBA::Black, 1, 1);
+			wordCount += word.length();
+			cidrRend.DrawText(" ", 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420 + Cidr::Fonts::Raster8x16.GetFontHeight());
+			wordCount++;
+		}
+		
 		/* APPLY SHADER */
 		int shaderSize = 128;
 		if(currentShader != nullptr) {
