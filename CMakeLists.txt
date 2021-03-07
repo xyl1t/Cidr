@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE Release)
 include("FindSDL2.cmake")  
 
-file(GLOB SRC "./src/main.cpp")
+file(GLOB SRC "./src/demo.cpp")
 
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
