@@ -11,7 +11,6 @@
 #endif
 #include <iostream>
 #include <map>
-#include "renderer.hpp"
 #include <string>
 #include "timer.hpp"
 
@@ -21,7 +20,16 @@
 #include <cstdio>
 #include <fstream>
 
-#include "cidr.hpp"
+#include "../cidr.hpp"
+//#include "renderer.hpp"
+// #include "bitmap.cpp"
+// #include "font.cpp"
+// #include "point.cpp"
+// #include "renderer.cpp"
+// #include "color.cpp"
+// #include "rectangle.cpp"
+// #include "tensorMath.cpp"
+
 
 Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y);
@@ -46,7 +54,7 @@ int main(int argc, char** argv) {
 	const int WINDOW_WIDTH = CANVAS_WIDTH * zoom;
 	const int WINDOW_HEIGHT = CANVAS_HEIGHT * zoom;
 	
-	SDL_Window* window = SDL_CreateWindow("Cidr Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
+	SDL_Window* window = SDL_CreateWindow("Cidr Demo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
 	SDL_Renderer* renderer = SDL_CreateRenderer(window, 0, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR32, SDL_TEXTUREACCESS_STREAMING, CANVAS_WIDTH, CANVAS_HEIGHT);
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
@@ -67,8 +75,8 @@ int main(int argc, char** argv) {
 	uint32_t timer = 0;
 	
 	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
-	Cidr::Bitmap bitmap{"./res/pureTest.png"};
-	Cidr::Bitmap triangleTexture{"./res/treeImg.png"};
+	Cidr::Bitmap bitmap{"../res/pureTest.png"};
+	Cidr::Bitmap triangleTexture{"../res/treeImg.png"};
 	
 	float val1{};
 	float val2{};

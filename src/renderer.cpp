@@ -754,11 +754,11 @@ void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x
 }
 
 void Cidr::Renderer::drawScanLine(uint32_t color, int startX, int endX, int y) {
-	std::fill_n(pixels + getIndex(startX, y), endX - startX, color);
-	// for(int i = startX; i < endX; i++) {
-	// 	// if(GetPixel(i,y).r)
-	// 	DrawPoint(color, i, y);
-	// }
+	// std::fill_n(pixels + getIndex(startX, y), endX - startX, color);
+	for(int i = startX; i <= endX; i++) {
+		// if(GetPixel(i,y).r)
+		DrawPoint(color, i, y);
+	}
 }
 void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y) {
 	float rStep{(color2.r - color1.r) / (float)(endX - startX)};
