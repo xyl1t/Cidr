@@ -90,7 +90,6 @@ int main(int argc, char** argv) {
 	
 	savingBitmap.SaveAs("savingBitmap.jpg", Cidr::Bitmap::Formats::JPG, 8);
 	savingBitmap.SaveAs("savingBitmap.png", Cidr::Bitmap::Formats::PNG);
-	return 0;
 	
 	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
 	Cidr::Bitmap bitmap{"../res/pureTest.png"};
