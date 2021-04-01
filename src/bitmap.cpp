@@ -37,7 +37,7 @@ Cidr::BaseBitmap::BaseBitmap(const std::string& file, int reqComponents) {
 		}
 		stbi_image_free(imageData);
 	} else {
-		throw std::runtime_error("Cidr: No bitmap found " + file);
+		throw std::runtime_error("Cidr: Bitmap not found (" + file + ")");
 	}
 }
 
