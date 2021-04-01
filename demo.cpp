@@ -88,7 +88,6 @@ int main(int argc, char** argv) {
 		128-0.5*Cidr::Fonts::Raster8x16.GetFontHeight(), 
 		Cidr::Fonts::Raster8x12, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black);
 	
-	savingBitmap.SaveAs("savingBitmap.jpg", Cidr::Bitmap::Formats::JPG, 8);
 	savingBitmap.SaveAs("savingBitmap.png", Cidr::Bitmap::Formats::PNG);
 	
 	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
