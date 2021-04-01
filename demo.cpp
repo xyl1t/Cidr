@@ -69,28 +69,28 @@ int main(int argc, char** argv) {
 	uint32_t old = 0;
 	uint32_t timer = 0;
 	
-	Cidr::Bitmap test{256, 256};
-	Cidr::Renderer testRend{test.GetData(), test.GetWidth(), test.GetHeight()};
-	for (int x = 0; x < 256; x++) {
-		for (int y = 0; y < 256; y++) {
+	Cidr::Bitmap savingBitmap{256, 256};
+	Cidr::Renderer savingBitmapRend{savingBitmap.GetData(), savingBitmap.GetWidth(), savingBitmap.GetHeight()};
+	for (uint32_t x = 0; x < 256; x++) {
+		for (uint32_t y = 0; y < 256; y++) {
 			Cidr::RGBA c1((x^y) | ~x, (x) & ~y, (y) | x);
 			Cidr::RGBA c2(((y+x)*2) >> (~x&y), ((y+x)*4) >> (x&y), ((y+x)*8) >> (x&~y));
-			test.SetRawPixel(
+			savingBitmap.SetRawPixel(
 				(y & (x^~y)) >> (~x&~y) | ((y & (x^~y))),
 				(x & (x^y) ) >> (~x& y) | ((x & (x^y) )),
 				(y & (x^y) ) >> ( x&~y) | ((y & (x^y) )),
-				// (x^y)*2 >> (x&y),
 				0xff, x, y);
 		}
 	}
 	
-	testRend.DrawText("Cidr",
+	savingBitmapRend.DrawText("Cidr",
 		128-2*Cidr::Fonts::Raster8x16.GetFontWidth(),
 		128-0.5*Cidr::Fonts::Raster8x16.GetFontHeight(), 
 		Cidr::Fonts::Raster8x12, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black);
 	
-	test.SaveAs("test.jpg", Cidr::Bitmap::Formats::JPG, 8);
-	test.SaveAs("test.png", Cidr::Bitmap::Formats::PNG);
+	savingBitmap.SaveAs("savingBitmap.jpg", Cidr::Bitmap::Formats::JPG, 8);
+	savingBitmap.SaveAs("savingBitmap.png", Cidr::Bitmap::Formats::PNG);
+	return 0;
 	
 	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
 	Cidr::Bitmap bitmap{"../res/pureTest.png"};
