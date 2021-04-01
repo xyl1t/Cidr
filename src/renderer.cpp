@@ -925,6 +925,21 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const F
 				
 				int subX = x + letterCount * (fontSizeWidth) + i;
 				int subY = y + j;
+				int fw = font.GetFontWidth();
+				int fh = font.GetFontHeight();
+				int ts = text.size();
+				
+				// switch (alignment) {
+				// 	// case TextAlign::TL: break; // NOTE: this is Default
+				// 	case TextAlign::TC: subX -= fw * ts/2.f; break;
+				// 	case TextAlign::TR: subX -= fw * ts; break;
+				// 	case TextAlign::CL: break;
+				// 	case TextAlign::CC: subX -= fw * ts/2.f; break;
+				// 	case TextAlign::CR: subX -= fw * ts; break;
+				// 	case TextAlign::BL: break;
+				// 	case TextAlign::BC: subY += fh; subX -= fw * ts/2.f; break;
+				// 	case TextAlign::BR: subX -= fw * ts; break;
+				// }
 				
 				if(subX >= GetWidth() || subY >= GetHeight() || 
 				   subX < 0 || subY < 0)

@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
 		}
 	}
 	
-	savingBitmapRend.DrawText("Cidr",
+	savingBitmapRend.DrawText("Cidr\nTest",
 		128-2*Cidr::Fonts::Raster8x16.GetFontWidth(),
 		128-0.5*Cidr::Fonts::Raster8x16.GetFontHeight(), 
 		Cidr::Fonts::Raster8x12, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black);
