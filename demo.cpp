@@ -20,15 +20,6 @@
 #include <cstdio>
 #include <fstream>
 
-// #include "src/renderer.hpp"
-// #include "src/bitmap.cpp"
-// #include "src/font.cpp"
-// #include "src/point.cpp"
-// #include "src/renderer.cpp"
-// #include "src/color.cpp"
-// #include "src/rectangle.cpp"
-// #include "src/tensorMath.cpp"
-
 #ifndef NDEBUG
 #include "src/renderer.hpp"
 #else
@@ -100,9 +91,6 @@ int main(int argc, char** argv) {
 	
 	test.SaveAs("test.jpg", Cidr::Bitmap::Formats::JPG, 8);
 	test.SaveAs("test.png", Cidr::Bitmap::Formats::PNG);
-	
-	return 0;
-	
 	
 	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
 	Cidr::Bitmap bitmap{"../res/pureTest.png"};
