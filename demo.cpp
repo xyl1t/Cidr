@@ -12,7 +12,7 @@
 #include <iostream>
 #include <map>
 #include <string>
-#include "timer.hpp"
+#include "src/timer.hpp"
 
 #include <cinttypes>
 #include <utility>
@@ -20,16 +20,17 @@
 #include <cstdio>
 #include <fstream>
 
-#include "../cidr.hpp"
-//#include "renderer.hpp"
-// #include "bitmap.cpp"
-// #include "font.cpp"
-// #include "point.cpp"
-// #include "renderer.cpp"
-// #include "color.cpp"
-// #include "rectangle.cpp"
-// #include "tensorMath.cpp"
+// #include "src/renderer.hpp"
+// #include "src/bitmap.cpp"
+// #include "src/font.cpp"
+// #include "src/point.cpp"
+// #include "src/renderer.cpp"
+// #include "src/color.cpp"
+// #include "src/rectangle.cpp"
+// #include "src/tensorMath.cpp"
 
+// #include "cidr.hpp"
+#include "src/renderer.hpp"
 
 Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y);
 Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y);
@@ -74,9 +75,36 @@ int main(int argc, char** argv) {
 	uint32_t old = 0;
 	uint32_t timer = 0;
 	
+	// Cidr::Bitmap test{256, 256};
+	// Cidr::Renderer testRend{test.GetData(), test.GetWidth(), test.GetHeight()};
+	// for (int x = 0; x < 256; x++) {
+	// 	for (int y = 0; y < 256; y++) {
+	// 		Cidr::RGBA c1((x^y) | ~x, (x) & ~y, (y) | x);
+	// 		Cidr::RGBA c2(((y+x)*2) >> (~x&y), ((y+x)*4) >> (x&y), ((y+x)*8) >> (x&~y));
+	// 		test.SetRawPixel(
+	// 			(y & (x^~y)) >> (~x&~y) | ((y & (x^~y))),
+	// 			(x & (x^y) ) >> (~x& y) | ((x & (x^y) )),
+	// 			(y & (x^y) ) >> ( x&~y) | ((y & (x^y) )),
+	// 			// (x^y)*2 >> (x&y),
+	// 			0xff, x, y);
+	// 	}
+	// }
+	
+	// testRend.DrawText("Cidr",
+	// 	128-2*Cidr::Fonts::Raster8x16.GetFontWidth(),
+	// 	128-0.5*Cidr::Fonts::Raster8x16.GetFontHeight(), 
+	// 	Cidr::Fonts::Raster8x12, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black);
+	
+	// test.SaveAs("test.jpg", Cidr::Bitmap::Formats::JPG, 8);
+	// test.SaveAs("test.png", Cidr::Bitmap::Formats::PNG);
+	
+	// return 0;
+	
+	
 	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
 	Cidr::Bitmap bitmap{"../res/pureTest.png"};
 	Cidr::Bitmap triangleTexture{"../res/treeImg.png"};
+	
 	
 	float val1{};
 	float val2{};

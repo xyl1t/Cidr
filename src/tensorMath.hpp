@@ -7,6 +7,7 @@
 #ifndef TENSOR_MATH_HPP
 #define TENSOR_MATH_HPP
 #include <cmath>
+#include <initializer_list>
 
 namespace tem {
 

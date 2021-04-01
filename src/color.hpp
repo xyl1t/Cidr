@@ -11,6 +11,8 @@
 #include <iostream>
 #include <cmath>
 
+// TODO: Maybe switch the inheritance
+
 namespace Cidr {
 
 struct RGBA;
@@ -174,7 +176,13 @@ inline uint32_t RGBtoUINT(const RGB& colorRGB) {
 inline uint32_t RGBtoUINT(const RGBA& colorRGB) {
 	return (colorRGB.r << 24) + (colorRGB.g << 16) + (colorRGB.b << 8) + colorRGB.a;
 }
-inline RGBA UINTtoRGB(const uint32_t& colorUINT) {
+inline uint32_t RGBtoUINT_BGR(const RGB& colorRGB) {
+	return (0xff << 24) + (colorRGB.b << 16) + (colorRGB.g << 8) + colorRGB.r;
+}
+inline uint32_t RGBtoUINT_ABGR(const RGBA& colorRGB) {
+	return (colorRGB.a << 24) + (colorRGB.b << 16) + (colorRGB.g << 8) + colorRGB.r;
+}
+inline RGBA UINTtoRGB(uint32_t colorUINT) {
 	return {
 		static_cast<uint8_t>((colorUINT >> 24) & 0xff),
 		static_cast<uint8_t>((colorUINT >> 16) & 0xff),
@@ -182,6 +190,13 @@ inline RGBA UINTtoRGB(const uint32_t& colorUINT) {
 		static_cast<uint8_t>((colorUINT >>  0) & 0xff)
 	};
 }
+inline uint32_t UINT_RGBAtoUINT_ABGR(uint32_t colorUINT) {
+	return (((colorUINT >>  0) & 0xff) << 24) + (((colorUINT >>  8) & 0xff) << 16) + (((colorUINT >> 16) & 0xff) << 8) + ((colorUINT >> 24) & 0xff);
+}
+inline uint32_t UINT_ABGRtoUINT_RGBA(uint32_t colorUINT) {
+	return (((colorUINT >>  0) & 0xff) << 24) + (((colorUINT >>  8) & 0xff) << 16) + (((colorUINT >> 16) & 0xff) << 8) + ((colorUINT >> 24) & 0xff);
+}
+
 inline HSV RGBtoHSV(const RGB& colorRGB) {
 	HSV color;
 	float min, max, delta;

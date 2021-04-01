@@ -9,17 +9,51 @@
 
 #include <cstdint>
 #include "color.hpp"
+#include <type_traits>
 
 namespace Cidr {
 
-class RGBABitmap {
-private:
+class BaseBitmap {
+protected:
 	/* Individual pixels of the bitmap */
 	uint32_t* data{nullptr};
 	/* Width of the bitmap */
 	int width{0};
 	/* Height of the bitmap */
 	int height{0};
+	/* Num of components*/
+	int components;
+	
+public:
+	enum class Formats {
+		PNG,
+		BMP,
+		TGA,
+		JPG,
+	};
+	
+	BaseBitmap(int width, int height, int numComponents = 4);
+	BaseBitmap(uint32_t* source, int sourceWidth, int sourceHeight, int sourceComponents);
+	BaseBitmap(const std::string& file, int reqComponents = 0);
+	virtual ~BaseBitmap();
+
+	BaseBitmap(const BaseBitmap& other);
+	BaseBitmap& operator=(const BaseBitmap& other);
+	BaseBitmap(BaseBitmap&& other) noexcept;
+	BaseBitmap& operator=(BaseBitmap&& other) noexcept;
+
+	inline int GetWidth() const { return width; }
+	inline int GetHeight() const { return height; }
+	inline uint32_t* GetData() const { return data; }
+	inline uint32_t GetRawPixel(int x, int y) { return data[x + y * width]; }
+	inline void SetRawPixel(uint32_t value, int x, int y) { data[x + y * width] = value; }
+	inline void SetRawPixel(uint8_t r, uint8_t g, uint8_t b, uint8_t a, int x, int y) { data[x + y * width] = (r << 24) + (g << 16) + (b << 8) + a; }
+	
+	void SaveAs(const std::string& fileName, Formats format, int quality = 100);
+};
+
+class RGBABitmap : public BaseBitmap {
+	int components{4};
 	
 public:
 	RGBABitmap(int width, int height);
@@ -33,16 +67,6 @@ public:
 	RGBABitmap(RGBABitmap&& other) noexcept;
 	RGBABitmap& operator=(RGBABitmap&& other) noexcept;
 	
-	// RGBABitmap(uint32_t* data, int width, int height);
-	inline int GetWidth() const  {
-		return width;
-	}
-	inline int GetHeight() const {
-		return height;
-	}
-	inline uint32_t* GetData() const {
-		return data;
-	}
 	inline RGBA GetPixel(int x, int y) const {
 		return (RGBA){data[x + y * width]};
 	}
@@ -51,15 +75,7 @@ public:
 	}
 };
 
-class RGBBitmap {
-private:
-	/* Individual pixels of the bitmap */
-	uint32_t* data{nullptr};
-	/* Width of the bitmap */
-	int width{0};
-	/* Height of the bitmap */
-	int height{0};
-	
+class RGBBitmap : public BaseBitmap {
 public:
 	RGBBitmap(int width, int height);
 	RGBBitmap(uint32_t* source, int sourceWidth, int sourceHeight);
@@ -72,15 +88,6 @@ public:
 	RGBBitmap(RGBBitmap&& other) noexcept;
 	RGBBitmap& operator=(RGBBitmap&& other) noexcept;
 	
-	inline int GetWidth() const  {
-		return width;
-	}
-	inline int GetHeight() const {
-		return height;
-	}
-	inline uint32_t* GetData() const {
-		return data;
-	}
 	inline RGB GetPixel(int x, int y) const {
 		return (RGBA){data[x + y * width]};
 	}
@@ -89,43 +96,43 @@ public:
 	}
 };
 
-class MonochromeBitmap {
-private:
-	/* Individual pixels of the bitmap */
-	uint8_t* data{nullptr};
-	/* Width of the bitmap */
-	int width{0};
-	/* Height of the bitmap */
-	int height{0};
-public:
-	MonochromeBitmap(int width, int height);
-	MonochromeBitmap(uint8_t* source, int sourceWidth, int sourceHeight);
-	MonochromeBitmap(const std::string& file);
-	~MonochromeBitmap();
+// class MonochromeBitmap {
+// private:
+// 	/* Individual pixels of the bitmap */
+// 	uint8_t* data{nullptr};
+// 	/* Width of the bitmap */
+// 	int width{0};
+// 	/* Height of the bitmap */
+// 	int height{0};
+// public:
+// 	MonochromeBitmap(int width, int height);
+// 	MonochromeBitmap(uint8_t* source, int sourceWidth, int sourceHeight);
+// 	MonochromeBitmap(const std::string& file);
+// 	~MonochromeBitmap();
 
-	// copy constructor/assignment
-	MonochromeBitmap(const MonochromeBitmap& other);
-	MonochromeBitmap& operator=(const MonochromeBitmap& other);
-	MonochromeBitmap(MonochromeBitmap&& other) noexcept;
-	MonochromeBitmap& operator=(MonochromeBitmap&& other) noexcept;
+// 	// copy constructor/assignment
+// 	MonochromeBitmap(const MonochromeBitmap& other);
+// 	MonochromeBitmap& operator=(const MonochromeBitmap& other);
+// 	MonochromeBitmap(MonochromeBitmap&& other) noexcept;
+// 	MonochromeBitmap& operator=(MonochromeBitmap&& other) noexcept;
 
-	inline int GetWidth() const  {
-		return width;
-	}
-	inline int GetHeight() const {
-		return height;
-	}
-	inline uint8_t* GetData() const {
-		return data;
-	}
+// 	inline int GetWidth() const  {
+// 		return width;
+// 	}
+// 	inline int GetHeight() const {
+// 		return height;
+// 	}
+// 	inline uint8_t* GetData() const {
+// 		return data;
+// 	}
 	
-	inline uint8_t GetPixel(int x, int y) {
-		return data[x + y * width];
-	}
-	inline void SetPixel(const uint8_t& value, int x, int y) {
-		data[x + y * width] = value;
-	}
-};
+// 	inline uint8_t GetPixel(int x, int y) {
+// 		return data[x + y * width];
+// 	}
+// 	inline void SetPixel(const uint8_t& value, int x, int y) {
+// 		data[x + y * width] = value;
+// 	}
+// };
 
 using Bitmap = RGBABitmap;
 
