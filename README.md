@@ -1,5 +1,7 @@
-# Cidr
+
 <img align="right" src="cidr.png" alt="cidr logo">
+
+# Cidr
 Cidr (pronounced "Sidr" which stands for "Simple Drawer" or "Simple Drawing") is (supposed to be) a simple header only library which you can use to easily draw simple stuff (simple geometric shapes such as lines squares etc, bitmaps and other simple stuff). All it requires is a simple pixel color buffer.
 
 #### Cidr has following features
