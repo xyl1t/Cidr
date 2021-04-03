@@ -912,45 +912,55 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const F
 	int charsRows = font.GetFontSheetWidth() / fontSizeWidth;
 	int charsCols = font.GetFontSheetHeight() / fontSizeHeight;
 	
+	int newLineCount{};
+	int caretCol{};
 	for (int letterCount = 0; letterCount < text.size(); letterCount++) {
 		const unsigned char& letter = text[letterCount];
 		if(letter < 0 || letter > 255) continue;
 		
 		int letterX = letter % charsCols;
 		int letterY = letter / charsRows;
-		
-		for (int i = 0; i < fontSizeWidth; i++) {
-			for (int j = 0; j < fontSizeHeight; j++) {
-				const RGB& letterPixel = font.GetPixel(letterX * fontSizeWidth + i, letterY * fontSizeHeight + j);
-				
-				int subX = x + letterCount * (fontSizeWidth) + i;
-				int subY = y + j;
-				int fw = font.GetFontWidth();
-				int fh = font.GetFontHeight();
-				int ts = text.size();
-				
-				// switch (alignment) {
-				// 	// case TextAlign::TL: break; // NOTE: this is Default
-				// 	case TextAlign::TC: subX -= fw * ts/2.f; break;
-				// 	case TextAlign::TR: subX -= fw * ts; break;
-				// 	case TextAlign::CL: break;
-				// 	case TextAlign::CC: subX -= fw * ts/2.f; break;
-				// 	case TextAlign::CR: subX -= fw * ts; break;
-				// 	case TextAlign::BL: break;
-				// 	case TextAlign::BC: subY += fh; subX -= fw * ts/2.f; break;
-				// 	case TextAlign::BR: subX -= fw * ts; break;
-				// }
-				
-				if(subX >= GetWidth() || subY >= GetHeight() || 
-				   subX < 0 || subY < 0)
-				   continue;
-				
-				if(letterPixel == RGB::Black && bColor != RGBA::Transparent && GetPixel(subX, subY) != shadowColor) {
-					DrawPoint(bColor, subX, subY);
-				} else if(letterPixel == RGB::White){
-					DrawPoint(fColor, subX, subY);
-					if(font.GetPixel(letterX * fontSizeWidth + i + shadowOffsetX, letterY * fontSizeHeight + j + shadowOffsetY) == RGB::Black) {
-						DrawPoint(shadowColor, subX + shadowOffsetX, subY + shadowOffsetY);
+		if (letter == '\n') {
+			newLineCount++;
+			caretCol = 0;
+		} else	if (letter == '\t') {
+			// NOTE: the 4 is the tab size
+			caretCol += 4 - (caretCol) % 4;
+		} else {
+			caretCol++;
+			for (int i = 0; i < fontSizeWidth; i++) {
+				for (int j = 0; j < fontSizeHeight; j++) {
+					const RGB& letterPixel = font.GetPixel(letterX * fontSizeWidth + i, letterY * fontSizeHeight + j);
+					
+					int subX = x + (caretCol-1) * (fontSizeWidth) + i;
+					int subY = y + j + newLineCount * fontSizeHeight;
+					
+					// int fw = font.GetFontWidth();
+					// int fh = font.GetFontHeight();
+					// int ts = text.size();
+					// switch (alignment) {
+					// 	// case TextAlign::TL: break; // NOTE: this is Default
+					// 	case TextAlign::TC: subX -= fw * ts/2.f; break;
+					// 	case TextAlign::TR: subX -= fw * ts; break;
+					// 	case TextAlign::CL: break;
+					// 	case TextAlign::CC: subX -= fw * ts/2.f; break;
+					// 	case TextAlign::CR: subX -= fw * ts; break;
+					// 	case TextAlign::BL: break;
+					// 	case TextAlign::BC: subY += fh; subX -= fw * ts/2.f; break;
+					// 	case TextAlign::BR: subX -= fw * ts; break;
+					// }
+					
+					if(subX >= GetWidth() || subY >= GetHeight() || 
+					subX < 0 || subY < 0)
+					continue;
+					
+					if(letterPixel == RGB::Black && bColor != RGBA::Transparent && GetPixel(subX, subY) != shadowColor) {
+						DrawPoint(bColor, subX, subY);
+					} else if(letterPixel == RGB::White){
+						DrawPoint(fColor, subX, subY);
+						if(font.GetPixel(letterX * fontSizeWidth + i + shadowOffsetX, letterY * fontSizeHeight + j + shadowOffsetY) == RGB::Black) {
+							DrawPoint(shadowColor, subX + shadowOffsetX, subY + shadowOffsetY);
+						}
 					}
 				}
 			}
