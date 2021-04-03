@@ -165,6 +165,11 @@ void Cidr::Renderer::FillRectangle(const RGBA& color, Rectangle rectangle) {
 	if(rectangle.x >= this->width) return;
 	if(rectangle.y >= this->height) return;
 	
+	if(rectangle.width == 1 && rectangle.height == 1) { 
+		DrawPoint(color, rectangle.x, rectangle.y);
+		return;
+	}
+	
 	// clamp locations
 	Point clampedLocation {rectangle.x, rectangle.y};
 	if(rectangle.x < 0) {
@@ -906,7 +911,7 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, 
 	}
 }
 
-void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, Cidr::TextAlignment ta, const Font& font, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
+void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, Cidr::TextAlignment ta, const Font& font, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
 	static int globalX = 0;
 	static int globalY = 0;
 	int startX = 0;
@@ -918,7 +923,7 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, Cidr::T
 	int fontSizeHeight = font.GetFontHeight();
 	int charsRows = font.GetFontSheetWidth() / fontSizeWidth;
 	int charsCols = font.GetFontSheetHeight() / fontSizeHeight;
-	
+		
 	int textBoundingBoxWidth{};
 	int textBoundingBoxHeight{1};
 	int localWidth{};
@@ -963,18 +968,18 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, Cidr::T
 			if(x == -1 || y == -1) {
 				globalX++;
 			}
-			for (int i = 0; i < fontSizeWidth; i++) {
-				for (int j = 0; j < fontSizeHeight; j++) {
-					const RGB& letterPixel = font.GetPixel(letterX * fontSizeWidth + i, letterY * fontSizeHeight + j);
+			for (int i = 0; i < fontSizeWidth * size; i++) {
+				for (int j = 0; j < fontSizeHeight * size; j++) {
+					const RGB& letterPixel = font.GetPixel(letterX * fontSizeWidth + i / size, letterY * fontSizeHeight + j / size);
 					
 					int subX{};
 					int subY{};
 					
 					if(x >= 0 && y >= 0) {
-						subX = x + (caretCol-1) * (fontSizeWidth) + i;
+						subX = x + (caretCol-1) * size * (fontSizeWidth) + i;
 						subY = y + newLineCount * fontSizeHeight + j;
 					} else {
-						subX = startX * fontSizeWidth + (caretCol-1) * (fontSizeWidth) + i;
+						subX = startX * fontSizeWidth + (caretCol-1) * size * (fontSizeWidth) + i;
 						if(subX >= GetWidth()) {
 							globalY++;
 							globalX = 0;
@@ -982,25 +987,27 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, Cidr::T
 							caretCol = 1;
 							subX = startX * fontSizeWidth + (caretCol-1) * (fontSizeWidth) + i;
 						}
-						subY = j + globalY * fontSizeHeight;
+						subY = j + globalY*size * fontSizeHeight;
 					}
 					
-					int fw = font.GetFontWidth();
-					int fh = font.GetFontHeight();
-					switch (ta) {
-						case TextAlignment::TL: break; // NOTE: this is Default
-						case TextAlignment::TC: subX -= fw * textBoundingBoxWidth/2.f; break;
-						case TextAlignment::TR: subX -= fw * textBoundingBoxWidth; break;
-						case TextAlignment::CL: subY -= fh * textBoundingBoxHeight/2.f; break;
-						case TextAlignment::CC: subX -= fw * textBoundingBoxWidth/2.f; 
-												subY -= fh * textBoundingBoxHeight/2.f; break;
-						case TextAlignment::CR: subX -= fw * textBoundingBoxWidth; 
-												subY -= fh * textBoundingBoxHeight/2.f;break;
-						case TextAlignment::BL: subY -= fh * textBoundingBoxHeight; break;
-						case TextAlignment::BC: subX -= fw * textBoundingBoxWidth/2.f; 
-												subY -= fh * textBoundingBoxHeight; break;
-						case TextAlignment::BR: subX -= fw * textBoundingBoxWidth; 
-												subY -= fh * textBoundingBoxHeight; break;
+					if (x >= 0 && y >= 0) {
+						int fw = font.GetFontWidth();
+						int fh = font.GetFontHeight();
+						switch (ta) {
+							case TextAlignment::TL: break; // NOTE: this is Default
+							case TextAlignment::TC: subX -= fw * textBoundingBoxWidth/2.f*size; break;
+							case TextAlignment::TR: subX -= fw * textBoundingBoxWidth*size; break;
+							case TextAlignment::CL: subY -= fh * textBoundingBoxHeight/2.f*size; break;
+							case TextAlignment::CC: subX -= fw * textBoundingBoxWidth/2.f*size; 
+													subY -= fh * textBoundingBoxHeight/2.f*size; break;
+							case TextAlignment::CR: subX -= fw * textBoundingBoxWidth*size; 
+													subY -= fh * textBoundingBoxHeight/2.f*size;break;
+							case TextAlignment::BL: subY -= fh * textBoundingBoxHeight*size; break;
+							case TextAlignment::BC: subX -= fw * textBoundingBoxWidth/2.f*size; 
+													subY -= fh * textBoundingBoxHeight*size; break;
+							case TextAlignment::BR: subX -= fw * textBoundingBoxWidth*size; 
+													subY -= fh * textBoundingBoxHeight*size; break;
+						}
 					}
 					
 					if(subX >= GetWidth() || subY >= GetHeight() || 
@@ -1011,8 +1018,8 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, Cidr::T
 						DrawPoint(bColor, subX, subY);
 					} else if(letterPixel == RGB::White){
 						DrawPoint(fColor, subX, subY);
-						if(font.GetPixel(letterX * fontSizeWidth + i + shadowOffsetX, letterY * fontSizeHeight + j + shadowOffsetY) == RGB::Black) {
-							DrawPoint(shadowColor, subX + shadowOffsetX, subY + shadowOffsetY);
+						if(font.GetPixel(letterX * fontSizeWidth + i/size + shadowOffsetX, letterY * fontSizeHeight + j/size + shadowOffsetY) == RGB::Black) {
+							DrawPoint(shadowColor, subX + shadowOffsetX*size, subY + shadowOffsetY*size);
 						}
 					}
 				}

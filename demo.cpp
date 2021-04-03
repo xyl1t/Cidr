@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
 	uint32_t timer = 0;
 	
 	Cidr::Bitmap savingBitmap{256, 256};
-	Cidr::Renderer savingBitmapRend{savingBitmap.GetData(), savingBitmap.GetWidth(), savingBitmap.GetHeight()};
+	Cidr::Renderer savingBitmapRenderer{savingBitmap.GetData(), savingBitmap.GetWidth(), savingBitmap.GetHeight()};
 	for (uint32_t x = 0; x < 256; x++) {
 		for (uint32_t y = 0; y < 256; y++) {
 			Cidr::RGBA c1((x^y) | ~x, (x) & ~y, (y) | x);
@@ -83,10 +83,7 @@ int main(int argc, char** argv) {
 		}
 	}
 	
-	savingBitmapRend.DrawText("Cidr",
-		128-2*Cidr::Fonts::Raster8x16.GetFontWidth(),
-		128-0.5*Cidr::Fonts::Raster8x16.GetFontHeight(), 
-		Cidr::Fonts::Raster8x12, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black);
+	savingBitmapRenderer.DrawText("Cidr", 132, 128, Cidr::TextAlignment::CC, Cidr::Fonts::Raster8x16, 4, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGB::Black);
 	
 	savingBitmap.SaveAs("savingBitmap.png", Cidr::Bitmap::Formats::PNG);
 	
@@ -313,16 +310,16 @@ int main(int argc, char** argv) {
 		
 		/* TEXT */
 		if(showText) {
-			cidrRend.DrawText("textured triangles", pInBetween.x - (8 * 18 / 2), pInBetween.y - 32, Cidr::Fonts::Raster8x16, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGB::Black, 1, 1);
-			cidrRend.DrawText("shaded rectangle", 64, 16, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("balls", 365, 16, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("triangles", 350, 110, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("lines", 365, 220, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("combinations", 80, 270, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("images", 335, 270, Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("textured triangles", pInBetween.x - (8 * 18 / 2), pInBetween.y - 32, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGB::Black, 1, 1);
+			cidrRend.DrawText("shaded rectangle", 64, 16, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("balls", 365, 16, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("triangles", 350, 110, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("lines", 365, 220, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("combinations", 80, 270, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("images", 335, 270, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
 			if(currentShader != nullptr) {
 				std::string shaderText = "shader";
-				cidrRend.DrawText(shaderText, mx-shaderSize - (Cidr::Fonts::Raster8x16.GetFontWidth() * shaderText.length()) / 2 + shaderSize/2, my-shaderSize-Cidr::Fonts::Raster8x16.GetFontHeight(), Cidr::Fonts::Raster8x16, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+				cidrRend.DrawText(shaderText, mx-shaderSize - (Cidr::Fonts::Raster8x16.GetFontWidth() * shaderText.length()) / 2 + shaderSize/2, my-shaderSize-Cidr::Fonts::Raster8x16.GetFontHeight(), Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
 			}
 		}
 		
@@ -336,7 +333,7 @@ int main(int argc, char** argv) {
 		
 		int wordCount = 0;
 		for(const std::string& word : {	"Lorem", "ipsum", "dolor", "sit", "amet,", "consectetur", "adipiscing", "elit,"	}) {
-			cidrRend.DrawText(word, 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420, Cidr::Fonts::Raster8x16, 
+			cidrRend.DrawText(word, 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1,
 				getRandomColor(128, 255), getRandomColor(0, 64), Cidr::RGBA::Black, 1, 1);
 			wordCount += word.length();
 			cidrRend.DrawText(" ", 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420);
@@ -344,7 +341,7 @@ int main(int argc, char** argv) {
 		}
 		wordCount = 0;
 		for(const std::string& word : { "sed", "do", "eiusmod", "tempor", "incididunt", "labore", "et", "dolore", "aliqua." }) {
-			cidrRend.DrawText(word, 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420 + Cidr::Fonts::Raster8x16.GetFontHeight(), Cidr::Fonts::Raster8x16, 
+			cidrRend.DrawText(word, 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420 + Cidr::Fonts::Raster8x16.GetFontHeight(), Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1,
 				getRandomColor(128, 255), getRandomColor(0, 64), Cidr::RGBA::Black, 1, 1);
 			wordCount += word.length();
 			cidrRend.DrawText(" ", 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420 + Cidr::Fonts::Raster8x16.GetFontHeight());
