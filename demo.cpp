@@ -319,7 +319,8 @@ int main(int argc, char** argv) {
 			cidrRend.DrawText("images", 335, 270, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
 			if(currentShader != nullptr) {
 				std::string shaderText = "shader";
-				cidrRend.DrawText(shaderText, mx-shaderSize - (Cidr::Fonts::Raster8x16.GetFontWidth() * shaderText.length()) / 2 + shaderSize/2, my-shaderSize-Cidr::Fonts::Raster8x16.GetFontHeight(), Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+				if(mx-shaderSize - (Cidr::Fonts::Raster8x16.GetFontWidth() * shaderText.length()) / 2 + shaderSize/2 >= 0 && my-shaderSize-Cidr::Fonts::Raster8x16.GetFontHeight() >= 0)
+					cidrRend.DrawText(shaderText, mx-shaderSize - (Cidr::Fonts::Raster8x16.GetFontWidth() * shaderText.length()) / 2 + shaderSize/2, my-shaderSize-Cidr::Fonts::Raster8x16.GetFontHeight(), Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
 			}
 		}
 		
