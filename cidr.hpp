@@ -559,7 +559,7 @@ inline HSL RGBtoHSL(const RGB& colorRGB) {
 		return color;
 	}
 	else if(cmax == r) {
-		color.setH(60.f * (std::fmodf((g - b) / delta, 6)));
+		color.setH(60.f * (std::fmod((g - b) / delta, 6)));
 	}
 	else if(cmax == g) {
 		color.setH(60.f * ((b - r) / delta + 2)); 
@@ -577,7 +577,7 @@ inline HSL RGBtoHSL(const RGB& colorRGB) {
 }
 inline RGB HSLtoRGB(const HSL& colorHSL) {
 	float c = (1 - std::abs(2 * colorHSL.getL() - 1)) * colorHSL.getS();
-	float x = c * (1 - std::abs(std::fmodf((colorHSL.getH()) / 60.f, 2) - 1.f));
+	float x = c * (1 - std::abs(std::fmod((colorHSL.getH()) / 60.f, 2) - 1.f));
 	float m = colorHSL.getL() - c / 2.f;
 	
 	float r = 0.0, g = 0.0, b = 0.0;
