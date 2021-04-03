@@ -32,7 +32,7 @@ public:
 // NOTE: 
 // [T]op, [B]ottom [C]enter
 // [R]ight, [L]eft
-enum class TextAlign {
+enum class TextAlignment {
 	TL,	TC,	TR,
 	CL,	CC,	CR,
 	BL,	BC,	BR,

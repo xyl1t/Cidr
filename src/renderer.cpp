@@ -906,11 +906,36 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, 
 	}
 }
 
-void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const Font& font, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
+void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, Cidr::TextAlignment ta, const Font& font, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
+	static int globalX = 0;
+	static int globalY = 0;
+	int startX = 0;
+	if (x < 0 || y < 0) {
+		startX = globalX;
+	}
+	
 	int fontSizeWidth = font.GetFontWidth();
 	int fontSizeHeight = font.GetFontHeight();
 	int charsRows = font.GetFontSheetWidth() / fontSizeWidth;
 	int charsCols = font.GetFontSheetHeight() / fontSizeHeight;
+	
+	int textBoundingBoxWidth{};
+	int textBoundingBoxHeight{1};
+	int localWidth{};
+	for (const auto& letter : text) {
+		if (letter == '\n') {
+			textBoundingBoxHeight++;
+			localWidth = 0;
+		} else	if (letter == '\t') {
+			// NOTE: the 4 is the tab size
+			localWidth += 4 - (localWidth) % 4;
+		} else {
+			localWidth++;
+		}
+		if(localWidth > textBoundingBoxWidth) {
+			textBoundingBoxWidth = localWidth;
+		}
+	}
 	
 	int newLineCount{};
 	int caretCol{};
@@ -923,32 +948,60 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const F
 		if (letter == '\n') {
 			newLineCount++;
 			caretCol = 0;
+			if(x == -1 || y == -1) {
+				globalY++;
+				globalX = 0;
+			}
 		} else	if (letter == '\t') {
 			// NOTE: the 4 is the tab size
 			caretCol += 4 - (caretCol) % 4;
+			if(x == -1 || y == -1) {
+				globalX += 4 - (globalX) % 4;
+			}
 		} else {
 			caretCol++;
+			if(x == -1 || y == -1) {
+				globalX++;
+			}
 			for (int i = 0; i < fontSizeWidth; i++) {
 				for (int j = 0; j < fontSizeHeight; j++) {
 					const RGB& letterPixel = font.GetPixel(letterX * fontSizeWidth + i, letterY * fontSizeHeight + j);
 					
-					int subX = x + (caretCol-1) * (fontSizeWidth) + i;
-					int subY = y + j + newLineCount * fontSizeHeight;
+					int subX{};
+					int subY{};
 					
-					// int fw = font.GetFontWidth();
-					// int fh = font.GetFontHeight();
-					// int ts = text.size();
-					// switch (alignment) {
-					// 	// case TextAlign::TL: break; // NOTE: this is Default
-					// 	case TextAlign::TC: subX -= fw * ts/2.f; break;
-					// 	case TextAlign::TR: subX -= fw * ts; break;
-					// 	case TextAlign::CL: break;
-					// 	case TextAlign::CC: subX -= fw * ts/2.f; break;
-					// 	case TextAlign::CR: subX -= fw * ts; break;
-					// 	case TextAlign::BL: break;
-					// 	case TextAlign::BC: subY += fh; subX -= fw * ts/2.f; break;
-					// 	case TextAlign::BR: subX -= fw * ts; break;
-					// }
+					if(x >= 0 && y >= 0) {
+						subX = x + (caretCol-1) * (fontSizeWidth) + i;
+						subY = y + newLineCount * fontSizeHeight + j;
+					} else {
+						subX = startX * fontSizeWidth + (caretCol-1) * (fontSizeWidth) + i;
+						if(subX >= GetWidth()) {
+							globalY++;
+							globalX = 0;
+							startX = 0;
+							caretCol = 1;
+							subX = startX * fontSizeWidth + (caretCol-1) * (fontSizeWidth) + i;
+						}
+						subY = j + globalY * fontSizeHeight;
+					}
+					
+					int fw = font.GetFontWidth();
+					int fh = font.GetFontHeight();
+					switch (ta) {
+						case TextAlignment::TL: break; // NOTE: this is Default
+						case TextAlignment::TC: subX -= fw * textBoundingBoxWidth/2.f; break;
+						case TextAlignment::TR: subX -= fw * textBoundingBoxWidth; break;
+						case TextAlignment::CL: subY -= fh * textBoundingBoxHeight/2.f; break;
+						case TextAlignment::CC: subX -= fw * textBoundingBoxWidth/2.f; 
+												subY -= fh * textBoundingBoxHeight/2.f; break;
+						case TextAlignment::CR: subX -= fw * textBoundingBoxWidth; 
+												subY -= fh * textBoundingBoxHeight/2.f;break;
+						case TextAlignment::BL: subY -= fh * textBoundingBoxHeight; break;
+						case TextAlignment::BC: subX -= fw * textBoundingBoxWidth/2.f; 
+												subY -= fh * textBoundingBoxHeight; break;
+						case TextAlignment::BR: subX -= fw * textBoundingBoxWidth; 
+												subY -= fh * textBoundingBoxHeight; break;
+					}
 					
 					if(subX >= GetWidth() || subY >= GetHeight() || 
 					subX < 0 || subY < 0)
