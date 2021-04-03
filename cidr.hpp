@@ -905,6 +905,15 @@ public:
 	inline int GetFontSheetHeight() const { return fontSheet.GetHeight(); }
 };
 
+// NOTE: 
+// [T]op, [B]ottom [C]enter
+// [R]ight, [L]eft
+enum class TextAlignment {
+	TL,	TC,	TR,
+	CL,	CC,	CR,
+	BL,	BC,	BR,
+};
+
 namespace Fonts {
 static const Cidr::Font Raster8x16 { (uint8_t[]) {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -2007,7 +2016,7 @@ public:
 	void FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3);
 	void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3);
 	void DrawBitmap(const Bitmap& bitmap, float destX, float destY, int destWidth, int destHeight, float srcX, float srcY, int srcWidth, int srcHeight);
-	void DrawText(const std::string_view text, int x, int y, const Font& f = Cidr::Fonts::Raster8x16, const RGBA& fColor = RGB::White, const RGBA& bColor = RGBA::Transparent, const RGBA& shadowColor = RGBA::Transparent, int shadowOffsetX = 1, int shadowOffsetY = 1);
+	void DrawText(const std::string_view text, int x = -1, int y = -1, TextAlignment ta = TextAlignment::TL, const Font& f = Cidr::Fonts::Raster8x12, float size = 1, const RGBA& fColor = RGB::White, const RGBA& bColor = RGBA::Transparent, const RGBA& shadowColor = RGBA::Transparent, int shadowOffsetX = 1, int shadowOffsetY = 1);
 
 	void DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, Point p1, Point p2, Point p3);
 	
@@ -2278,6 +2287,11 @@ void Cidr::Renderer::FillRectangle(const RGBA& color, Rectangle rectangle) {
 	// exit if the rectangle is outside of the screen
 	if(rectangle.x >= this->width) return;
 	if(rectangle.y >= this->height) return;
+	
+	if(rectangle.width == 1 && rectangle.height == 1) { 
+		DrawPoint(color, rectangle.x, rectangle.y);
+		return;
+	}
 	
 	// clamp locations
 	Point clampedLocation {rectangle.x, rectangle.y};
@@ -3020,36 +3034,116 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, 
 	}
 }
 
-void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, const Font& font, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
+void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, Cidr::TextAlignment ta, const Font& font, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
+	static int globalX = 0;
+	static int globalY = 0;
+	int startX = 0;
+	if (x < 0 || y < 0) {
+		startX = globalX;
+	}
+	
 	int fontSizeWidth = font.GetFontWidth();
 	int fontSizeHeight = font.GetFontHeight();
 	int charsRows = font.GetFontSheetWidth() / fontSizeWidth;
 	int charsCols = font.GetFontSheetHeight() / fontSizeHeight;
+		
+	int textBoundingBoxWidth{};
+	int textBoundingBoxHeight{1};
+	int localWidth{};
+	for (const auto& letter : text) {
+		if (letter == '\n') {
+			textBoundingBoxHeight++;
+			localWidth = 0;
+		} else	if (letter == '\t') {
+			// NOTE: the 4 is the tab size
+			localWidth += 4 - (localWidth) % 4;
+		} else {
+			localWidth++;
+		}
+		if(localWidth > textBoundingBoxWidth) {
+			textBoundingBoxWidth = localWidth;
+		}
+	}
 	
+	int newLineCount{};
+	int caretCol{};
 	for (int letterCount = 0; letterCount < text.size(); letterCount++) {
 		const unsigned char& letter = text[letterCount];
 		if(letter < 0 || letter > 255) continue;
 		
 		int letterX = letter % charsCols;
 		int letterY = letter / charsRows;
-		
-		for (int i = 0; i < fontSizeWidth; i++) {
-			for (int j = 0; j < fontSizeHeight; j++) {
-				const RGB& letterPixel = font.GetPixel(letterX * fontSizeWidth + i, letterY * fontSizeHeight + j);
-				
-				int subX = x + letterCount * (fontSizeWidth) + i;
-				int subY = y + j;
-				
-				if(subX >= GetWidth() || subY >= GetHeight() || 
-				   subX < 0 || subY < 0)
-				   continue;
-				
-				if(letterPixel == RGB::Black && bColor != RGBA::Transparent && GetPixel(subX, subY) != shadowColor) {
-					DrawPoint(bColor, subX, subY);
-				} else if(letterPixel == RGB::White){
-					DrawPoint(fColor, subX, subY);
-					if(font.GetPixel(letterX * fontSizeWidth + i + shadowOffsetX, letterY * fontSizeHeight + j + shadowOffsetY) == RGB::Black) {
-						DrawPoint(shadowColor, subX + shadowOffsetX, subY + shadowOffsetY);
+		if (letter == '\n') {
+			newLineCount++;
+			caretCol = 0;
+			if(x == -1 || y == -1) {
+				globalY++;
+				globalX = 0;
+			}
+		} else	if (letter == '\t') {
+			// NOTE: the 4 is the tab size
+			caretCol += 4 - (caretCol) % 4;
+			if(x == -1 || y == -1) {
+				globalX += 4 - (globalX) % 4;
+			}
+		} else {
+			caretCol++;
+			if(x == -1 || y == -1) {
+				globalX++;
+			}
+			for (int i = 0; i < fontSizeWidth * size; i++) {
+				for (int j = 0; j < fontSizeHeight * size; j++) {
+					const RGB& letterPixel = font.GetPixel(letterX * fontSizeWidth + i / size, letterY * fontSizeHeight + j / size);
+					
+					int subX{};
+					int subY{};
+					
+					if(x >= 0 && y >= 0) {
+						subX = x + (caretCol-1) * size * (fontSizeWidth) + i;
+						subY = y + newLineCount * fontSizeHeight + j;
+					} else {
+						subX = startX * fontSizeWidth + (caretCol-1) * size * (fontSizeWidth) + i;
+						if(subX >= GetWidth()) {
+							globalY++;
+							globalX = 0;
+							startX = 0;
+							caretCol = 1;
+							subX = startX * fontSizeWidth + (caretCol-1) * (fontSizeWidth) + i;
+						}
+						subY = j + globalY*size * fontSizeHeight;
+					}
+					
+					if (x >= 0 && y >= 0) {
+						int fw = font.GetFontWidth();
+						int fh = font.GetFontHeight();
+						switch (ta) {
+							case TextAlignment::TL: break; // NOTE: this is Default
+							case TextAlignment::TC: subX -= fw * textBoundingBoxWidth/2.f*size; break;
+							case TextAlignment::TR: subX -= fw * textBoundingBoxWidth*size; break;
+							case TextAlignment::CL: subY -= fh * textBoundingBoxHeight/2.f*size; break;
+							case TextAlignment::CC: subX -= fw * textBoundingBoxWidth/2.f*size; 
+													subY -= fh * textBoundingBoxHeight/2.f*size; break;
+							case TextAlignment::CR: subX -= fw * textBoundingBoxWidth*size; 
+													subY -= fh * textBoundingBoxHeight/2.f*size;break;
+							case TextAlignment::BL: subY -= fh * textBoundingBoxHeight*size; break;
+							case TextAlignment::BC: subX -= fw * textBoundingBoxWidth/2.f*size; 
+													subY -= fh * textBoundingBoxHeight*size; break;
+							case TextAlignment::BR: subX -= fw * textBoundingBoxWidth*size; 
+													subY -= fh * textBoundingBoxHeight*size; break;
+						}
+					}
+					
+					if(subX >= GetWidth() || subY >= GetHeight() || 
+					subX < 0 || subY < 0)
+					continue;
+					
+					if(letterPixel == RGB::Black && bColor != RGBA::Transparent && GetPixel(subX, subY) != shadowColor) {
+						DrawPoint(bColor, subX, subY);
+					} else if(letterPixel == RGB::White){
+						DrawPoint(fColor, subX, subY);
+						if(font.GetPixel(letterX * fontSizeWidth + i/size + shadowOffsetX, letterY * fontSizeHeight + j/size + shadowOffsetY) == RGB::Black) {
+							DrawPoint(shadowColor, subX + shadowOffsetX*size, subY + shadowOffsetY*size);
+						}
 					}
 				}
 			}
