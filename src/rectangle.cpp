@@ -7,9 +7,9 @@
 #include "rectangle.hpp"
 
 Cidr::Rectangle::operator FRectangle() const {
-	return (FRectangle){(float)x, (float)y, (float)width, (float)height};
+	return FRectangle{(float)x, (float)y, (float)width, (float)height};
 }
 
 Cidr::FRectangle::operator Rectangle() const {
-	return (Rectangle){(int)x, (int)y, (int)width, (int)height};
+	return Rectangle{(int)x, (int)y, (int)width, (int)height};
 }

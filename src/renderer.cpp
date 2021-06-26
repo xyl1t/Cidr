@@ -218,7 +218,7 @@ void Cidr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int 
 	
 	std::vector<std::vector<uint32_t>> shadedPixels{};
 	for (int y = clampedLocation.y; y < clampedLocation.y + clampedHeight; y++) {
-		shadedPixels.push_back((std::vector<uint32_t>){});
+		shadedPixels.push_back(std::vector<uint32_t>{});
 		for (int x = clampedLocation.x; x < clampedLocation.x + clampedWidth; x++) {
 			shadedPixels[y - clampedLocation.y].push_back(RGBtoUINT(shader(*this, x, y)));
 		}

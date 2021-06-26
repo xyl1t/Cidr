@@ -611,14 +611,14 @@ inline RGB HSLtoRGB(const HSL& colorHSL) {
 		g = 0;
 		b = x;
 	}
-	return (RGB){
+	return RGB {
 		static_cast<uint8_t>((r + m) * 255),
 		static_cast<uint8_t>((g + m) * 255),
 		static_cast<uint8_t>((b + m) * 255)
-		};
+	};
 }
 
-} // NAMESPACE CIDR END 
+}
 
 std::ostream& operator<<(std::ostream& out, const Cidr::RGB& rgb);
 std::ostream& operator<<(std::ostream& out, const Cidr::RGBA& rgba);
@@ -738,7 +738,7 @@ public:
 	RGBABitmap& operator=(RGBABitmap&& other) noexcept;
 	
 	inline RGBA GetPixel(int x, int y) const {
-		return (RGBA){data[x + y * width]};
+		return RGBA{data[x + y * width]};
 	}
 	inline void SetPixel(const RGB& value, int x, int y) {
 		data[x + y * width] = RGBtoUINT(value);
@@ -759,7 +759,7 @@ public:
 	RGBBitmap& operator=(RGBBitmap&& other) noexcept;
 	
 	inline RGB GetPixel(int x, int y) const {
-		return (RGBA){data[x + y * width]};
+		return {data[x + y * width]};
 	}
 	inline void SetPixel(const RGB& value, int x, int y) {
 		data[x + y * width] = RGBtoUINT(value);
@@ -915,7 +915,7 @@ enum class TextAlignment {
 };
 
 namespace Fonts {
-static const Cidr::Font Raster8x16 { (uint8_t[]) {
+static const Cidr::Font Raster8x16 { new uint8_t[4096] {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x7E, 0x7E, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x78, 0x3C, 0xFC, 0xFE, 0x00, 0x00, 0x81, 0xFF, 0x00, 0x00, 0x18, 0x18, 0x00, 0xFF, 0x00, 0xFF, 0x70, 0x66, 0xCC, 0xC6, 0x18,
 	0x00, 0xA5, 0xDB, 0x36, 0x08, 0x3C, 0x3C, 0x00, 0xFF, 0x00, 0xFF, 0x58, 0x66, 0xFC, 0xFE, 0x18, 0x00, 0x81, 0xFF, 0x7F, 0x1C, 0x3C, 0x7E, 0x00, 0xFF, 0x3C, 0xC3, 0x4C, 0x66, 0x0C, 0xC6, 0xDB,
@@ -1046,7 +1046,7 @@ static const Cidr::Font Raster8x16 { (uint8_t[]) {
 	0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	
 }, 128, 256, 8, 16};
 
-static const Cidr::Font Raster8x8 { (uint8_t[]) {
+static const Cidr::Font Raster8x8 { new uint8_t[2048] {
 	0x00, 0x7E, 0x7E, 0x36, 0x08, 0x1C, 0x08, 0x00, 0xFF, 0x00, 0xFF, 0xF0, 0x3C, 0xFC, 0xFE, 0x99, 0x00, 0x81, 0xFF, 0x7F, 0x1C, 0x3E, 0x08, 0x00, 0xFF, 0x3C, 0xC3, 0xE0, 0x66, 0xCC, 0xC6, 0x5A,
 	0x00, 0xA5, 0xDB, 0x7F, 0x3E, 0x1C, 0x1C, 0x18, 0xE7, 0x66, 0x99, 0xF0, 0x66, 0xFC, 0xFE, 0x3C, 0x00, 0x81, 0xFF, 0x7F, 0x7F, 0x7F, 0x3E, 0x3C, 0xC3, 0x42, 0xBD, 0xBE, 0x66, 0x0C, 0xC6, 0xE7,
 	0x00, 0xBD, 0xC3, 0x3E, 0x3E, 0x7F, 0x7F, 0x3C, 0xC3, 0x42, 0xBD, 0x33, 0x3C, 0x0C, 0xC6, 0xE7, 0x00, 0x99, 0xE7, 0x1C, 0x1C, 0x2A, 0x3E, 0x18, 0xE7, 0x66, 0x99, 0x33, 0x18, 0x0E, 0xE6, 0x3C,
@@ -1113,7 +1113,7 @@ static const Cidr::Font Raster8x8 { (uint8_t[]) {
 	0x00, 0x3F, 0x3F, 0x3F, 0x18, 0x1B, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x3C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x38, 0x00, 0x00, 0x00, 0x00,
 }, 128, 128, 8, 8};
 
-static const Cidr::Font Raster10x10 { (uint8_t[]) {
+static const Cidr::Font Raster10x10 { new uint8_t[3200] {
 	0x00, 0xF0, 0xC3, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x03, 0xF0, 0x3F, 0x3E, 0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0xE6, 0x1F, 0x33, 0x30, 0xC0, 0x00, 0x03, 0x00, 0xFF, 0x03,
 	0xF0, 0x3F, 0x38, 0xCC, 0xC0, 0xC7, 0x1F, 0x0C, 0x00, 0x08, 0xE4, 0x9F, 0x7F, 0x78, 0xE0, 0x81, 0x07, 0x00, 0xFF, 0xE3, 0x71, 0x38, 0x2E, 0xCC, 0xC0, 0xC4, 0x98, 0x6D, 0x00, 0x28, 0x65, 0x9B,
 	0x7F, 0xFC, 0xE0, 0xC1, 0x0F, 0x1E, 0x87, 0xF3, 0x33, 0x30, 0x27, 0xCC, 0xC0, 0xC7, 0x9F, 0x7F, 0x00, 0x08, 0xE4, 0x9F, 0x7F, 0xFE, 0xF1, 0xE3, 0x1F, 0x3F, 0x03, 0x33, 0x33, 0xB3, 0x0F, 0x78,
@@ -1216,7 +1216,7 @@ static const Cidr::Font Raster10x10 { (uint8_t[]) {
 	0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 }, 160, 160, 10, 10};
 
-static const Cidr::Font Raster10x12 { (uint8_t[]) {
+static const Cidr::Font Raster10x12 { new uint8_t[3840] {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x03, 0xF0, 0x3F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0xC3, 0x0F, 0x00, 0x10, 0xC0, 0x00, 0x03, 0x00, 0xFF, 0x03,
 	0xF0, 0x3F, 0x3E, 0x78, 0xC0, 0xC7, 0x1F, 0x00, 0x00, 0x08, 0xE4, 0x1F, 0x11, 0x38, 0xE0, 0x81, 0x07, 0x00, 0xFF, 0xE3, 0x71, 0x38, 0x38, 0xCC, 0xC0, 0xC4, 0x18, 0x0C, 0x00, 0x28, 0x65, 0x9B,
 	0x3B, 0x7C, 0xE0, 0xC1, 0x0F, 0x00, 0xFF, 0xF3, 0x33, 0x30, 0x2E, 0xCC, 0xC0, 0xC4, 0x9F, 0x6D, 0x00, 0x08, 0xE4, 0x9F, 0x3F, 0xFE, 0xF8, 0xE7, 0x1F, 0x1E, 0x87, 0x33, 0x33, 0x33, 0x27, 0xCC,
@@ -1339,7 +1339,7 @@ static const Cidr::Font Raster10x12 { (uint8_t[]) {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 }, 160, 192, 10, 12};
 
-static const Cidr::Font Raster8x12 { (uint8_t[]) {
+static const Cidr::Font Raster8x12 { new uint8_t[3072] {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x7E, 0x00, 0x00, 0x18, 0x18, 0x00, 0xFF, 0x00, 0xFF, 0x7C, 0x3C, 0xFC, 0xFE, 0x18,
 	0x00, 0x81, 0xFF, 0x36, 0x08, 0x3C, 0x3C, 0x00, 0xFF, 0x00, 0xFF, 0x70, 0x66, 0xCC, 0xC6, 0x18, 0x00, 0xA5, 0xDB, 0x7F, 0x1C, 0x3C, 0x7E, 0x00, 0xFF, 0x3C, 0xC3, 0x58, 0x66, 0xFC, 0xFE, 0xDB,
 	0x00, 0x81, 0xFF, 0x7F, 0x3E, 0xE7, 0xFF, 0x18, 0xE7, 0x66, 0x99, 0x4C, 0x66, 0x0C, 0xC6, 0x3C, 0x00, 0x81, 0xFF, 0x7F, 0x7F, 0xE7, 0xFF, 0x3C, 0xC3, 0x42, 0xBD, 0x1E, 0x3C, 0x0C, 0xC6, 0xE7,
@@ -2022,40 +2022,40 @@ public:
 	
 	/* DRAWING FUNCTION OVERLOADS */
 	inline void DrawPoint(const RGBA& color, int x, int y) { DrawPoint(color, Point(x, y)); }
-	inline void DrawLine(const RGBA& color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(color, (Point){x1, y1}, (Point){x2, y2}, AA, GC); }
-	inline void DrawRectangle(const RGBA& color, int x, int y, int width, int height) { DrawRectangle(color, (Rectangle){x, y, width, height}); }
-	inline void FillRectangle(const RGBA& color, int x, int y, int width, int height) { FillRectangle(color, (Rectangle){x,y, width, height}); }
-	inline void FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), int x, int y, int width, int height) { FillRectangle(shader, (Rectangle){x, y, width, height}); }
-	inline void DrawCircle(const RGBA& color, int centreX, int centreY, int radius, bool AA = false) { DrawCircle(color, (Point){centreX,centreY}, radius, AA); }
-	inline void FillCircle(const RGBA& color, int centreX, int centreY, int radius, bool AA = false) { FillCircle(color, (Point){centreX,centreY}, radius, AA); }
-	inline void FillCircle(RGBA (*shader)(const Renderer& renderer, int x, int y), int centreX, int centreY, int radius, bool AA = false) { FillCircle(shader, (Point){centreX,centreY}, radius, AA); }
-	inline void DrawTriangle(const RGBA& color, int x1, int y1, int x2, int y2, int x3, int y3, bool AA = false, bool GC = false) { DrawTriangle(color, (Point){x1, y1}, (Point){x2, y2}, (Point){x3, y3}, AA, GC ); }
-	inline void DrawTriangle(const Bitmap& texture, float tx1, float ty1, float tx2, float ty2, float tx3, float ty3, int x1, int y1, int x2, int y2, int x3, int y3) { DrawTriangle(texture, (FPoint){tx1, ty1}, (FPoint){tx2, ty2}, (FPoint){tx3, ty3}, (Point){x1, y1}, (Point){x2, y2}, (Point){x3, y3}); }
-	inline void FillTriangle(const RGBA& color, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(color, (Point){x1, y1}, (Point){x2, y2}, (Point){x3, y3} ); }
-	inline void FillTriangle(RGBA color1, RGBA color2, RGBA color3, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(color1, color2, color3, (Point){x1, y1}, (Point){x2, y2}, (Point){x3, y3}); }
-	inline void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(shader, (Point){x1, y1}, (Point){x2, y2}, (Point){x3, y3} ); }
+	inline void DrawLine(const RGBA& color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(color, Point{x1, y1}, Point{x2, y2}, AA, GC); }
+	inline void DrawRectangle(const RGBA& color, int x, int y, int width, int height) { DrawRectangle(color, Rectangle{x, y, width, height}); }
+	inline void FillRectangle(const RGBA& color, int x, int y, int width, int height) { FillRectangle(color, Rectangle{x,y, width, height}); }
+	inline void FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), int x, int y, int width, int height) { FillRectangle(shader, Rectangle{x, y, width, height}); }
+	inline void DrawCircle(const RGBA& color, int centreX, int centreY, int radius, bool AA = false) { DrawCircle(color, Point{centreX,centreY}, radius, AA); }
+	inline void FillCircle(const RGBA& color, int centreX, int centreY, int radius, bool AA = false) { FillCircle(color, Point{centreX,centreY}, radius, AA); }
+	inline void FillCircle(RGBA (*shader)(const Renderer& renderer, int x, int y), int centreX, int centreY, int radius, bool AA = false) { FillCircle(shader, Point{centreX,centreY}, radius, AA); }
+	inline void DrawTriangle(const RGBA& color, int x1, int y1, int x2, int y2, int x3, int y3, bool AA = false, bool GC = false) { DrawTriangle(color, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}, AA, GC ); }
+	inline void DrawTriangle(const Bitmap& texture, float tx1, float ty1, float tx2, float ty2, float tx3, float ty3, int x1, int y1, int x2, int y2, int x3, int y3) { DrawTriangle(texture, FPoint{tx1, ty1}, FPoint{tx2, ty2}, FPoint{tx3, ty3}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}); }
+	inline void FillTriangle(const RGBA& color, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(color, Point{x1, y1}, Point{x2, y2}, Point{x3, y3} ); }
+	inline void FillTriangle(RGBA color1, RGBA color2, RGBA color3, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(color1, color2, color3, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}); }
+	inline void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(shader, Point{x1, y1}, Point{x2, y2}, Point{x3, y3} ); }
 	inline void DrawBitmap(const Bitmap& bitmap, FPoint destLocation, int destWidth, int destHeight, FPoint srcLocation, int srcWidth, int srcHeight) { DrawBitmap(bitmap, destLocation.x, destLocation.y, destWidth, destHeight, srcLocation.x, srcLocation.y, srcWidth, srcHeight); }
 	
-	inline void DrawPoint(uint32_t color, const Point& p) { DrawPoint((RGBA){color}, p); }
-	inline void DrawLine(uint32_t color, const Point& start, const Point& end, bool AA = false, bool GC = false) { DrawLine((RGBA){color}, start, end, AA, GC); }
-	inline void DrawRectangle(uint32_t color, Rectangle rectangle) { DrawRectangle((RGBA){color}, rectangle); }	
-	inline void FillRectangle(uint32_t color, Rectangle rectangle) { FillRectangle((RGBA){color}, rectangle); }
-	inline void DrawCircle(uint32_t color, const Point& centreLocation, int radius, bool AA = false) { DrawCircle((RGBA){color}, centreLocation, radius, AA); }
-	inline void FillCircle(uint32_t color, const Point& centreLocation, int radius, bool AA = false) { FillCircle((RGBA){color}, centreLocation, radius, AA); }
-	inline void DrawTriangle(uint32_t color, const Point& p1, const Point& p2, const Point& p3, bool AA = false, bool GC = false) { DrawTriangle((RGBA){color}, p1, p2, p3, AA, GC ); }
-	inline void FillTriangle(uint32_t color, const Point& p1, Point p2, Point p3) { FillTriangle((RGBA){color}, p1, p2, p3 ); }
-	inline void FillTriangle(uint32_t color1, uint32_t color2, uint32_t color3, Point p1, Point p2, Point p3) { FillTriangle((RGBA){color1}, (RGBA){color2}, (RGBA){color3}, p1, p2, p3); }
+	inline void DrawPoint(uint32_t color, const Point& p) { DrawPoint(RGBA{color}, p); }
+	inline void DrawLine(uint32_t color, const Point& start, const Point& end, bool AA = false, bool GC = false) { DrawLine(RGBA{color}, start, end, AA, GC); }
+	inline void DrawRectangle(uint32_t color, Rectangle rectangle) { DrawRectangle(RGBA{color}, rectangle); }	
+	inline void FillRectangle(uint32_t color, Rectangle rectangle) { FillRectangle(RGBA{color}, rectangle); }
+	inline void DrawCircle(uint32_t color, const Point& centreLocation, int radius, bool AA = false) { DrawCircle(RGBA{color}, centreLocation, radius, AA); }
+	inline void FillCircle(uint32_t color, const Point& centreLocation, int radius, bool AA = false) { FillCircle(RGBA{color}, centreLocation, radius, AA); }
+	inline void DrawTriangle(uint32_t color, const Point& p1, const Point& p2, const Point& p3, bool AA = false, bool GC = false) { DrawTriangle(RGBA{color}, p1, p2, p3, AA, GC ); }
+	inline void FillTriangle(uint32_t color, const Point& p1, Point p2, Point p3) { FillTriangle(RGBA{color}, p1, p2, p3 ); }
+	inline void FillTriangle(uint32_t color1, uint32_t color2, uint32_t color3, Point p1, Point p2, Point p3) { FillTriangle(RGBA{color1}, RGBA{color2}, RGBA{color3}, p1, p2, p3); }
 	inline void DrawBitmap(const Bitmap& bitmap, FRectangle destRect, FRectangle srcRect) { DrawBitmap(bitmap, destRect.x, destRect.y, destRect.width, destRect.height, srcRect.x, srcRect.y, srcRect.width, srcRect.height); }
 	
-	inline void DrawPoint(uint32_t color, int x, int y) { DrawPoint((RGBA){color}, (Point){x, y}); }
-	inline void DrawLine(uint32_t color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine((RGBA){color}, (Point){x1, y1}, (Point){x2, y2}, AA, GC); }
-	inline void DrawRectangle(uint32_t color, int x, int y, int width, int height) { DrawRectangle((RGBA){color}, (Rectangle){x, y, width, height}); }
-	inline void FillRectangle(uint32_t color, int x, int y, int width, int height) { FillRectangle((RGBA){color}, (Rectangle){x, y, width, height}); }
-	inline void DrawCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false) { DrawCircle((RGBA){color}, (Point){centreX,centreY}, radius, AA); }
-	inline void FillCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false) { FillCircle((RGBA){color}, (Point){centreX,centreY}, radius, AA); }
-	inline void DrawTriangle(uint32_t color, int x1, int y1, int x2, int y2, int x3, int y3, bool AA = false, bool GC = false) { DrawTriangle((RGBA){color}, (Point){x1, y1}, (Point){x2, y2}, (Point){x3, y3}, AA, GC ); }
-	inline void FillTriangle(uint32_t color, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle((RGBA){color}, (Point){x1, y1}, (Point){x2, y2}, (Point){x3, y3} ); }
-	inline void FillTriangle(uint32_t color1, uint32_t color2, uint32_t color3, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle((RGBA){color1}, (RGBA){color2}, (RGBA){color3}, (Point){x1, y1}, (Point){x2, y2}, (Point){x3, y3}); }
+	inline void DrawPoint(uint32_t color, int x, int y) { DrawPoint(RGBA{color}, Point{x, y}); }
+	inline void DrawLine(uint32_t color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(RGBA{color}, Point{x1, y1}, Point{x2, y2}, AA, GC); }
+	inline void DrawRectangle(uint32_t color, int x, int y, int width, int height) { DrawRectangle(RGBA{color}, Rectangle{x, y, width, height}); }
+	inline void FillRectangle(uint32_t color, int x, int y, int width, int height) { FillRectangle(RGBA{color}, Rectangle{x, y, width, height}); }
+	inline void DrawCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false) { DrawCircle(RGBA{color}, Point{centreX,centreY}, radius, AA); }
+	inline void FillCircle(uint32_t color, int centreX, int centreY, int radius, bool AA = false) { FillCircle(RGBA{color}, Point{centreX,centreY}, radius, AA); }
+	inline void DrawTriangle(uint32_t color, int x1, int y1, int x2, int y2, int x3, int y3, bool AA = false, bool GC = false) { DrawTriangle(RGBA{color}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}, AA, GC ); }
+	inline void FillTriangle(uint32_t color, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(RGBA{color}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3} ); }
+	inline void FillTriangle(uint32_t color1, uint32_t color2, uint32_t color3, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(RGBA{color1}, RGBA{color2}, RGBA{color3}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}); }
 	
 	/* GETTERS */
 	inline uint32_t* GetData() const {
@@ -2096,14 +2096,14 @@ private:
 };
 
 inline RGB alphaBlendColor(const Cidr::RGB& color1, const Cidr::RGB& color2, float alpha) {
-	return (Cidr::RGB) { 
+	return Cidr::RGB { 
 		static_cast<uint8_t>(color2.r * (alpha / 255.f) + color1.r * (1 - alpha / 255.f)),
 		static_cast<uint8_t>(color2.g * (alpha / 255.f) + color1.g * (1 - alpha / 255.f)),
 		static_cast<uint8_t>(color2.b * (alpha / 255.f) + color1.b * (1 - alpha / 255.f))
 	};
 }
 inline RGB alphaBlendColorGammaCorrected(const Cidr::RGB& color1, const Cidr::RGB& color2, float alpha, float gamma = 2.2) {
-	return (Cidr::RGB) { 
+	return Cidr::RGB { 
 		static_cast<uint8_t>(std::pow(std::pow(color2.r, gamma) * (alpha / 255.f) + std::pow(color1.r, gamma) * (1 - alpha / 255.f), 1.f / gamma)),
 		static_cast<uint8_t>(std::pow(std::pow(color2.g, gamma) * (alpha / 255.f) + std::pow(color1.g, gamma) * (1 - alpha / 255.f), 1.f / gamma)),
 		static_cast<uint8_t>(std::pow(std::pow(color2.b, gamma) * (alpha / 255.f) + std::pow(color1.b, gamma) * (1 - alpha / 255.f), 1.f / gamma))
@@ -2111,7 +2111,7 @@ inline RGB alphaBlendColorGammaCorrected(const Cidr::RGB& color1, const Cidr::RG
 }
 inline RGBA alphaBlendColor(const Cidr::RGBA& color1, const Cidr::RGBA& color2){
 	 // uses color2's alpha value
-	return (Cidr::RGBA) {
+	return Cidr::RGBA {
 		static_cast<uint8_t>(color2.r * (color2.a / 255.f) + color1.r * (1 - color2.a / 255.f)),
 		static_cast<uint8_t>(color2.g * (color2.a / 255.f) + color1.g * (1 - color2.a / 255.f)),
 		static_cast<uint8_t>(color2.b * (color2.a / 255.f) + color1.b * (1 - color2.a / 255.f)),
@@ -2126,8 +2126,7 @@ inline RGBA alphaBlendColor(const Cidr::RGBA& color1, const Cidr::RGBA& color2){
 
 
 
-#ifndef CIDR_IMPLEMENTATION
-#define CIDR_IMPLEMENTATION
+#ifdef CIDR_IMPLEMENTATION
 
 #pragma region RENDERER_CPP
 /********************************
@@ -2341,7 +2340,7 @@ void Cidr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int 
 	
 	std::vector<std::vector<uint32_t>> shadedPixels{};
 	for (int y = clampedLocation.y; y < clampedLocation.y + clampedHeight; y++) {
-		shadedPixels.push_back((std::vector<uint32_t>){});
+		shadedPixels.push_back(std::vector<uint32_t>{});
 		for (int x = clampedLocation.x; x < clampedLocation.x + clampedWidth; x++) {
 			shadedPixels[y - clampedLocation.y].push_back(RGBtoUINT(shader(*this, x, y)));
 		}
@@ -3679,10 +3678,10 @@ tem::mat2x2 tem::mat2x2::inverse() {
 	return mat;
 }
 tem::mat2x2::row tem::mat2x2::operator[](int index) {
-	return (tem::mat2x2::row){this->mat, index};
+	return tem::mat2x2::row{this->mat, index};
 }
 const tem::mat2x2::row tem::mat2x2::operator[](int index) const {
-	return (tem::mat2x2::row){this->mat, index};
+	return tem::mat2x2::row{this->mat, index};
 }
 tem::mat2x2& tem::mat2x2::operator=(const tem::mat2x2& other) {
 	for(int i = 0; i < 4; i++)
@@ -3858,10 +3857,10 @@ tem::mat3x3 tem::mat3x3::inverse() {
 	return mat;
 }
 tem::mat3x3::row tem::mat3x3::operator[](int index) {
-	return (tem::mat3x3::row){this->mat, index};
+	return tem::mat3x3::row{this->mat, index};
 }
 const tem::mat3x3::row tem::mat3x3::operator[](int index) const {
-	return (tem::mat3x3::row){this->mat, index};
+	return tem::mat3x3::row{this->mat, index};
 }
 tem::mat3x3& tem::mat3x3::operator=(const tem::mat3x3& other) {
 	for(int i = 0; i < 9; i++)
@@ -4150,10 +4149,10 @@ tem::mat4x4 tem::mat4x4::inverse() {
 	return mat;
 }
 tem::mat4x4::row tem::mat4x4::operator[](int index) {
-	return (tem::mat4x4::row){this->mat, index};
+	return tem::mat4x4::row{this->mat, index};
 }
 const tem::mat4x4::row tem::mat4x4::operator[](int index) const {
-	return (tem::mat4x4::row){this->mat, index};
+	return tem::mat4x4::row{this->mat, index};
 }
 tem::mat4x4& tem::mat4x4::operator=(const tem::mat4x4& other) {
 	for(int i = 0; i < 16; i++)
@@ -4619,12 +4618,12 @@ Cidr::RGBBitmap::~RGBBitmap() {}
  ********************************/
 
 
-Cidr::Rectangle::operator FRectangle() const {
-	return (FRectangle){(float)x, (float)y, (float)width, (float)height};
+Cidr::Rectangle::operator Cidr::FRectangle() const {
+	return FRectangle{(float)x, (float)y, (float)width, (float)height};
 }
 
-Cidr::FRectangle::operator Rectangle() const {
-	return (Rectangle){(int)x, (int)y, (int)width, (int)height};
+Cidr::FRectangle::operator Cidr::Rectangle() const {
+	return Rectangle{(int)x, (int)y, (int)width, (int)height};
 }
 
 #pragma endregion RECTANGLE_CPP
@@ -4926,7 +4925,7 @@ Cidr::Font::Font(const uint8_t* data, int fontSheetWidth, int fontSheetHeight, i
 		for(int j = 0; j < 8; j++) {
 			uint8_t c = ((color8 >> j) & 1) * 255;
 			
-			fontSheet.SetPixel((Cidr::RGBA){c, c, c, 255}, getCoordX(i*8 + j, fontSheetWidth), getCoordY(i*8 + j, fontSheetWidth));
+			fontSheet.SetPixel(Cidr::RGBA{c, c, c, 255}, getCoordX(i*8 + j, fontSheetWidth), getCoordY(i*8 + j, fontSheetWidth));
 		}
 	}
 }

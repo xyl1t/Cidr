@@ -23,7 +23,7 @@ Cidr::Font::Font(const uint8_t* data, int fontSheetWidth, int fontSheetHeight, i
 		for(int j = 0; j < 8; j++) {
 			uint8_t c = ((color8 >> j) & 1) * 255;
 			
-			fontSheet.SetPixel((Cidr::RGBA){c, c, c, 255}, getCoordX(i*8 + j, fontSheetWidth), getCoordY(i*8 + j, fontSheetWidth));
+			fontSheet.SetPixel(Cidr::RGBA{c, c, c, 255}, getCoordX(i*8 + j, fontSheetWidth), getCoordY(i*8 + j, fontSheetWidth));
 		}
 	}
 }

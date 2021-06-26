@@ -477,10 +477,10 @@ tem::mat2x2 tem::mat2x2::inverse() {
 	return mat;
 }
 tem::mat2x2::row tem::mat2x2::operator[](int index) {
-	return (tem::mat2x2::row){this->mat, index};
+	return tem::mat2x2::row{this->mat, index};
 }
 const tem::mat2x2::row tem::mat2x2::operator[](int index) const {
-	return (tem::mat2x2::row){this->mat, index};
+	return tem::mat2x2::row{this->mat, index};
 }
 tem::mat2x2& tem::mat2x2::operator=(const tem::mat2x2& other) {
 	for(int i = 0; i < 4; i++)
@@ -656,10 +656,10 @@ tem::mat3x3 tem::mat3x3::inverse() {
 	return mat;
 }
 tem::mat3x3::row tem::mat3x3::operator[](int index) {
-	return (tem::mat3x3::row){this->mat, index};
+	return tem::mat3x3::row{this->mat, index};
 }
 const tem::mat3x3::row tem::mat3x3::operator[](int index) const {
-	return (tem::mat3x3::row){this->mat, index};
+	return tem::mat3x3::row{this->mat, index};
 }
 tem::mat3x3& tem::mat3x3::operator=(const tem::mat3x3& other) {
 	for(int i = 0; i < 9; i++)
@@ -948,10 +948,10 @@ tem::mat4x4 tem::mat4x4::inverse() {
 	return mat;
 }
 tem::mat4x4::row tem::mat4x4::operator[](int index) {
-	return (tem::mat4x4::row){this->mat, index};
+	return tem::mat4x4::row{this->mat, index};
 }
 const tem::mat4x4::row tem::mat4x4::operator[](int index) const {
-	return (tem::mat4x4::row){this->mat, index};
+	return tem::mat4x4::row{this->mat, index};
 }
 tem::mat4x4& tem::mat4x4::operator=(const tem::mat4x4& other) {
 	for(int i = 0; i < 16; i++)

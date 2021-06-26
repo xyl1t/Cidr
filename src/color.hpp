@@ -365,14 +365,14 @@ inline RGB HSLtoRGB(const HSL& colorHSL) {
 		g = 0;
 		b = x;
 	}
-	return (RGB){
+	return RGB {
 		static_cast<uint8_t>((r + m) * 255),
 		static_cast<uint8_t>((g + m) * 255),
 		static_cast<uint8_t>((b + m) * 255)
 		};
 }
 
-} // NAMESPACE CIDR END 
+}
 
 std::ostream& operator<<(std::ostream& out, const Cidr::RGB& rgb);
 std::ostream& operator<<(std::ostream& out, const Cidr::RGBA& rgba);
