@@ -23,29 +23,29 @@ static inline float lerp(float a, float b, float t) {
 	return a + (b - a) * t;
 }
 
-Cidr::Renderer::Renderer(uint32_t* pixels, int width, int height) 
+cdr::Renderer::Renderer(uint32_t* pixels, int width, int height) 
 	: pixels{pixels}, 
 	width{width}, 
 	height{height} {
 }
 
-void Cidr::Renderer::Clear() {
+void cdr::Renderer::Clear() {
 	memset(pixels, 0, width * height * sizeof(uint32_t));
 }
-void Cidr::Renderer::Clear(const RGBA& color) {
+void cdr::Renderer::Clear(const RGBA& color) {
 	std::fill(pixels, pixels + width * height, RGBtoUINT(color));
 }
-void Cidr::Renderer::Clear(uint32_t color) {
+void cdr::Renderer::Clear(uint32_t color) {
 	std::fill(pixels, pixels + width * height, color);
 }
 
-void Cidr::Renderer::DrawPoint(const Cidr::RGBA& color, const Point& p) {
+void cdr::Renderer::DrawPoint(const cdr::RGBA& color, const Point& p) {
 	if(color.a != 0)
 		pixels[getIndex(p.x, p.y)] = RGBtoUINT(color);
 }
 
 // TODO: Add clipping
-void Cidr::Renderer::DrawLine(const Cidr::RGBA& color, const Point& start, const Point& end, bool AA, bool GC) {
+void cdr::Renderer::DrawLine(const cdr::RGBA& color, const Point& start, const Point& end, bool AA, bool GC) {
 	// calculate delta lengths
 	int dx {end.x - start.x}; 
 	int dy {end.y - start.y};
@@ -115,7 +115,7 @@ void Cidr::Renderer::DrawLine(const Cidr::RGBA& color, const Point& start, const
 	}
 }
 
-void Cidr::Renderer::DrawRectangle(const RGBA& color, Rectangle rectangle) {
+void cdr::Renderer::DrawRectangle(const RGBA& color, Rectangle rectangle) {
 	// exit if the rectangle is outside of the screen
 	if(rectangle.x >= this->width) return;
 	if(rectangle.y >= this->height) return;
@@ -160,7 +160,7 @@ void Cidr::Renderer::DrawRectangle(const RGBA& color, Rectangle rectangle) {
 			DrawPoint(color, clampedLocation.x + rectangle.width - 1, i);
 	}
 }
-void Cidr::Renderer::FillRectangle(const RGBA& color, Rectangle rectangle) {
+void cdr::Renderer::FillRectangle(const RGBA& color, Rectangle rectangle) {
 	// exit if the rectangle is outside of the screen
 	if(rectangle.x >= this->width) return;
 	if(rectangle.y >= this->height) return;
@@ -192,7 +192,7 @@ void Cidr::Renderer::FillRectangle(const RGBA& color, Rectangle rectangle) {
 		std::fill_n(pixels + getIndex(clampedLocation.x, clampedLocation.y + i), clampedWidth, RGBtoUINT(color));
 	}
 }
-void Cidr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Rectangle rectangle) {
+void cdr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Rectangle rectangle) {
 	// exit if the rectangle is outside of the screen
 	if(rectangle.x >= this->width) return;
 	if(rectangle.y >= this->height) return;
@@ -229,7 +229,7 @@ void Cidr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int 
 	}
 }
 
-void Cidr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
+void cdr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
 	if(radius < 1) return;
 	if(radius == 1) DrawPoint(color, centreLocation);
 	
@@ -280,7 +280,7 @@ void Cidr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, 
 		y++;
 	}
 }
-void Cidr::Renderer::FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
+void cdr::Renderer::FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
 	if(radius < 1) return;
 	if(radius == 1) DrawPoint(color, centreLocation);
 	
@@ -328,7 +328,7 @@ void Cidr::Renderer::FillCircle(const RGBA& color, const Point& centreLocation, 
 		y++;
 	}
 }
-void Cidr::Renderer::FillCircle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& centreLocation, int radius, bool AA) {
+void cdr::Renderer::FillCircle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& centreLocation, int radius, bool AA) {
 	if(radius < 1) return;
 	if(radius == 1) DrawPoint(shader(*this, centreLocation.x, centreLocation.y), centreLocation);
 	
@@ -391,12 +391,12 @@ void Cidr::Renderer::FillCircle(RGBA (*shader)(const Renderer& renderer, int x, 
 	}
 }
 
-void Cidr::Renderer::DrawTriangle(const RGBA& color, const Point& p1, const Point& p2, const Point& p3, bool AA, bool GC) {
+void cdr::Renderer::DrawTriangle(const RGBA& color, const Point& p1, const Point& p2, const Point& p3, bool AA, bool GC) {
 	DrawLine(color, p1, p2, AA, GC);
 	DrawLine(color, p2, p3, AA, GC);
 	DrawLine(color, p3, p1, AA, GC);
 }
-void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, Point p1, Point p2, Point p3) {
+void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, Point p1, Point p2, Point p3) {
 	// sort top most point
 	if(p1.y > p2.y) {
 		std::swap(p1, p2);
@@ -589,7 +589,7 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 		}
 	}
 }
-void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p3) {
+void cdr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p3) {
 	// sort top most point
 	if(p1.y > p2.y) {
 		std::swap(p1, p2);
@@ -623,7 +623,7 @@ void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p
 		}
 	}
 }
-void Cidr::Renderer::FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3) {
+void cdr::Renderer::FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3) {
 	// sort top most point
 	if(p1.y > p2.y) {
 		std::swap(p1, p2);
@@ -689,7 +689,7 @@ void Cidr::Renderer::FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p
 		}
 	}
 }
-void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3) {
+void cdr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3) {
 	// sort top most point
 	if(p1.y > p2.y) {
 		std::swap(p1, p2);
@@ -762,14 +762,14 @@ void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x
 	}
 }
 
-void Cidr::Renderer::drawScanLine(uint32_t color, int startX, int endX, int y) {
+void cdr::Renderer::drawScanLine(uint32_t color, int startX, int endX, int y) {
 	// std::fill_n(pixels + getIndex(startX, y), endX - startX, color);
 	for(int i = startX; i <= endX; i++) {
 		// if(GetPixel(i,y).r)
 		DrawPoint(color, i, y);
 	}
 }
-void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y) {
+void cdr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y) {
 	float rStep{(color2.r - color1.r) / (float)(endX - startX)};
 	float gStep{(color2.g - color1.g) / (float)(endX - startX)};
 	float bStep{(color2.b - color1.b) / (float)(endX - startX)};
@@ -790,7 +790,7 @@ void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int st
 	}
 }
 // TODO: fix this mess
-void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, int destWidth, int destHeight, float srcX, float srcY, int srcWidth, int srcHeight) {
+void cdr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, int destWidth, int destHeight, float srcX, float srcY, int srcWidth, int srcHeight) {
 	// Exit if image is out of bounds of the canvas
 	if(destX >= width) return;	
 	if(destY >= height) return;
@@ -911,7 +911,7 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, 
 	}
 }
 
-void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, Cidr::TextAlignment ta, const Font& font, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
+void cdr::Renderer::DrawText(const std::string_view text, int x, int y, cdr::TextAlignment ta, const Font& font, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
 	static int globalX = 0;
 	static int globalY = 0;
 	int startX = 0;
@@ -1029,7 +1029,7 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, Cidr::T
 }
 
 /* UTILILTY FUNCTIONS */
-bool Cidr::Renderer::clampCoords(float& x, float& y, int width, int height) {
+bool cdr::Renderer::clampCoords(float& x, float& y, int width, int height) {
 	// NOTE: return true if coordinates are in bound of bitmap size
 	if(x >= 0 && y >= 0 && x < width && y < height) return true;
 

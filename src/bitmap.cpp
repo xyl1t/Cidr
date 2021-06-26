@@ -12,15 +12,15 @@
 
 /* RGBABitmap *******************************************************************************/
 
-Cidr::BaseBitmap::BaseBitmap(int width, int height, int numComponents) : 
+cdr::BaseBitmap::BaseBitmap(int width, int height, int numComponents) : 
 	data{new uint32_t[width * height]}, width{width}, height{height}, components{numComponents} { 
 	memset(data, 0, width * height * sizeof(uint32_t));
 }
-Cidr::BaseBitmap::BaseBitmap(uint32_t* source, int sourceWidth, int sourceHeight, int sourceComponents) :
+cdr::BaseBitmap::BaseBitmap(uint32_t* source, int sourceWidth, int sourceHeight, int sourceComponents) :
 	data{new uint32_t[sourceWidth * sourceHeight]}, width{sourceWidth}, height{sourceHeight}, components{sourceComponents} {
 	memcpy(data, source, width * height * sizeof(uint32_t));
 }
-Cidr::BaseBitmap::BaseBitmap(const std::string& file, int reqComponents) {
+cdr::BaseBitmap::BaseBitmap(const std::string& file, int reqComponents) {
 	uint8_t* imageData = stbi_load(file.c_str(), &this->width, &this->height, &this->components, reqComponents);
 	this->components = reqComponents;
 	if(imageData) {
@@ -41,11 +41,11 @@ Cidr::BaseBitmap::BaseBitmap(const std::string& file, int reqComponents) {
 	}
 }
 
-Cidr::BaseBitmap::BaseBitmap(const BaseBitmap& other) : 
+cdr::BaseBitmap::BaseBitmap(const BaseBitmap& other) : 
 	data{new uint32_t[other.width * other.height]}, width{other.width}, height{other.height}, components{other.components} { 
 	memcpy(data, other.data, width * height * sizeof(uint32_t));
 }
-Cidr::BaseBitmap& Cidr::BaseBitmap::operator=(const BaseBitmap& other) {
+cdr::BaseBitmap& cdr::BaseBitmap::operator=(const BaseBitmap& other) {
 	delete[] data;
 	this->width = other.width;
 	this->height = other.height;
@@ -55,13 +55,13 @@ Cidr::BaseBitmap& Cidr::BaseBitmap::operator=(const BaseBitmap& other) {
 	
 	return *this;
 }
-Cidr::BaseBitmap::BaseBitmap(BaseBitmap&& other) noexcept : 
+cdr::BaseBitmap::BaseBitmap(BaseBitmap&& other) noexcept : 
 	data{other.data} , width{other.width}, height{other.height}, components{other.components} { 
 	other.width = 0;
 	other.height = 0;
 	other.data = nullptr;
 }
-Cidr::BaseBitmap& Cidr::BaseBitmap::operator=(BaseBitmap&& other) noexcept {
+cdr::BaseBitmap& cdr::BaseBitmap::operator=(BaseBitmap&& other) noexcept {
 	if(this == &other) return *this;
 	
 	delete[] data;
@@ -77,11 +77,11 @@ Cidr::BaseBitmap& Cidr::BaseBitmap::operator=(BaseBitmap&& other) noexcept {
 	return *this;
 }
 
-Cidr::BaseBitmap::~BaseBitmap() {
+cdr::BaseBitmap::~BaseBitmap() {
 	delete[] data;
 }
 
-void Cidr::BaseBitmap::SaveAs(const std::string& fileName, Formats format, int quality) {
+void cdr::BaseBitmap::SaveAs(const std::string& fileName, Formats format, int quality) {
 	// NOTE: Cidr uses rgba, stbi uses abgr
 	uint32_t* abgrData = new uint32_t[this->width * this->height];
 	for (int i = 0; i < this->width * this->height; i++) {
@@ -109,53 +109,53 @@ void Cidr::BaseBitmap::SaveAs(const std::string& fileName, Formats format, int q
 
 /* RGBABitmap *******************************************************************************/
 
-Cidr::RGBABitmap::RGBABitmap(int width, int height) : BaseBitmap(width, height, 4) {}
-Cidr::RGBABitmap::RGBABitmap(uint32_t* source, int sourceWidth, int sourceHeight) : BaseBitmap(source, sourceWidth, sourceHeight, 4) {}
-Cidr::RGBABitmap::RGBABitmap(const std::string& file) : BaseBitmap(file, 4) {}
+cdr::RGBABitmap::RGBABitmap(int width, int height) : BaseBitmap(width, height, 4) {}
+cdr::RGBABitmap::RGBABitmap(uint32_t* source, int sourceWidth, int sourceHeight) : BaseBitmap(source, sourceWidth, sourceHeight, 4) {}
+cdr::RGBABitmap::RGBABitmap(const std::string& file) : BaseBitmap(file, 4) {}
 
-Cidr::RGBABitmap::RGBABitmap(const RGBABitmap& other) : BaseBitmap(other) {}
-Cidr::RGBABitmap& Cidr::RGBABitmap::operator=(const RGBABitmap& other) {
+cdr::RGBABitmap::RGBABitmap(const RGBABitmap& other) : BaseBitmap(other) {}
+cdr::RGBABitmap& cdr::RGBABitmap::operator=(const RGBABitmap& other) {
 	BaseBitmap::operator=(other);
 	return *this;
 }
-Cidr::RGBABitmap::RGBABitmap(RGBABitmap&& other) noexcept : BaseBitmap(other) {}
-Cidr::RGBABitmap& Cidr::RGBABitmap::operator=(RGBABitmap&& other) noexcept {
+cdr::RGBABitmap::RGBABitmap(RGBABitmap&& other) noexcept : BaseBitmap(other) {}
+cdr::RGBABitmap& cdr::RGBABitmap::operator=(RGBABitmap&& other) noexcept {
 	BaseBitmap::operator=(other);
 	return *this;
 }
-Cidr::RGBABitmap::~RGBABitmap() {}
+cdr::RGBABitmap::~RGBABitmap() {}
 
 
 /* RGBBitmap *******************************************************************************/
 
-Cidr::RGBBitmap::RGBBitmap(int width, int height) : BaseBitmap(width, height, 3) {}
-Cidr::RGBBitmap::RGBBitmap(uint32_t* source, int sourceWidth, int sourceHeight) : BaseBitmap(source, sourceWidth, sourceHeight, 4) {}
-Cidr::RGBBitmap::RGBBitmap(const std::string& file) : BaseBitmap(file, 3) {}
+cdr::RGBBitmap::RGBBitmap(int width, int height) : BaseBitmap(width, height, 3) {}
+cdr::RGBBitmap::RGBBitmap(uint32_t* source, int sourceWidth, int sourceHeight) : BaseBitmap(source, sourceWidth, sourceHeight, 4) {}
+cdr::RGBBitmap::RGBBitmap(const std::string& file) : BaseBitmap(file, 3) {}
 
-Cidr::RGBBitmap::RGBBitmap(const RGBBitmap& other) : BaseBitmap(other) {}
-Cidr::RGBBitmap& Cidr::RGBBitmap::operator=(const RGBBitmap& other) {
+cdr::RGBBitmap::RGBBitmap(const RGBBitmap& other) : BaseBitmap(other) {}
+cdr::RGBBitmap& cdr::RGBBitmap::operator=(const RGBBitmap& other) {
 	BaseBitmap::operator=(other);
 	return *this;
 }
-Cidr::RGBBitmap::RGBBitmap(RGBBitmap&& other) noexcept : BaseBitmap(other) {}
-Cidr::RGBBitmap& Cidr::RGBBitmap::operator=(RGBBitmap&& other) noexcept {
+cdr::RGBBitmap::RGBBitmap(RGBBitmap&& other) noexcept : BaseBitmap(other) {}
+cdr::RGBBitmap& cdr::RGBBitmap::operator=(RGBBitmap&& other) noexcept {
 	BaseBitmap::operator=(other);
 	return *this;
 }
-Cidr::RGBBitmap::~RGBBitmap() {}
+cdr::RGBBitmap::~RGBBitmap() {}
 
 
 /* MonochromeBitmap *******************************************************************************/
 
-// Cidr::MonochromeBitmap::MonochromeBitmap(int width, int height) : 
+// cdr::MonochromeBitmap::MonochromeBitmap(int width, int height) : 
 // 	data{new uint8_t[width * height]}, width{width}, height{height} { 
 // 	memset(data, 0, width * height * sizeof(uint8_t));
 // }
-// Cidr::MonochromeBitmap::MonochromeBitmap(uint8_t* source, int sourceWidth, int sourceHeight) :
+// cdr::MonochromeBitmap::MonochromeBitmap(uint8_t* source, int sourceWidth, int sourceHeight) :
 // 	data{new uint8_t[sourceWidth * sourceHeight]}, width{sourceWidth}, height{sourceHeight} {
 // 	memcpy(data, source, width * height * sizeof(uint8_t));
 // }
-// Cidr::MonochromeBitmap::MonochromeBitmap(const std::string& file) {
+// cdr::MonochromeBitmap::MonochromeBitmap(const std::string& file) {
 // 	int channels;
 // 	uint8_t* imageData = stbi_load(file.c_str(), &this->width, &this->height, &channels, 0);
 // 	if(imageData) {
@@ -183,11 +183,11 @@ Cidr::RGBBitmap::~RGBBitmap() {}
 // 	}
 // }
 
-// Cidr::MonochromeBitmap::MonochromeBitmap(const MonochromeBitmap& other)  : 
+// cdr::MonochromeBitmap::MonochromeBitmap(const MonochromeBitmap& other)  : 
 // 	data{new uint8_t[other.width * other.height]}, width{other.width}, height{other.height} { 
 // 	memcpy(data, other.data, width * height * sizeof(uint8_t));
 // }
-// Cidr::MonochromeBitmap& Cidr::MonochromeBitmap::operator=(const MonochromeBitmap& other) {
+// cdr::MonochromeBitmap& cdr::MonochromeBitmap::operator=(const MonochromeBitmap& other) {
 // 	delete[] data;
 // 	this->width = other.width;
 // 	this->height = other.height;
@@ -196,13 +196,13 @@ Cidr::RGBBitmap::~RGBBitmap() {}
 	
 // 	return *this;
 // }
-// Cidr::MonochromeBitmap::MonochromeBitmap(MonochromeBitmap&& other) noexcept : 
+// cdr::MonochromeBitmap::MonochromeBitmap(MonochromeBitmap&& other) noexcept : 
 // 	data{other.data} , width{other.width}, height{other.height} { 
 // 	other.width = 0;
 // 	other.height = 0;
 // 	other.data = nullptr;
 // }
-// Cidr::MonochromeBitmap& Cidr::MonochromeBitmap::operator=(MonochromeBitmap&& other) noexcept {
+// cdr::MonochromeBitmap& cdr::MonochromeBitmap::operator=(MonochromeBitmap&& other) noexcept {
 // 	if(this == &other) return *this;
 	
 // 	delete[] data;
@@ -215,6 +215,6 @@ Cidr::RGBBitmap::~RGBBitmap() {}
 	
 // 	return *this;
 // }
-// Cidr::MonochromeBitmap::~MonochromeBitmap() {
+// cdr::MonochromeBitmap::~MonochromeBitmap() {
 // 	delete[] data;
 // }

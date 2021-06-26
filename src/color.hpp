@@ -13,7 +13,7 @@
 
 // TODO: Maybe switch the inheritance
 
-namespace Cidr {
+namespace cdr {
 
 struct RGBA;
 
@@ -374,8 +374,8 @@ inline RGB HSLtoRGB(const HSL& colorHSL) {
 
 }
 
-std::ostream& operator<<(std::ostream& out, const Cidr::RGB& rgb);
-std::ostream& operator<<(std::ostream& out, const Cidr::RGBA& rgba);
+std::ostream& operator<<(std::ostream& out, const cdr::RGB& rgb);
+std::ostream& operator<<(std::ostream& out, const cdr::RGBA& rgba);
 
 #endif
 

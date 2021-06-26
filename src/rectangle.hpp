@@ -7,7 +7,7 @@
 #ifndef CIDR_RECTANGLE_HPP
 #define CIDR_RECTANGLE_HPP
 
-namespace Cidr {
+namespace cdr {
 
 struct FRectangle;
 

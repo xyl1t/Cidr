@@ -259,7 +259,7 @@ STBIWDEF void stbi_flip_vertically_on_write(int flip_boolean);
 
 // TODO: Maybe switch the inheritance
 
-namespace Cidr {
+namespace cdr {
 
 struct RGBA;
 
@@ -620,8 +620,8 @@ inline RGB HSLtoRGB(const HSL& colorHSL) {
 
 }
 
-std::ostream& operator<<(std::ostream& out, const Cidr::RGB& rgb);
-std::ostream& operator<<(std::ostream& out, const Cidr::RGBA& rgba);
+std::ostream& operator<<(std::ostream& out, const cdr::RGB& rgb);
+std::ostream& operator<<(std::ostream& out, const cdr::RGBA& rgba);
 
 #endif
 
@@ -681,7 +681,7 @@ return color;*/
 #include <cstdint>
 #include <type_traits>
 
-namespace Cidr {
+namespace cdr {
 
 class BaseBitmap {
 protected:
@@ -885,7 +885,7 @@ using BitmapMonochrome = Bitmap<RGBA>;
 #ifndef CIDR_FONT_HPP
 #define CIDR_FONT_HPP
 
-namespace Cidr {
+namespace cdr {
 	
 class Font {
 private:
@@ -915,7 +915,7 @@ enum class TextAlignment {
 };
 
 namespace Fonts {
-static const Cidr::Font Raster8x16 { new uint8_t[4096] {
+static const cdr::Font Raster8x16 { new uint8_t[4096] {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x7E, 0x7E, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x78, 0x3C, 0xFC, 0xFE, 0x00, 0x00, 0x81, 0xFF, 0x00, 0x00, 0x18, 0x18, 0x00, 0xFF, 0x00, 0xFF, 0x70, 0x66, 0xCC, 0xC6, 0x18,
 	0x00, 0xA5, 0xDB, 0x36, 0x08, 0x3C, 0x3C, 0x00, 0xFF, 0x00, 0xFF, 0x58, 0x66, 0xFC, 0xFE, 0x18, 0x00, 0x81, 0xFF, 0x7F, 0x1C, 0x3C, 0x7E, 0x00, 0xFF, 0x3C, 0xC3, 0x4C, 0x66, 0x0C, 0xC6, 0xDB,
@@ -1046,7 +1046,7 @@ static const Cidr::Font Raster8x16 { new uint8_t[4096] {
 	0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	
 }, 128, 256, 8, 16};
 
-static const Cidr::Font Raster8x8 { new uint8_t[2048] {
+static const cdr::Font Raster8x8 { new uint8_t[2048] {
 	0x00, 0x7E, 0x7E, 0x36, 0x08, 0x1C, 0x08, 0x00, 0xFF, 0x00, 0xFF, 0xF0, 0x3C, 0xFC, 0xFE, 0x99, 0x00, 0x81, 0xFF, 0x7F, 0x1C, 0x3E, 0x08, 0x00, 0xFF, 0x3C, 0xC3, 0xE0, 0x66, 0xCC, 0xC6, 0x5A,
 	0x00, 0xA5, 0xDB, 0x7F, 0x3E, 0x1C, 0x1C, 0x18, 0xE7, 0x66, 0x99, 0xF0, 0x66, 0xFC, 0xFE, 0x3C, 0x00, 0x81, 0xFF, 0x7F, 0x7F, 0x7F, 0x3E, 0x3C, 0xC3, 0x42, 0xBD, 0xBE, 0x66, 0x0C, 0xC6, 0xE7,
 	0x00, 0xBD, 0xC3, 0x3E, 0x3E, 0x7F, 0x7F, 0x3C, 0xC3, 0x42, 0xBD, 0x33, 0x3C, 0x0C, 0xC6, 0xE7, 0x00, 0x99, 0xE7, 0x1C, 0x1C, 0x2A, 0x3E, 0x18, 0xE7, 0x66, 0x99, 0x33, 0x18, 0x0E, 0xE6, 0x3C,
@@ -1113,7 +1113,7 @@ static const Cidr::Font Raster8x8 { new uint8_t[2048] {
 	0x00, 0x3F, 0x3F, 0x3F, 0x18, 0x1B, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x3C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x38, 0x00, 0x00, 0x00, 0x00,
 }, 128, 128, 8, 8};
 
-static const Cidr::Font Raster10x10 { new uint8_t[3200] {
+static const cdr::Font Raster10x10 { new uint8_t[3200] {
 	0x00, 0xF0, 0xC3, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x03, 0xF0, 0x3F, 0x3E, 0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0xE6, 0x1F, 0x33, 0x30, 0xC0, 0x00, 0x03, 0x00, 0xFF, 0x03,
 	0xF0, 0x3F, 0x38, 0xCC, 0xC0, 0xC7, 0x1F, 0x0C, 0x00, 0x08, 0xE4, 0x9F, 0x7F, 0x78, 0xE0, 0x81, 0x07, 0x00, 0xFF, 0xE3, 0x71, 0x38, 0x2E, 0xCC, 0xC0, 0xC4, 0x98, 0x6D, 0x00, 0x28, 0x65, 0x9B,
 	0x7F, 0xFC, 0xE0, 0xC1, 0x0F, 0x1E, 0x87, 0xF3, 0x33, 0x30, 0x27, 0xCC, 0xC0, 0xC7, 0x9F, 0x7F, 0x00, 0x08, 0xE4, 0x9F, 0x7F, 0xFE, 0xF1, 0xE3, 0x1F, 0x3F, 0x03, 0x33, 0x33, 0xB3, 0x0F, 0x78,
@@ -1216,7 +1216,7 @@ static const Cidr::Font Raster10x10 { new uint8_t[3200] {
 	0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 }, 160, 160, 10, 10};
 
-static const Cidr::Font Raster10x12 { new uint8_t[3840] {
+static const cdr::Font Raster10x12 { new uint8_t[3840] {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x03, 0xF0, 0x3F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF0, 0xC3, 0x0F, 0x00, 0x10, 0xC0, 0x00, 0x03, 0x00, 0xFF, 0x03,
 	0xF0, 0x3F, 0x3E, 0x78, 0xC0, 0xC7, 0x1F, 0x00, 0x00, 0x08, 0xE4, 0x1F, 0x11, 0x38, 0xE0, 0x81, 0x07, 0x00, 0xFF, 0xE3, 0x71, 0x38, 0x38, 0xCC, 0xC0, 0xC4, 0x18, 0x0C, 0x00, 0x28, 0x65, 0x9B,
 	0x3B, 0x7C, 0xE0, 0xC1, 0x0F, 0x00, 0xFF, 0xF3, 0x33, 0x30, 0x2E, 0xCC, 0xC0, 0xC4, 0x9F, 0x6D, 0x00, 0x08, 0xE4, 0x9F, 0x3F, 0xFE, 0xF8, 0xE7, 0x1F, 0x1E, 0x87, 0x33, 0x33, 0x33, 0x27, 0xCC,
@@ -1339,7 +1339,7 @@ static const Cidr::Font Raster10x12 { new uint8_t[3840] {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 }, 160, 192, 10, 12};
 
-static const Cidr::Font Raster8x12 { new uint8_t[3072] {
+static const cdr::Font Raster8x12 { new uint8_t[3072] {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x7E, 0x00, 0x00, 0x18, 0x18, 0x00, 0xFF, 0x00, 0xFF, 0x7C, 0x3C, 0xFC, 0xFE, 0x18,
 	0x00, 0x81, 0xFF, 0x36, 0x08, 0x3C, 0x3C, 0x00, 0xFF, 0x00, 0xFF, 0x70, 0x66, 0xCC, 0xC6, 0x18, 0x00, 0xA5, 0xDB, 0x7F, 0x1C, 0x3C, 0x7E, 0x00, 0xFF, 0x3C, 0xC3, 0x58, 0x66, 0xFC, 0xFE, 0xDB,
 	0x00, 0x81, 0xFF, 0x7F, 0x3E, 0xE7, 0xFF, 0x18, 0xE7, 0x66, 0x99, 0x4C, 0x66, 0x0C, 0xC6, 0x3C, 0x00, 0x81, 0xFF, 0x7F, 0x7F, 0xE7, 0xFF, 0x3C, 0xC3, 0x42, 0xBD, 0x1E, 0x3C, 0x0C, 0xC6, 0xE7,
@@ -1897,7 +1897,7 @@ inline float degrees(float radian) {
 
 // In order to keep the code "consice" I just derive the point classes from vectors
 // But Since points are not really vectors they shouldn't have length functions so I hide them
-namespace Cidr {
+namespace cdr {
 
 struct FPoint;
 
@@ -1905,7 +1905,7 @@ struct Point : public tem::ivec2 {
 public:
 	Point();
 	Point(int x, int y);
-	operator Cidr::FPoint() const;
+	operator cdr::FPoint() const;
 	
 private:
 	using tem::ivec2::length;
@@ -1918,7 +1918,7 @@ struct FPoint : public tem::vec2 {
 public:
 	FPoint();
 	FPoint(float x, float y);
-	operator Cidr::Point() const;
+	operator cdr::Point() const;
 private:
 	using tem::vec2::length;
 	using tem::vec2::setLength;
@@ -1938,7 +1938,7 @@ private:
 #ifndef CIDR_RECTANGLE_HPP
 #define CIDR_RECTANGLE_HPP
 
-namespace Cidr {
+namespace cdr {
 
 struct FRectangle;
 
@@ -1977,7 +1977,7 @@ struct FRectangle {
 #define CIDR_RENDERER_HPP
 
 
-namespace Cidr {
+namespace cdr {
 	
 class Renderer {
 public:
@@ -2016,7 +2016,7 @@ public:
 	void FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3);
 	void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3);
 	void DrawBitmap(const Bitmap& bitmap, float destX, float destY, int destWidth, int destHeight, float srcX, float srcY, int srcWidth, int srcHeight);
-	void DrawText(const std::string_view text, int x = -1, int y = -1, TextAlignment ta = TextAlignment::TL, const Font& f = Cidr::Fonts::Raster8x12, float size = 1, const RGBA& fColor = RGB::White, const RGBA& bColor = RGBA::Transparent, const RGBA& shadowColor = RGBA::Transparent, int shadowOffsetX = 1, int shadowOffsetY = 1);
+	void DrawText(const std::string_view text, int x = -1, int y = -1, TextAlignment ta = TextAlignment::TL, const Font& f = cdr::Fonts::Raster8x12, float size = 1, const RGBA& fColor = RGB::White, const RGBA& bColor = RGBA::Transparent, const RGBA& shadowColor = RGBA::Transparent, int shadowOffsetX = 1, int shadowOffsetY = 1);
 
 	void DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, Point p1, Point p2, Point p3);
 	
@@ -2067,13 +2067,13 @@ public:
 	inline int GetHeight() const {
 		return height;
 	}
-	inline Cidr::RGBA GetPixel(const Point& p) const {
-		if(p.x < 0 || p.y < 0 || p.x >= GetWidth() || p.y >= GetHeight()) return Cidr::RGBA{};
-		return Cidr::RGBA{pixels[getIndex(p)]};
+	inline cdr::RGBA GetPixel(const Point& p) const {
+		if(p.x < 0 || p.y < 0 || p.x >= GetWidth() || p.y >= GetHeight()) return cdr::RGBA{};
+		return cdr::RGBA{pixels[getIndex(p)]};
 	}
-	inline Cidr::RGBA GetPixel(int x, int y) const {
-		if(x < 0 || y < 0 || x >= GetWidth() || y >= GetHeight()) return Cidr::RGBA{};
-		return Cidr::RGBA{pixels[getIndex(x, y)]};
+	inline cdr::RGBA GetPixel(int x, int y) const {
+		if(x < 0 || y < 0 || x >= GetWidth() || y >= GetHeight()) return cdr::RGBA{};
+		return cdr::RGBA{pixels[getIndex(x, y)]};
 	}
 	
 private:
@@ -2095,23 +2095,23 @@ private:
 	void constructFontBitmap(Font f);
 };
 
-inline RGB alphaBlendColor(const Cidr::RGB& color1, const Cidr::RGB& color2, float alpha) {
-	return Cidr::RGB { 
+inline RGB alphaBlendColor(const cdr::RGB& color1, const cdr::RGB& color2, float alpha) {
+	return cdr::RGB { 
 		static_cast<uint8_t>(color2.r * (alpha / 255.f) + color1.r * (1 - alpha / 255.f)),
 		static_cast<uint8_t>(color2.g * (alpha / 255.f) + color1.g * (1 - alpha / 255.f)),
 		static_cast<uint8_t>(color2.b * (alpha / 255.f) + color1.b * (1 - alpha / 255.f))
 	};
 }
-inline RGB alphaBlendColorGammaCorrected(const Cidr::RGB& color1, const Cidr::RGB& color2, float alpha, float gamma = 2.2) {
-	return Cidr::RGB { 
+inline RGB alphaBlendColorGammaCorrected(const cdr::RGB& color1, const cdr::RGB& color2, float alpha, float gamma = 2.2) {
+	return cdr::RGB { 
 		static_cast<uint8_t>(std::pow(std::pow(color2.r, gamma) * (alpha / 255.f) + std::pow(color1.r, gamma) * (1 - alpha / 255.f), 1.f / gamma)),
 		static_cast<uint8_t>(std::pow(std::pow(color2.g, gamma) * (alpha / 255.f) + std::pow(color1.g, gamma) * (1 - alpha / 255.f), 1.f / gamma)),
 		static_cast<uint8_t>(std::pow(std::pow(color2.b, gamma) * (alpha / 255.f) + std::pow(color1.b, gamma) * (1 - alpha / 255.f), 1.f / gamma))
 	};
 }
-inline RGBA alphaBlendColor(const Cidr::RGBA& color1, const Cidr::RGBA& color2){
+inline RGBA alphaBlendColor(const cdr::RGBA& color1, const cdr::RGBA& color2){
 	 // uses color2's alpha value
-	return Cidr::RGBA {
+	return cdr::RGBA {
 		static_cast<uint8_t>(color2.r * (color2.a / 255.f) + color1.r * (1 - color2.a / 255.f)),
 		static_cast<uint8_t>(color2.g * (color2.a / 255.f) + color1.g * (1 - color2.a / 255.f)),
 		static_cast<uint8_t>(color2.b * (color2.a / 255.f) + color1.b * (1 - color2.a / 255.f)),
@@ -2145,29 +2145,29 @@ static inline float lerp(float a, float b, float t) {
 	return a + (b - a) * t;
 }
 
-Cidr::Renderer::Renderer(uint32_t* pixels, int width, int height) 
+cdr::Renderer::Renderer(uint32_t* pixels, int width, int height) 
 	: pixels{pixels}, 
 	width{width}, 
 	height{height} {
 }
 
-void Cidr::Renderer::Clear() {
+void cdr::Renderer::Clear() {
 	memset(pixels, 0, width * height * sizeof(uint32_t));
 }
-void Cidr::Renderer::Clear(const RGBA& color) {
+void cdr::Renderer::Clear(const RGBA& color) {
 	std::fill(pixels, pixels + width * height, RGBtoUINT(color));
 }
-void Cidr::Renderer::Clear(uint32_t color) {
+void cdr::Renderer::Clear(uint32_t color) {
 	std::fill(pixels, pixels + width * height, color);
 }
 
-void Cidr::Renderer::DrawPoint(const Cidr::RGBA& color, const Point& p) {
+void cdr::Renderer::DrawPoint(const cdr::RGBA& color, const Point& p) {
 	if(color.a != 0)
 		pixels[getIndex(p.x, p.y)] = RGBtoUINT(color);
 }
 
 // TODO: Add clipping
-void Cidr::Renderer::DrawLine(const Cidr::RGBA& color, const Point& start, const Point& end, bool AA, bool GC) {
+void cdr::Renderer::DrawLine(const cdr::RGBA& color, const Point& start, const Point& end, bool AA, bool GC) {
 	// calculate delta lengths
 	int dx {end.x - start.x}; 
 	int dy {end.y - start.y};
@@ -2237,7 +2237,7 @@ void Cidr::Renderer::DrawLine(const Cidr::RGBA& color, const Point& start, const
 	}
 }
 
-void Cidr::Renderer::DrawRectangle(const RGBA& color, Rectangle rectangle) {
+void cdr::Renderer::DrawRectangle(const RGBA& color, Rectangle rectangle) {
 	// exit if the rectangle is outside of the screen
 	if(rectangle.x >= this->width) return;
 	if(rectangle.y >= this->height) return;
@@ -2282,7 +2282,7 @@ void Cidr::Renderer::DrawRectangle(const RGBA& color, Rectangle rectangle) {
 			DrawPoint(color, clampedLocation.x + rectangle.width - 1, i);
 	}
 }
-void Cidr::Renderer::FillRectangle(const RGBA& color, Rectangle rectangle) {
+void cdr::Renderer::FillRectangle(const RGBA& color, Rectangle rectangle) {
 	// exit if the rectangle is outside of the screen
 	if(rectangle.x >= this->width) return;
 	if(rectangle.y >= this->height) return;
@@ -2314,7 +2314,7 @@ void Cidr::Renderer::FillRectangle(const RGBA& color, Rectangle rectangle) {
 		std::fill_n(pixels + getIndex(clampedLocation.x, clampedLocation.y + i), clampedWidth, RGBtoUINT(color));
 	}
 }
-void Cidr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Rectangle rectangle) {
+void cdr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Rectangle rectangle) {
 	// exit if the rectangle is outside of the screen
 	if(rectangle.x >= this->width) return;
 	if(rectangle.y >= this->height) return;
@@ -2351,7 +2351,7 @@ void Cidr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int 
 	}
 }
 
-void Cidr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
+void cdr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
 	if(radius < 1) return;
 	if(radius == 1) DrawPoint(color, centreLocation);
 	
@@ -2402,7 +2402,7 @@ void Cidr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, 
 		y++;
 	}
 }
-void Cidr::Renderer::FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
+void cdr::Renderer::FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
 	if(radius < 1) return;
 	if(radius == 1) DrawPoint(color, centreLocation);
 	
@@ -2450,7 +2450,7 @@ void Cidr::Renderer::FillCircle(const RGBA& color, const Point& centreLocation, 
 		y++;
 	}
 }
-void Cidr::Renderer::FillCircle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& centreLocation, int radius, bool AA) {
+void cdr::Renderer::FillCircle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& centreLocation, int radius, bool AA) {
 	if(radius < 1) return;
 	if(radius == 1) DrawPoint(shader(*this, centreLocation.x, centreLocation.y), centreLocation);
 	
@@ -2513,12 +2513,12 @@ void Cidr::Renderer::FillCircle(RGBA (*shader)(const Renderer& renderer, int x, 
 	}
 }
 
-void Cidr::Renderer::DrawTriangle(const RGBA& color, const Point& p1, const Point& p2, const Point& p3, bool AA, bool GC) {
+void cdr::Renderer::DrawTriangle(const RGBA& color, const Point& p1, const Point& p2, const Point& p3, bool AA, bool GC) {
 	DrawLine(color, p1, p2, AA, GC);
 	DrawLine(color, p2, p3, AA, GC);
 	DrawLine(color, p3, p1, AA, GC);
 }
-void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, Point p1, Point p2, Point p3) {
+void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, Point p1, Point p2, Point p3) {
 	// sort top most point
 	if(p1.y > p2.y) {
 		std::swap(p1, p2);
@@ -2711,7 +2711,7 @@ void Cidr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2,
 		}
 	}
 }
-void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p3) {
+void cdr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p3) {
 	// sort top most point
 	if(p1.y > p2.y) {
 		std::swap(p1, p2);
@@ -2745,7 +2745,7 @@ void Cidr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p
 		}
 	}
 }
-void Cidr::Renderer::FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3) {
+void cdr::Renderer::FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3) {
 	// sort top most point
 	if(p1.y > p2.y) {
 		std::swap(p1, p2);
@@ -2811,7 +2811,7 @@ void Cidr::Renderer::FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p
 		}
 	}
 }
-void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3) {
+void cdr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3) {
 	// sort top most point
 	if(p1.y > p2.y) {
 		std::swap(p1, p2);
@@ -2884,14 +2884,14 @@ void Cidr::Renderer::FillTriangle(RGBA (*shader)(const Renderer& renderer, int x
 	}
 }
 
-void Cidr::Renderer::drawScanLine(uint32_t color, int startX, int endX, int y) {
+void cdr::Renderer::drawScanLine(uint32_t color, int startX, int endX, int y) {
 	// std::fill_n(pixels + getIndex(startX, y), endX - startX, color);
 	for(int i = startX; i <= endX; i++) {
 		// if(GetPixel(i,y).r)
 		DrawPoint(color, i, y);
 	}
 }
-void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y) {
+void cdr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y) {
 	float rStep{(color2.r - color1.r) / (float)(endX - startX)};
 	float gStep{(color2.g - color1.g) / (float)(endX - startX)};
 	float bStep{(color2.b - color1.b) / (float)(endX - startX)};
@@ -2912,7 +2912,7 @@ void Cidr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int st
 	}
 }
 // TODO: fix this mess
-void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, int destWidth, int destHeight, float srcX, float srcY, int srcWidth, int srcHeight) {
+void cdr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, int destWidth, int destHeight, float srcX, float srcY, int srcWidth, int srcHeight) {
 	// Exit if image is out of bounds of the canvas
 	if(destX >= width) return;	
 	if(destY >= height) return;
@@ -3033,7 +3033,7 @@ void Cidr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, 
 	}
 }
 
-void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, Cidr::TextAlignment ta, const Font& font, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
+void cdr::Renderer::DrawText(const std::string_view text, int x, int y, cdr::TextAlignment ta, const Font& font, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
 	static int globalX = 0;
 	static int globalY = 0;
 	int startX = 0;
@@ -3151,7 +3151,7 @@ void Cidr::Renderer::DrawText(const std::string_view text, int x, int y, Cidr::T
 }
 
 /* UTILILTY FUNCTIONS */
-bool Cidr::Renderer::clampCoords(float& x, float& y, int width, int height) {
+bool cdr::Renderer::clampCoords(float& x, float& y, int width, int height) {
 	// NOTE: return true if coordinates are in bound of bitmap size
 	if(x >= 0 && y >= 0 && x < width && y < height) return true;
 
@@ -4399,15 +4399,15 @@ tem::mat4x4 tem::QuickInverse(const tem::mat4x4& m) {
 
 /* RGBABitmap *******************************************************************************/
 
-Cidr::BaseBitmap::BaseBitmap(int width, int height, int numComponents) : 
+cdr::BaseBitmap::BaseBitmap(int width, int height, int numComponents) : 
 	data{new uint32_t[width * height]}, width{width}, height{height}, components{numComponents} { 
 	memset(data, 0, width * height * sizeof(uint32_t));
 }
-Cidr::BaseBitmap::BaseBitmap(uint32_t* source, int sourceWidth, int sourceHeight, int sourceComponents) :
+cdr::BaseBitmap::BaseBitmap(uint32_t* source, int sourceWidth, int sourceHeight, int sourceComponents) :
 	data{new uint32_t[sourceWidth * sourceHeight]}, width{sourceWidth}, height{sourceHeight}, components{sourceComponents} {
 	memcpy(data, source, width * height * sizeof(uint32_t));
 }
-Cidr::BaseBitmap::BaseBitmap(const std::string& file, int reqComponents) {
+cdr::BaseBitmap::BaseBitmap(const std::string& file, int reqComponents) {
 	uint8_t* imageData = stbi_load(file.c_str(), &this->width, &this->height, &this->components, reqComponents);
 	this->components = reqComponents;
 	if(imageData) {
@@ -4428,11 +4428,11 @@ Cidr::BaseBitmap::BaseBitmap(const std::string& file, int reqComponents) {
 	}
 }
 
-Cidr::BaseBitmap::BaseBitmap(const BaseBitmap& other) : 
+cdr::BaseBitmap::BaseBitmap(const BaseBitmap& other) : 
 	data{new uint32_t[other.width * other.height]}, width{other.width}, height{other.height}, components{other.components} { 
 	memcpy(data, other.data, width * height * sizeof(uint32_t));
 }
-Cidr::BaseBitmap& Cidr::BaseBitmap::operator=(const BaseBitmap& other) {
+cdr::BaseBitmap& cdr::BaseBitmap::operator=(const BaseBitmap& other) {
 	delete[] data;
 	this->width = other.width;
 	this->height = other.height;
@@ -4442,13 +4442,13 @@ Cidr::BaseBitmap& Cidr::BaseBitmap::operator=(const BaseBitmap& other) {
 	
 	return *this;
 }
-Cidr::BaseBitmap::BaseBitmap(BaseBitmap&& other) noexcept : 
+cdr::BaseBitmap::BaseBitmap(BaseBitmap&& other) noexcept : 
 	data{other.data} , width{other.width}, height{other.height}, components{other.components} { 
 	other.width = 0;
 	other.height = 0;
 	other.data = nullptr;
 }
-Cidr::BaseBitmap& Cidr::BaseBitmap::operator=(BaseBitmap&& other) noexcept {
+cdr::BaseBitmap& cdr::BaseBitmap::operator=(BaseBitmap&& other) noexcept {
 	if(this == &other) return *this;
 	
 	delete[] data;
@@ -4464,11 +4464,11 @@ Cidr::BaseBitmap& Cidr::BaseBitmap::operator=(BaseBitmap&& other) noexcept {
 	return *this;
 }
 
-Cidr::BaseBitmap::~BaseBitmap() {
+cdr::BaseBitmap::~BaseBitmap() {
 	delete[] data;
 }
 
-void Cidr::BaseBitmap::SaveAs(const std::string& fileName, Formats format, int quality) {
+void cdr::BaseBitmap::SaveAs(const std::string& fileName, Formats format, int quality) {
 	// NOTE: Cidr uses rgba, stbi uses abgr
 	uint32_t* abgrData = new uint32_t[this->width * this->height];
 	for (int i = 0; i < this->width * this->height; i++) {
@@ -4496,53 +4496,53 @@ void Cidr::BaseBitmap::SaveAs(const std::string& fileName, Formats format, int q
 
 /* RGBABitmap *******************************************************************************/
 
-Cidr::RGBABitmap::RGBABitmap(int width, int height) : BaseBitmap(width, height, 4) {}
-Cidr::RGBABitmap::RGBABitmap(uint32_t* source, int sourceWidth, int sourceHeight) : BaseBitmap(source, sourceWidth, sourceHeight, 4) {}
-Cidr::RGBABitmap::RGBABitmap(const std::string& file) : BaseBitmap(file, 4) {}
+cdr::RGBABitmap::RGBABitmap(int width, int height) : BaseBitmap(width, height, 4) {}
+cdr::RGBABitmap::RGBABitmap(uint32_t* source, int sourceWidth, int sourceHeight) : BaseBitmap(source, sourceWidth, sourceHeight, 4) {}
+cdr::RGBABitmap::RGBABitmap(const std::string& file) : BaseBitmap(file, 4) {}
 
-Cidr::RGBABitmap::RGBABitmap(const RGBABitmap& other) : BaseBitmap(other) {}
-Cidr::RGBABitmap& Cidr::RGBABitmap::operator=(const RGBABitmap& other) {
+cdr::RGBABitmap::RGBABitmap(const RGBABitmap& other) : BaseBitmap(other) {}
+cdr::RGBABitmap& cdr::RGBABitmap::operator=(const RGBABitmap& other) {
 	BaseBitmap::operator=(other);
 	return *this;
 }
-Cidr::RGBABitmap::RGBABitmap(RGBABitmap&& other) noexcept : BaseBitmap(other) {}
-Cidr::RGBABitmap& Cidr::RGBABitmap::operator=(RGBABitmap&& other) noexcept {
+cdr::RGBABitmap::RGBABitmap(RGBABitmap&& other) noexcept : BaseBitmap(other) {}
+cdr::RGBABitmap& cdr::RGBABitmap::operator=(RGBABitmap&& other) noexcept {
 	BaseBitmap::operator=(other);
 	return *this;
 }
-Cidr::RGBABitmap::~RGBABitmap() {}
+cdr::RGBABitmap::~RGBABitmap() {}
 
 
 /* RGBBitmap *******************************************************************************/
 
-Cidr::RGBBitmap::RGBBitmap(int width, int height) : BaseBitmap(width, height, 3) {}
-Cidr::RGBBitmap::RGBBitmap(uint32_t* source, int sourceWidth, int sourceHeight) : BaseBitmap(source, sourceWidth, sourceHeight, 4) {}
-Cidr::RGBBitmap::RGBBitmap(const std::string& file) : BaseBitmap(file, 3) {}
+cdr::RGBBitmap::RGBBitmap(int width, int height) : BaseBitmap(width, height, 3) {}
+cdr::RGBBitmap::RGBBitmap(uint32_t* source, int sourceWidth, int sourceHeight) : BaseBitmap(source, sourceWidth, sourceHeight, 4) {}
+cdr::RGBBitmap::RGBBitmap(const std::string& file) : BaseBitmap(file, 3) {}
 
-Cidr::RGBBitmap::RGBBitmap(const RGBBitmap& other) : BaseBitmap(other) {}
-Cidr::RGBBitmap& Cidr::RGBBitmap::operator=(const RGBBitmap& other) {
+cdr::RGBBitmap::RGBBitmap(const RGBBitmap& other) : BaseBitmap(other) {}
+cdr::RGBBitmap& cdr::RGBBitmap::operator=(const RGBBitmap& other) {
 	BaseBitmap::operator=(other);
 	return *this;
 }
-Cidr::RGBBitmap::RGBBitmap(RGBBitmap&& other) noexcept : BaseBitmap(other) {}
-Cidr::RGBBitmap& Cidr::RGBBitmap::operator=(RGBBitmap&& other) noexcept {
+cdr::RGBBitmap::RGBBitmap(RGBBitmap&& other) noexcept : BaseBitmap(other) {}
+cdr::RGBBitmap& cdr::RGBBitmap::operator=(RGBBitmap&& other) noexcept {
 	BaseBitmap::operator=(other);
 	return *this;
 }
-Cidr::RGBBitmap::~RGBBitmap() {}
+cdr::RGBBitmap::~RGBBitmap() {}
 
 
 /* MonochromeBitmap *******************************************************************************/
 
-// Cidr::MonochromeBitmap::MonochromeBitmap(int width, int height) : 
+// cdr::MonochromeBitmap::MonochromeBitmap(int width, int height) : 
 // 	data{new uint8_t[width * height]}, width{width}, height{height} { 
 // 	memset(data, 0, width * height * sizeof(uint8_t));
 // }
-// Cidr::MonochromeBitmap::MonochromeBitmap(uint8_t* source, int sourceWidth, int sourceHeight) :
+// cdr::MonochromeBitmap::MonochromeBitmap(uint8_t* source, int sourceWidth, int sourceHeight) :
 // 	data{new uint8_t[sourceWidth * sourceHeight]}, width{sourceWidth}, height{sourceHeight} {
 // 	memcpy(data, source, width * height * sizeof(uint8_t));
 // }
-// Cidr::MonochromeBitmap::MonochromeBitmap(const std::string& file) {
+// cdr::MonochromeBitmap::MonochromeBitmap(const std::string& file) {
 // 	int channels;
 // 	uint8_t* imageData = stbi_load(file.c_str(), &this->width, &this->height, &channels, 0);
 // 	if(imageData) {
@@ -4570,11 +4570,11 @@ Cidr::RGBBitmap::~RGBBitmap() {}
 // 	}
 // }
 
-// Cidr::MonochromeBitmap::MonochromeBitmap(const MonochromeBitmap& other)  : 
+// cdr::MonochromeBitmap::MonochromeBitmap(const MonochromeBitmap& other)  : 
 // 	data{new uint8_t[other.width * other.height]}, width{other.width}, height{other.height} { 
 // 	memcpy(data, other.data, width * height * sizeof(uint8_t));
 // }
-// Cidr::MonochromeBitmap& Cidr::MonochromeBitmap::operator=(const MonochromeBitmap& other) {
+// cdr::MonochromeBitmap& cdr::MonochromeBitmap::operator=(const MonochromeBitmap& other) {
 // 	delete[] data;
 // 	this->width = other.width;
 // 	this->height = other.height;
@@ -4583,13 +4583,13 @@ Cidr::RGBBitmap::~RGBBitmap() {}
 	
 // 	return *this;
 // }
-// Cidr::MonochromeBitmap::MonochromeBitmap(MonochromeBitmap&& other) noexcept : 
+// cdr::MonochromeBitmap::MonochromeBitmap(MonochromeBitmap&& other) noexcept : 
 // 	data{other.data} , width{other.width}, height{other.height} { 
 // 	other.width = 0;
 // 	other.height = 0;
 // 	other.data = nullptr;
 // }
-// Cidr::MonochromeBitmap& Cidr::MonochromeBitmap::operator=(MonochromeBitmap&& other) noexcept {
+// cdr::MonochromeBitmap& cdr::MonochromeBitmap::operator=(MonochromeBitmap&& other) noexcept {
 // 	if(this == &other) return *this;
 	
 // 	delete[] data;
@@ -4602,7 +4602,7 @@ Cidr::RGBBitmap::~RGBBitmap() {}
 	
 // 	return *this;
 // }
-// Cidr::MonochromeBitmap::~MonochromeBitmap() {
+// cdr::MonochromeBitmap::~MonochromeBitmap() {
 // 	delete[] data;
 // }
 
@@ -4618,11 +4618,11 @@ Cidr::RGBBitmap::~RGBBitmap() {}
  ********************************/
 
 
-Cidr::Rectangle::operator Cidr::FRectangle() const {
+cdr::Rectangle::operator cdr::FRectangle() const {
 	return FRectangle{(float)x, (float)y, (float)width, (float)height};
 }
 
-Cidr::FRectangle::operator Cidr::Rectangle() const {
+cdr::FRectangle::operator cdr::Rectangle() const {
 	return Rectangle{(int)x, (int)y, (int)width, (int)height};
 }
 
@@ -4636,94 +4636,94 @@ Cidr::FRectangle::operator Cidr::Rectangle() const {
  * Date: 10.9.2020              *
  ********************************/
 
-Cidr::RGB::RGB() : r{0}, g{0}, b{0} {
+cdr::RGB::RGB() : r{0}, g{0}, b{0} {
 }
-Cidr::RGB::RGB(uint8_t r, uint8_t g, uint8_t b) : r{r}, g{g}, b{b} {
+cdr::RGB::RGB(uint8_t r, uint8_t g, uint8_t b) : r{r}, g{g}, b{b} {
 }
-Cidr::RGB::RGB(uint32_t color)
+cdr::RGB::RGB(uint32_t color)
 	: r{static_cast<uint8_t>((color >> 24) & 0xff)}, 
 	g{static_cast<uint8_t>((color >> 16) & 0xff)}, 
 	b{static_cast<uint8_t>((color >>  8) & 0xff)} {
 }
 
-Cidr::RGB& Cidr::RGB::operator+=(const RGB& that) {
+cdr::RGB& cdr::RGB::operator+=(const RGB& that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r + that.r, 0, 255));
 	this->g = static_cast<uint8_t>(std::clamp(this->g + that.g, 0, 255));
 	this->b = static_cast<uint8_t>(std::clamp(this->b + that.b, 0, 255));
 	return *this;
 }
-Cidr::RGB& Cidr::RGB::operator-=(const RGB& that) {
+cdr::RGB& cdr::RGB::operator-=(const RGB& that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r - that.r, 0, 255));
 	this->g = static_cast<uint8_t>(std::clamp(this->g - that.g, 0, 255));
 	this->b = static_cast<uint8_t>(std::clamp(this->b - that.b, 0, 255));
 	return *this;
 }
-Cidr::RGB& Cidr::RGB::operator*=(const int that) {
+cdr::RGB& cdr::RGB::operator*=(const int that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r * that, 0, 255));
 	this->g = static_cast<uint8_t>(std::clamp(this->g * that, 0, 255));
 	this->b = static_cast<uint8_t>(std::clamp(this->b * that, 0, 255));
 	return *this;
 }
-Cidr::RGB& Cidr::RGB::operator/=(const int that) {
+cdr::RGB& cdr::RGB::operator/=(const int that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r / that, 0, 255));
 	this->g = static_cast<uint8_t>(std::clamp(this->g / that, 0, 255));
 	this->b = static_cast<uint8_t>(std::clamp(this->b / that, 0, 255));
 	return *this;
 }
-Cidr::RGB& Cidr::RGB::operator*=(const float that) {
+cdr::RGB& cdr::RGB::operator*=(const float that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r * that, 0.f, 255.f));
 	this->g = static_cast<uint8_t>(std::clamp(this->g * that, 0.f, 255.f));
 	this->b = static_cast<uint8_t>(std::clamp(this->b * that, 0.f, 255.f));
 	return *this;
 }
-Cidr::RGB& Cidr::RGB::operator/=(const float that) {
+cdr::RGB& cdr::RGB::operator/=(const float that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r / that, 0.f, 255.f));
 	this->g = static_cast<uint8_t>(std::clamp(this->g / that, 0.f, 255.f));
 	this->b = static_cast<uint8_t>(std::clamp(this->b / that, 0.f, 255.f));
 	return *this;
 }
-bool Cidr::RGB::operator==(const RGB& that) const {
+bool cdr::RGB::operator==(const RGB& that) const {
 	return this->r == that.r && this->g == that.g && this->b == that.b;
 }
-bool Cidr::RGB::operator!=(const RGB& that) const {
+bool cdr::RGB::operator!=(const RGB& that) const {
 	return !(*this == that);
 }
-Cidr::RGB Cidr::RGB::operator+(const RGB& that) const {
+cdr::RGB cdr::RGB::operator+(const RGB& that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r + that.r, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g + that.g, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b + that.b, 0, 255)),
 	};
 }
-Cidr::RGB Cidr::RGB::operator-(const RGB& that) const {
+cdr::RGB cdr::RGB::operator-(const RGB& that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r - that.r, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g - that.g, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b - that.b, 0, 255)),
 	};
 }
-Cidr::RGB Cidr::RGB::operator*(const int that) const {
+cdr::RGB cdr::RGB::operator*(const int that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r * that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g * that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b * that, 0, 255)),
 	};
 }
-Cidr::RGB Cidr::RGB::operator/(const int that) const {
+cdr::RGB cdr::RGB::operator/(const int that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r / that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g / that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->b / that, 0, 255)),
 	};
 }
-Cidr::RGB Cidr::RGB::operator*(const float that) const {
+cdr::RGB cdr::RGB::operator*(const float that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->g * that, 0.f, 255.f)),
 		static_cast<uint8_t>(std::clamp(this->b * that, 0.f, 255.f)),
 		static_cast<uint8_t>(std::clamp(this->r * that, 0.f, 255.f)),
 	};
 }
-Cidr::RGB Cidr::RGB::operator/(const float that) const {
+cdr::RGB cdr::RGB::operator/(const float that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r / that, 0.f, 255.f)),
 		static_cast<uint8_t>(std::clamp(this->g / that, 0.f, 255.f)),
@@ -4734,69 +4734,69 @@ Cidr::RGB Cidr::RGB::operator/(const float that) const {
 
 
 
-Cidr::RGBA::RGBA() : Cidr::RGB(), a(0xff) {
+cdr::RGBA::RGBA() : cdr::RGB(), a(0xff) {
 }
-Cidr::RGBA::RGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : Cidr::RGB(r, g, b), a(a) {
+cdr::RGBA::RGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : cdr::RGB(r, g, b), a(a) {
 }
-Cidr::RGBA::RGBA(uint32_t color) : RGB(color), a{static_cast<uint8_t>(color & 0xff)} {
+cdr::RGBA::RGBA(uint32_t color) : RGB(color), a{static_cast<uint8_t>(color & 0xff)} {
 }
-Cidr::RGBA::RGBA(const Cidr::RGB& rgb, int a) : Cidr::RGB(rgb), a(a) {
+cdr::RGBA::RGBA(const cdr::RGB& rgb, int a) : cdr::RGB(rgb), a(a) {
 	
 }
 
-std::ostream& operator<<(std::ostream& out, const Cidr::RGB& rgb) {
+std::ostream& operator<<(std::ostream& out, const cdr::RGB& rgb) {
 	out << "r: " << (int)rgb.r << " g: " << (int)rgb.g << " b: " << (int)rgb.b;
 	return out;
 }
-std::ostream& operator<<(std::ostream& out, const Cidr::RGBA& rgba) {
+std::ostream& operator<<(std::ostream& out, const cdr::RGBA& rgba) {
 	out << "r: " << (int)rgba.r << " g: " << (int)rgba.g << " b: " << (int)rgba.b << " a: " << (int)rgba.a;
 	return out;
 }
 
-Cidr::RGBA& Cidr::RGBA::operator+=(const RGBA& that) {
+cdr::RGBA& cdr::RGBA::operator+=(const RGBA& that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r + that.r, 0, 255));
 	this->g = static_cast<uint8_t>(std::clamp(this->g + that.g, 0, 255));
 	this->b = static_cast<uint8_t>(std::clamp(this->b + that.b, 0, 255));
 	return *this;
 }
-Cidr::RGBA& Cidr::RGBA::operator-=(const RGBA& that) {
+cdr::RGBA& cdr::RGBA::operator-=(const RGBA& that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r - that.r, 0, 255));
 	this->g = static_cast<uint8_t>(std::clamp(this->g - that.g, 0, 255));
 	this->b = static_cast<uint8_t>(std::clamp(this->b - that.b, 0, 255));
 	return *this;
 }
-Cidr::RGBA& Cidr::RGBA::operator*=(const int that) {
+cdr::RGBA& cdr::RGBA::operator*=(const int that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r * that, 0, 255));
 	this->g = static_cast<uint8_t>(std::clamp(this->g * that, 0, 255));
 	this->b = static_cast<uint8_t>(std::clamp(this->b * that, 0, 255));
 	return *this;
 }
-Cidr::RGBA& Cidr::RGBA::operator/=(const int that) {
+cdr::RGBA& cdr::RGBA::operator/=(const int that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r / that, 0, 255));
 	this->g = static_cast<uint8_t>(std::clamp(this->g / that, 0, 255));
 	this->b = static_cast<uint8_t>(std::clamp(this->b / that, 0, 255));
 	return *this;
 }
 
-Cidr::RGBA& Cidr::RGBA::operator*=(const float that) {
+cdr::RGBA& cdr::RGBA::operator*=(const float that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r * that, 0.f, 255.f));
 	this->g = static_cast<uint8_t>(std::clamp(this->g * that, 0.f, 255.f));
 	this->b = static_cast<uint8_t>(std::clamp(this->b * that, 0.f, 255.f));
 	return *this;
 }
-Cidr::RGBA& Cidr::RGBA::operator/=(const float that) {
+cdr::RGBA& cdr::RGBA::operator/=(const float that) {
 	this->r = static_cast<uint8_t>(std::clamp(this->r / that, 0.f, 255.f));
 	this->g = static_cast<uint8_t>(std::clamp(this->g / that, 0.f, 255.f));
 	this->b = static_cast<uint8_t>(std::clamp(this->b / that, 0.f, 255.f));
 	return *this;
 }
-bool Cidr::RGBA::operator==(const RGBA& that) const {
+bool cdr::RGBA::operator==(const RGBA& that) const {
 	return this->r == that.r && this->g == that.g && this->b == that.b && this->a == that.a;
 }
-bool Cidr::RGBA::operator!=(const RGBA& that) const {
+bool cdr::RGBA::operator!=(const RGBA& that) const {
 	return !(*this == that);
 }
-Cidr::RGBA Cidr::RGBA::operator+(const RGBA& that) const {
+cdr::RGBA cdr::RGBA::operator+(const RGBA& that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r + that.r, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g + that.g, 0, 255)),
@@ -4804,7 +4804,7 @@ Cidr::RGBA Cidr::RGBA::operator+(const RGBA& that) const {
 		this->a,
 	};
 }
-Cidr::RGBA Cidr::RGBA::operator-(const RGBA& that) const {
+cdr::RGBA cdr::RGBA::operator-(const RGBA& that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r - that.r, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g - that.g, 0, 255)),
@@ -4812,7 +4812,7 @@ Cidr::RGBA Cidr::RGBA::operator-(const RGBA& that) const {
 		this->a,
 	};
 }
-Cidr::RGBA Cidr::RGBA::operator*(const int that) const {
+cdr::RGBA cdr::RGBA::operator*(const int that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r * that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g * that, 0, 255)),
@@ -4820,7 +4820,7 @@ Cidr::RGBA Cidr::RGBA::operator*(const int that) const {
 		this->a,
 	};
 }
-Cidr::RGBA Cidr::RGBA::operator/(const int that) const {
+cdr::RGBA cdr::RGBA::operator/(const int that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r / that, 0, 255)),
 		static_cast<uint8_t>(std::clamp(this->g / that, 0, 255)),
@@ -4828,7 +4828,7 @@ Cidr::RGBA Cidr::RGBA::operator/(const int that) const {
 		this->a,
 	};
 }
-Cidr::RGBA Cidr::RGBA::operator*(const float that) const {
+cdr::RGBA cdr::RGBA::operator*(const float that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r * that, 0.f, 255.f)),
 		static_cast<uint8_t>(std::clamp(this->g * that, 0.f, 255.f)),
@@ -4836,7 +4836,7 @@ Cidr::RGBA Cidr::RGBA::operator*(const float that) const {
 		this->a,
 	};
 }
-Cidr::RGBA Cidr::RGBA::operator/(const float that) const {
+cdr::RGBA cdr::RGBA::operator/(const float that) const {
 	return {
 		static_cast<uint8_t>(std::clamp(this->r / that, 0.f, 255.f)),
 		static_cast<uint8_t>(std::clamp(this->g / that, 0.f, 255.f)),
@@ -4848,28 +4848,28 @@ Cidr::RGBA Cidr::RGBA::operator/(const float that) const {
 
 
 
-uint32_t Cidr::ToColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+uint32_t cdr::ToColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	return (r << 24) + (g << 16) + (b << 8) + (a);
 }
 
-const Cidr::RGBA Cidr::RGBA::Transparent { 0, 0, 0, 0 };
+const cdr::RGBA cdr::RGBA::Transparent { 0, 0, 0, 0 };
 
-const Cidr::RGB Cidr::RGB::Black 	{  0,   0,   0};
-const Cidr::RGB Cidr::RGB::Red 		{255,   0,   0};
-const Cidr::RGB Cidr::RGB::Green 	{  0, 255,   0};
-const Cidr::RGB Cidr::RGB::Blue 	{  0,   0, 255};
-const Cidr::RGB Cidr::RGB::Cyan 	{  0, 255, 255};
-const Cidr::RGB Cidr::RGB::Magenta 	{255,   0, 255};
-const Cidr::RGB Cidr::RGB::Yellow 	{255, 255,   0};
-const Cidr::RGB Cidr::RGB::White 	{255, 255, 255};
-const Cidr::RGB Cidr::RGB::Gray 	{128, 128, 128};
-const Cidr::RGB Cidr::RGB::Grey 	{192, 192, 192};
-const Cidr::RGB Cidr::RGB::Maroon 	{128,   0,   0};
-const Cidr::RGB Cidr::RGB::Darkgreen{  0, 128,   0};
-const Cidr::RGB Cidr::RGB::Navy 	{  0,   0, 128};
-const Cidr::RGB Cidr::RGB::Teal 	{  0, 128, 128};
-const Cidr::RGB Cidr::RGB::Purple 	{128,   0, 128};
-const Cidr::RGB Cidr::RGB::Olive 	{128, 128,   0};
+const cdr::RGB cdr::RGB::Black 	{  0,   0,   0};
+const cdr::RGB cdr::RGB::Red 		{255,   0,   0};
+const cdr::RGB cdr::RGB::Green 	{  0, 255,   0};
+const cdr::RGB cdr::RGB::Blue 	{  0,   0, 255};
+const cdr::RGB cdr::RGB::Cyan 	{  0, 255, 255};
+const cdr::RGB cdr::RGB::Magenta 	{255,   0, 255};
+const cdr::RGB cdr::RGB::Yellow 	{255, 255,   0};
+const cdr::RGB cdr::RGB::White 	{255, 255, 255};
+const cdr::RGB cdr::RGB::Gray 	{128, 128, 128};
+const cdr::RGB cdr::RGB::Grey 	{192, 192, 192};
+const cdr::RGB cdr::RGB::Maroon 	{128,   0,   0};
+const cdr::RGB cdr::RGB::Darkgreen{  0, 128,   0};
+const cdr::RGB cdr::RGB::Navy 	{  0,   0, 128};
+const cdr::RGB cdr::RGB::Teal 	{  0, 128, 128};
+const cdr::RGB cdr::RGB::Purple 	{128,   0, 128};
+const cdr::RGB cdr::RGB::Olive 	{128, 128,   0};
 
 #pragma endregion COLOR_CPP
 
@@ -4881,20 +4881,20 @@ const Cidr::RGB Cidr::RGB::Olive 	{128, 128,   0};
  ********************************/
 
 
-Cidr::Point::Point() : tem::ivec2() {
+cdr::Point::Point() : tem::ivec2() {
 }
-Cidr::Point::Point(int x, int y) : tem::ivec2(x, y) {
+cdr::Point::Point(int x, int y) : tem::ivec2(x, y) {
 }
-Cidr::Point::operator Cidr::FPoint() const {
+cdr::Point::operator cdr::FPoint() const {
 	return {static_cast<float>(x), static_cast<float>(y)};
 }
 
 
-Cidr::FPoint::FPoint() : tem::vec2() {
+cdr::FPoint::FPoint() : tem::vec2() {
 }
-Cidr::FPoint::FPoint(float x, float y) : tem::vec2(x, y) {
+cdr::FPoint::FPoint(float x, float y) : tem::vec2(x, y) {
 }
-Cidr::FPoint::operator Cidr::Point() const {
+cdr::FPoint::operator cdr::Point() const {
 	return {static_cast<int>(x), static_cast<int>(y)};
 }
 
@@ -4908,7 +4908,7 @@ Cidr::FPoint::operator Cidr::Point() const {
  * Date: 12.2.2021				*
  ********************************/
 
-Cidr::Font::Font(const uint8_t* data, int fontSheetWidth, int fontSheetHeight, int fontWidth, int fontHeight) : 
+cdr::Font::Font(const uint8_t* data, int fontSheetWidth, int fontSheetHeight, int fontWidth, int fontHeight) : 
 	fontSheet{fontSheetWidth, fontSheetHeight}, fontWidth{fontWidth}, fontHeight{fontHeight} {
 		
 	auto getCoordX = [](int val, int width) {
@@ -4925,7 +4925,7 @@ Cidr::Font::Font(const uint8_t* data, int fontSheetWidth, int fontSheetHeight, i
 		for(int j = 0; j < 8; j++) {
 			uint8_t c = ((color8 >> j) & 1) * 255;
 			
-			fontSheet.SetPixel(Cidr::RGBA{c, c, c, 255}, getCoordX(i*8 + j, fontSheetWidth), getCoordY(i*8 + j, fontSheetWidth));
+			fontSheet.SetPixel(cdr::RGBA{c, c, c, 255}, getCoordX(i*8 + j, fontSheetWidth), getCoordY(i*8 + j, fontSheetWidth));
 		}
 	}
 }

@@ -15,7 +15,7 @@
 #include "rectangle.hpp"
 #include "font.hpp"
 
-namespace Cidr {
+namespace cdr {
 	
 class Renderer {
 public:
@@ -54,7 +54,7 @@ public:
 	void FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3);
 	void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3);
 	void DrawBitmap(const Bitmap& bitmap, float destX, float destY, int destWidth, int destHeight, float srcX, float srcY, int srcWidth, int srcHeight);
-	void DrawText(const std::string_view text, int x = -1, int y = -1, TextAlignment ta = TextAlignment::TL, const Font& f = Cidr::Fonts::Raster8x12, float size = 1, const RGBA& fColor = RGB::White, const RGBA& bColor = RGBA::Transparent, const RGBA& shadowColor = RGBA::Transparent, int shadowOffsetX = 1, int shadowOffsetY = 1);
+	void DrawText(const std::string_view text, int x = -1, int y = -1, TextAlignment ta = TextAlignment::TL, const Font& f = cdr::Fonts::Raster8x12, float size = 1, const RGBA& fColor = RGB::White, const RGBA& bColor = RGBA::Transparent, const RGBA& shadowColor = RGBA::Transparent, int shadowOffsetX = 1, int shadowOffsetY = 1);
 
 	void DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, Point p1, Point p2, Point p3);
 	
@@ -105,13 +105,13 @@ public:
 	inline int GetHeight() const {
 		return height;
 	}
-	inline Cidr::RGBA GetPixel(const Point& p) const {
-		if(p.x < 0 || p.y < 0 || p.x >= GetWidth() || p.y >= GetHeight()) return Cidr::RGBA{};
-		return Cidr::RGBA{pixels[getIndex(p)]};
+	inline cdr::RGBA GetPixel(const Point& p) const {
+		if(p.x < 0 || p.y < 0 || p.x >= GetWidth() || p.y >= GetHeight()) return cdr::RGBA{};
+		return cdr::RGBA{pixels[getIndex(p)]};
 	}
-	inline Cidr::RGBA GetPixel(int x, int y) const {
-		if(x < 0 || y < 0 || x >= GetWidth() || y >= GetHeight()) return Cidr::RGBA{};
-		return Cidr::RGBA{pixels[getIndex(x, y)]};
+	inline cdr::RGBA GetPixel(int x, int y) const {
+		if(x < 0 || y < 0 || x >= GetWidth() || y >= GetHeight()) return cdr::RGBA{};
+		return cdr::RGBA{pixels[getIndex(x, y)]};
 	}
 	
 private:
@@ -133,23 +133,23 @@ private:
 	void constructFontBitmap(Font f);
 };
 
-inline RGB alphaBlendColor(const Cidr::RGB& color1, const Cidr::RGB& color2, float alpha) {
-	return (Cidr::RGB) { 
+inline RGB alphaBlendColor(const cdr::RGB& color1, const cdr::RGB& color2, float alpha) {
+	return (cdr::RGB) { 
 		static_cast<uint8_t>(color2.r * (alpha / 255.f) + color1.r * (1 - alpha / 255.f)),
 		static_cast<uint8_t>(color2.g * (alpha / 255.f) + color1.g * (1 - alpha / 255.f)),
 		static_cast<uint8_t>(color2.b * (alpha / 255.f) + color1.b * (1 - alpha / 255.f))
 	};
 }
-inline RGB alphaBlendColorGammaCorrected(const Cidr::RGB& color1, const Cidr::RGB& color2, float alpha, float gamma = 2.2) {
-	return (Cidr::RGB) { 
+inline RGB alphaBlendColorGammaCorrected(const cdr::RGB& color1, const cdr::RGB& color2, float alpha, float gamma = 2.2) {
+	return (cdr::RGB) { 
 		static_cast<uint8_t>(std::pow(std::pow(color2.r, gamma) * (alpha / 255.f) + std::pow(color1.r, gamma) * (1 - alpha / 255.f), 1.f / gamma)),
 		static_cast<uint8_t>(std::pow(std::pow(color2.g, gamma) * (alpha / 255.f) + std::pow(color1.g, gamma) * (1 - alpha / 255.f), 1.f / gamma)),
 		static_cast<uint8_t>(std::pow(std::pow(color2.b, gamma) * (alpha / 255.f) + std::pow(color1.b, gamma) * (1 - alpha / 255.f), 1.f / gamma))
 	};
 }
-inline RGBA alphaBlendColor(const Cidr::RGBA& color1, const Cidr::RGBA& color2){
+inline RGBA alphaBlendColor(const cdr::RGBA& color1, const cdr::RGBA& color2){
 	 // uses color2's alpha value
-	return (Cidr::RGBA) {
+	return (cdr::RGBA) {
 		static_cast<uint8_t>(color2.r * (color2.a / 255.f) + color1.r * (1 - color2.a / 255.f)),
 		static_cast<uint8_t>(color2.g * (color2.a / 255.f) + color1.g * (1 - color2.a / 255.f)),
 		static_cast<uint8_t>(color2.b * (color2.a / 255.f) + color1.b * (1 - color2.a / 255.f)),

@@ -27,13 +27,13 @@
 #include "cidr.hpp"
 #endif
 
-Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y);
-Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y);
-Cidr::RGBA hBlurShader(const Cidr::Renderer& renderer, int x, int y);
-Cidr::RGBA vBlurShader(const Cidr::Renderer& renderer, int x, int y);
-Cidr::RGBA hsvHueRotationShader(const Cidr::Renderer& renderer, int x, int y);
-Cidr::RGBA distortionShader(const Cidr::Renderer& renderer, int x, int y);
-Cidr::RGBA grayScaleShader(const Cidr::Renderer& renderer, int x, int y);
+cdr::RGBA testShader(const cdr::Renderer& renderer, int x, int y);
+cdr::RGBA blurShader(const cdr::Renderer& renderer, int x, int y);
+cdr::RGBA hBlurShader(const cdr::Renderer& renderer, int x, int y);
+cdr::RGBA vBlurShader(const cdr::Renderer& renderer, int x, int y);
+cdr::RGBA hsvHueRotationShader(const cdr::Renderer& renderer, int x, int y);
+cdr::RGBA distortionShader(const cdr::Renderer& renderer, int x, int y);
+cdr::RGBA grayScaleShader(const cdr::Renderer& renderer, int x, int y);
 
 int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
 	uint32_t* pixels = new uint32_t[CANVAS_WIDTH * CANVAS_HEIGHT];
 	memset(pixels, 0, CANVAS_WIDTH * CANVAS_HEIGHT * sizeof(uint32_t));
 	
-	Cidr::Renderer cidrRend {pixels, CANVAS_WIDTH, CANVAS_HEIGHT};
+	cdr::Renderer cidrRend {pixels, CANVAS_WIDTH, CANVAS_HEIGHT};
 	
 	SDL_Event event;
 	bool alive = true;
@@ -70,12 +70,12 @@ int main(int argc, char** argv) {
 	uint32_t old = 0;
 	uint32_t timer = 0;
 	
-	Cidr::Bitmap savingBitmap{256, 256};
-	Cidr::Renderer savingBitmapRenderer{savingBitmap.GetData(), savingBitmap.GetWidth(), savingBitmap.GetHeight()};
+	cdr::Bitmap savingBitmap{256, 256};
+	cdr::Renderer savingBitmapRenderer{savingBitmap.GetData(), savingBitmap.GetWidth(), savingBitmap.GetHeight()};
 	for (uint32_t x = 0; x < 256; x++) {
 		for (uint32_t y = 0; y < 256; y++) {
-			Cidr::RGBA c1((x^y) | ~x, (x) & ~y, (y) | x);
-			Cidr::RGBA c2(((y+x)*2) >> (~x&y), ((y+x)*4) >> (x&y), ((y+x)*8) >> (x&~y));
+			cdr::RGBA c1((x^y) | ~x, (x) & ~y, (y) | x);
+			cdr::RGBA c2(((y+x)*2) >> (~x&y), ((y+x)*4) >> (x&y), ((y+x)*8) >> (x&~y));
 			savingBitmap.SetRawPixel(
 				(y & (x^~y)) >> (~x&~y) | ((y & (x^~y))),
 				(x & (x^y) ) >> (~x& y) | ((x & (x^y) )),
@@ -84,13 +84,13 @@ int main(int argc, char** argv) {
 		}
 	}
 	
-	savingBitmapRenderer.DrawText("Cidr", 132, 128, Cidr::TextAlignment::CC, Cidr::Fonts::Raster8x16, 4, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGB::Black);
+	savingBitmapRenderer.DrawText("Cidr", 132, 128, cdr::TextAlignment::CC, cdr::Fonts::Raster8x16, 4, cdr::RGB::White, cdr::RGBA::Transparent, cdr::RGB::Black);
 	
-	savingBitmap.SaveAs("savingBitmap.png", Cidr::Bitmap::Formats::PNG);
+	savingBitmap.SaveAs("savingBitmap.png", cdr::Bitmap::Formats::PNG);
 	
-	Cidr::RGBA (*currentShader)(const Cidr::Renderer& renderer, int x, int y) {nullptr};
-	Cidr::Bitmap bitmap{"../res/pureTest.png"};
-	Cidr::Bitmap triangleTexture{"../res/treeImg.png"};
+	cdr::RGBA (*currentShader)(const cdr::Renderer& renderer, int x, int y) {nullptr};
+	cdr::Bitmap bitmap{"../res/pureTest.png"};
+	cdr::Bitmap triangleTexture{"../res/treeImg.png"};
 	
 	
 	float val1{};
@@ -143,27 +143,27 @@ int main(int argc, char** argv) {
 			currentShader = &testShader;
 		}
 		if(keyboard[SDLK_5]) {
-			cidrRend.OutOfBoundsType = Cidr::Renderer::OutOfBoundsType::Repeat;
+			cidrRend.OutOfBoundsType = cdr::Renderer::OutOfBoundsType::Repeat;
 			currentShader = nullptr;
 		}
 		if(keyboard[SDLK_6]) {
-			cidrRend.OutOfBoundsType = Cidr::Renderer::OutOfBoundsType::MirroredRepeat;
+			cidrRend.OutOfBoundsType = cdr::Renderer::OutOfBoundsType::MirroredRepeat;
 			currentShader = nullptr;
 		}
 		if(keyboard[SDLK_7]) {
-			cidrRend.OutOfBoundsType = Cidr::Renderer::OutOfBoundsType::ClampToBorder;
+			cidrRend.OutOfBoundsType = cdr::Renderer::OutOfBoundsType::ClampToBorder;
 			currentShader = nullptr;
 		}
 		if(keyboard[SDLK_8]) {
-			cidrRend.OutOfBoundsType = Cidr::Renderer::OutOfBoundsType::ClampToEdge;
+			cidrRend.OutOfBoundsType = cdr::Renderer::OutOfBoundsType::ClampToEdge;
 			currentShader = nullptr;
 		}
 		if(keyboard[SDLK_9]) {
-			cidrRend.ScaleType = Cidr::Renderer::ScaleType::Nearest;
+			cidrRend.ScaleType = cdr::Renderer::ScaleType::Nearest;
 			currentShader = nullptr;
 		}
 		if(keyboard[SDLK_0]) {
-			cidrRend.ScaleType = Cidr::Renderer::ScaleType::Linear;
+			cidrRend.ScaleType = cdr::Renderer::ScaleType::Linear;
 			currentShader = nullptr;
 		}
 		if(keyboard[SDLK_UP]) {
@@ -196,13 +196,13 @@ int main(int argc, char** argv) {
 		
 		
 		/* DRAWING A COLORFUL RECTANGLE USING A SHADER */
-		auto lambda = [](const Cidr::Renderer& renderer, int x, int y) -> Cidr::RGBA {
+		auto lambda = [](const cdr::Renderer& renderer, int x, int y) -> cdr::RGBA {
 			return {
 				static_cast<uint8_t>(x - 3), 
 				static_cast<uint8_t>(y - 3), 
 				static_cast<uint8_t>(255 - (x - 3))};
 		};
-		cidrRend.FillRectangle(lambda, (Cidr::Rectangle){3, 3, 256, 256});
+		cidrRend.FillRectangle(lambda, (cdr::Rectangle){3, 3, 256, 256});
 		
 		
 		/* DRAWING THREE TYPES OF LINES */
@@ -221,7 +221,7 @@ int main(int argc, char** argv) {
 		cidrRend.DrawCircle(0x23ff10ff, 192, 340, 50);
 		int circlesCount = 7;
 		for(int i = 0; i < circlesCount; i++) {
-			Cidr::RGB color{0xff, 0xff, 0xff};
+			cdr::RGB color{0xff, 0xff, 0xff};
 			if(i % 2) {
 				color = {};
 			}
@@ -236,49 +236,49 @@ int main(int argc, char** argv) {
 
 		/* TRIANGLES */
 		cidrRend.FillTriangle(
-			Cidr::RGB::Red, 
-			Cidr::RGB::Green, 
-			Cidr::RGB::Blue, 
+			cdr::RGB::Red, 
+			cdr::RGB::Green, 
+			cdr::RGB::Blue, 
 			 0 + 310,  0 + 128,
 			64 + 310, 32 + 128,
 			32 + 310, 64 + 128);
-		cidrRend.DrawTriangle(Cidr::RGB::White, 
+		cidrRend.DrawTriangle(cdr::RGB::White, 
 			 0 + 310, 0 + 128,
 			64 + 310,32 + 128,
 			32 + 310,64 + 128, true, true);
 		
 		cidrRend.FillTriangle(
-			Cidr::RGB::Red,
-			Cidr::RGB::Green,
-			Cidr::RGB::Blue,
+			cdr::RGB::Red,
+			cdr::RGB::Green,
+			cdr::RGB::Blue,
 			400, 		128,
 			400, 		128 + 64,
 			400 + 32, 	128 + 32);
 		cidrRend.FillTriangle(
-			Cidr::RGB::Green,
-			Cidr::RGB::Blue,
-			Cidr::RGB::Red,
+			cdr::RGB::Green,
+			cdr::RGB::Blue,
+			cdr::RGB::Red,
 			400 + 64, 	128,
 			400 + 32, 	128 + 32,
 			400 + 64, 	128 + 64);
 		cidrRend.FillTriangle(
-			Cidr::RGB::Green,
-			Cidr::RGB::Blue,
-			Cidr::RGB::Red,
+			cdr::RGB::Green,
+			cdr::RGB::Blue,
+			cdr::RGB::Red,
 			400, 		128 + 64,
 			400 + 32, 	128 + 32,
 			400 + 64, 	128 + 64);
 		cidrRend.FillTriangle(
-			Cidr::RGB::Red,
-			Cidr::RGB::Green,
-			Cidr::RGB::Blue,
+			cdr::RGB::Red,
+			cdr::RGB::Green,
+			cdr::RGB::Blue,
 			400, 		128,
 			400 + 64, 	128,
 			400 + 32, 	128 + 32);
 		
 		
 		/* IMAGES */
-		cidrRend.ClampToBorderColor = Cidr::RGB::Gray;
+		cidrRend.ClampToBorderColor = cdr::RGB::Gray;
 		int destWidth = bitmap.GetWidth() * 6;
 		int destHeight = bitmap.GetWidth() * 6;
 		cidrRend.DrawBitmap(bitmap, 
@@ -287,11 +287,11 @@ int main(int argc, char** argv) {
 
 
 		/* TEXTURED TRIANGLE */
-		Cidr::Point p1{32, 48};
-		Cidr::Point p2{32, 256};
-		Cidr::Point p3{256-32, 256};
-		Cidr::Point p4{256-32, 48};
-		Cidr::Point pInBetween {(p1.x + p2.x + p3.x + p4.x) / 4, (p1.y + p2.y + p3.y + p4.y) / 4};
+		cdr::Point p1{32, 48};
+		cdr::Point p2{32, 256};
+		cdr::Point p3{256-32, 256};
+		cdr::Point p4{256-32, 48};
+		cdr::Point pInBetween {(p1.x + p2.x + p3.x + p4.x) / 4, (p1.y + p2.y + p3.y + p4.y) / 4};
 		
 		cidrRend.DrawTriangle(triangleTexture, 
 			0 + val2/100.f, 0 - val1/100.f,
@@ -311,42 +311,42 @@ int main(int argc, char** argv) {
 		
 		/* TEXT */
 		if(showText) {
-			cidrRend.DrawText("textured triangles", pInBetween.x - (8 * 18 / 2), pInBetween.y - 32, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGB::White, Cidr::RGBA::Transparent, Cidr::RGB::Black, 1, 1);
-			cidrRend.DrawText("shaded rectangle", 64, 16, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("balls", 365, 16, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("triangles", 350, 110, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("lines", 365, 220, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("combinations", 80, 270, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("images", 335, 270, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("textured triangles", pInBetween.x - (8 * 18 / 2), pInBetween.y - 32, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGB::White, cdr::RGBA::Transparent, cdr::RGB::Black, 1, 1);
+			cidrRend.DrawText("shaded rectangle", 64, 16, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("balls", 365, 16, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("triangles", 350, 110, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("lines", 365, 220, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("combinations", 80, 270, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("images", 335, 270, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
 			if(currentShader != nullptr) {
 				std::string shaderText = "shader";
-				if ((mx - shaderRectSize / 2.f - (shaderText.length() * Cidr::Fonts::Raster8x16.GetFontWidth()) / 2) >= 0 && my-shaderRectSize-Cidr::Fonts::Raster8x16.GetFontHeight() >= 0)
-					cidrRend.DrawText(shaderText, mx-shaderRectSize - (Cidr::Fonts::Raster8x16.GetFontWidth() * shaderText.length()) / 2 + shaderRectSize/2, my-shaderRectSize-Cidr::Fonts::Raster8x16.GetFontHeight(), Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+				if ((mx - shaderRectSize / 2.f - (shaderText.length() * cdr::Fonts::Raster8x16.GetFontWidth()) / 2) >= 0 && my-shaderRectSize-cdr::Fonts::Raster8x16.GetFontHeight() >= 0)
+					cidrRend.DrawText(shaderText, mx-shaderRectSize - (cdr::Fonts::Raster8x16.GetFontWidth() * shaderText.length()) / 2 + shaderRectSize/2, my-shaderRectSize-cdr::Fonts::Raster8x16.GetFontHeight(), cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
 			}
 		}
 		
 		int seed = 6123434;
-		auto getRandomColor = [&seed](int min = 0, int max = 255) -> Cidr::RGBA {
+		auto getRandomColor = [&seed](int min = 0, int max = 255) -> cdr::RGBA {
 			seed += 3489;
-			return Cidr::RGBA{(uint8_t)std::clamp(seed*2378%255, min, max), (uint8_t)std::clamp(seed*899%255, min, max), (uint8_t)std::clamp(seed*328%255,min,max)};
+			return cdr::RGBA{(uint8_t)std::clamp(seed*2378%255, min, max), (uint8_t)std::clamp(seed*899%255, min, max), (uint8_t)std::clamp(seed*328%255,min,max)};
 		};
 		
 		//#0CD848 nicegreen 
 		
 		int wordCount = 0;
 		for(const std::string& word : {	"Lorem", "ipsum", "dolor", "sit", "amet,", "consectetur", "adipiscing", "elit,"	}) {
-			cidrRend.DrawText(word, 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1,
-				getRandomColor(128, 255), getRandomColor(0, 64), Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText(word, 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1,
+				getRandomColor(128, 255), getRandomColor(0, 64), cdr::RGBA::Black, 1, 1);
 			wordCount += word.length();
-			cidrRend.DrawText(" ", 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420);
+			cidrRend.DrawText(" ", 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420);
 			wordCount++;
 		}
 		wordCount = 0;
 		for(const std::string& word : { "sed", "do", "eiusmod", "tempor", "incididunt", "labore", "et", "dolore", "aliqua." }) {
-			cidrRend.DrawText(word, 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420 + Cidr::Fonts::Raster8x16.GetFontHeight(), Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1,
-				getRandomColor(128, 255), getRandomColor(0, 64), Cidr::RGBA::Black, 1, 1);
+			cidrRend.DrawText(word, 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420 + cdr::Fonts::Raster8x16.GetFontHeight(), cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1,
+				getRandomColor(128, 255), getRandomColor(0, 64), cdr::RGBA::Black, 1, 1);
 			wordCount += word.length();
-			cidrRend.DrawText(" ", 16 + wordCount * Cidr::Fonts::Raster8x16.GetFontWidth(), 420 + Cidr::Fonts::Raster8x16.GetFontHeight());
+			cidrRend.DrawText(" ", 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420 + cdr::Fonts::Raster8x16.GetFontHeight());
 			wordCount++;
 		}
 		
@@ -376,9 +376,9 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
-Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y) { 
-	Cidr::RGBA finalColor{};
-	const Cidr::RGBA& currentPixel = renderer.GetPixel(x,y);
+cdr::RGBA testShader(const cdr::Renderer& renderer, int x, int y) { 
+	cdr::RGBA finalColor{};
+	const cdr::RGBA& currentPixel = renderer.GetPixel(x,y);
 
 	finalColor.r = 255 - currentPixel.r;
 	finalColor.g = 255 - currentPixel.g;
@@ -387,9 +387,9 @@ Cidr::RGBA testShader(const Cidr::Renderer& renderer, int x, int y) {
 	return finalColor;
 }
 
-Cidr::RGBA grayScaleShader(const Cidr::Renderer& renderer, int x, int y) { 
-	Cidr::RGBA finalColor{};
-	const Cidr::RGBA& currentPixel = renderer.GetPixel(x,y);
+cdr::RGBA grayScaleShader(const cdr::Renderer& renderer, int x, int y) { 
+	cdr::RGBA finalColor{};
+	const cdr::RGBA& currentPixel = renderer.GetPixel(x,y);
 
 	finalColor.r = finalColor.g = finalColor.b = 
 		0.2126 * currentPixel.r + 0.7152 * currentPixel.g + 0.0722 * currentPixel.b;
@@ -397,22 +397,22 @@ Cidr::RGBA grayScaleShader(const Cidr::Renderer& renderer, int x, int y) {
 	return finalColor;
 }
 
-Cidr::RGBA hsvHueRotationShader(const Cidr::Renderer& renderer, int x, int y) {
-	Cidr::RGBA finalColor{};
-	const Cidr::RGBA& currentPixel = renderer.GetPixel(x,y);
+cdr::RGBA hsvHueRotationShader(const cdr::Renderer& renderer, int x, int y) {
+	cdr::RGBA finalColor{};
+	const cdr::RGBA& currentPixel = renderer.GetPixel(x,y);
 
 	static double v {};
 	v += 0.00005;
 	if(v > 360) v = 0;
 
-	Cidr::HSV temp = Cidr::RGBtoHSV(currentPixel); 
+	cdr::HSV temp = cdr::RGBtoHSV(currentPixel); 
 	temp.setH(temp.getH() + v);
-	finalColor = Cidr::HSVtoRGB(temp);
+	finalColor = cdr::HSVtoRGB(temp);
 	
 	return finalColor;
 }
-Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y) {
-	Cidr::RGBA finalColor{};
+cdr::RGBA blurShader(const cdr::Renderer& renderer, int x, int y) {
+	cdr::RGBA finalColor{};
 	int blurSize = 3;
 	int rTotal{0}, gTotal{0}, bTotal{0};
 	float total = 0;
@@ -437,8 +437,8 @@ Cidr::RGBA blurShader(const Cidr::Renderer& renderer, int x, int y) {
 	
 	return finalColor;
 }
-Cidr::RGBA hBlurShader(const Cidr::Renderer& renderer, int x, int y) {
-	Cidr::RGBA finalColor{};
+cdr::RGBA hBlurShader(const cdr::Renderer& renderer, int x, int y) {
+	cdr::RGBA finalColor{};
 	
 	int offset = -8;
 	finalColor += renderer.GetPixel(x + offset++, y) * 0.000078f;
@@ -461,8 +461,8 @@ Cidr::RGBA hBlurShader(const Cidr::Renderer& renderer, int x, int y) {
 	
 	return finalColor;
 }
-Cidr::RGBA vBlurShader(const Cidr::Renderer& renderer, int x, int y) {
-	Cidr::RGBA finalColor{};
+cdr::RGBA vBlurShader(const cdr::Renderer& renderer, int x, int y) {
+	cdr::RGBA finalColor{};
 	
 	int offset = -8;
 	finalColor += renderer.GetPixel(x, y + offset++) * 0.000078f;
@@ -485,8 +485,8 @@ Cidr::RGBA vBlurShader(const Cidr::Renderer& renderer, int x, int y) {
 	
 	return finalColor;
 }
-Cidr::RGBA distortionShader(const Cidr::Renderer& renderer, int x, int y) {
-	Cidr::RGBA color{};
+cdr::RGBA distortionShader(const cdr::Renderer& renderer, int x, int y) {
+	cdr::RGBA color{};
 	
 	static double v1{0};
 	static double v2{0};

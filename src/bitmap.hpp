@@ -11,7 +11,7 @@
 #include "color.hpp"
 #include <type_traits>
 
-namespace Cidr {
+namespace cdr {
 
 class BaseBitmap {
 protected:

@@ -6,19 +6,19 @@
 
 #include "point.hpp"
 
-Cidr::Point::Point() : tem::ivec2() {
+cdr::Point::Point() : tem::ivec2() {
 }
-Cidr::Point::Point(int x, int y) : tem::ivec2(x, y) {
+cdr::Point::Point(int x, int y) : tem::ivec2(x, y) {
 }
-Cidr::Point::operator Cidr::FPoint() const {
+cdr::Point::operator cdr::FPoint() const {
 	return {static_cast<float>(x), static_cast<float>(y)};
 }
 
 
-Cidr::FPoint::FPoint() : tem::vec2() {
+cdr::FPoint::FPoint() : tem::vec2() {
 }
-Cidr::FPoint::FPoint(float x, float y) : tem::vec2(x, y) {
+cdr::FPoint::FPoint(float x, float y) : tem::vec2(x, y) {
 }
-Cidr::FPoint::operator Cidr::Point() const {
+cdr::FPoint::operator cdr::Point() const {
 	return {static_cast<int>(x), static_cast<int>(y)};
 }
