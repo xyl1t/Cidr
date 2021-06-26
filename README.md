@@ -65,7 +65,11 @@ By pressing keys from `5`-`8` you switch between "OutOfBound" modes and keys `9`
 Press `t` to turn off the text and `shift` + `t` to turn it back on.
 
 ## Usage
-Just copy and paste the `cidr.hpp` file into your project and you're done!
+Just copy and paste the `cidr.hpp` file into your project and do this:
+	
+	#define CIDR_IMPLEMENTATION
+	
+in *one* C or C++ file to create the implementation before you include the `cidr.hpp` file. 
 
 ## Dependencies
 All you need is a compiler that supports C++17.
