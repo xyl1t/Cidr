@@ -3,5 +3,5 @@ build/
 *.d
 Cidr
 .vscode
-/Makefile
-/paper.txt
+.cache
+/stf

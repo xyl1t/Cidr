@@ -20,6 +20,7 @@
 #include <cstdio>
 #include <fstream>
 
+#define CIDR_IMPLEMENTATION
 #ifndef NDEBUG
 #include "src/renderer.hpp"
 #else
@@ -64,7 +65,7 @@ int main(int argc, char** argv) {
 	std::map<int, bool> keyboard;
 	int mx, my;
 	bool showText = true;
-	constexpr int shaderSize = 128;
+	constexpr int shaderRectSize = 128;
 	uint32_t current = SDL_GetTicks();
 	uint32_t old = 0;
 	uint32_t timer = 0;
@@ -103,7 +104,7 @@ int main(int argc, char** argv) {
 		current = t.elapsed();
 		if(timer > 1000) {
 			std::cout << "ms: " << (current - old) / 1000000.f << '\n';
-			timer = 0;
+			timer = 0; 
 		}
 		timer += (current - old) / 1000000.f;
 		
@@ -281,7 +282,7 @@ int main(int argc, char** argv) {
 		int destWidth = bitmap.GetWidth() * 6;
 		int destHeight = bitmap.GetWidth() * 6;
 		cidrRend.DrawBitmap(bitmap, 
-			(float)360-destWidth/2,(float)340-destHeight/2, destWidth, destHeight, 
+			(float)360-destWidth/2.f,(float)340-destHeight/2.f, destWidth, destHeight, 
 			val2/4.f, -val1/4.f, bitmap.GetWidth(), bitmap.GetHeight());
 
 
@@ -319,10 +320,8 @@ int main(int argc, char** argv) {
 			cidrRend.DrawText("images", 335, 270, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
 			if(currentShader != nullptr) {
 				std::string shaderText = "shader";
-				int x = mx-shaderSize - (Cidr::Fonts::Raster8x16.GetFontWidth() * shaderText.length()) / 2 + shaderSize/2;
-				int y = my-shaderSize-Cidr::Fonts::Raster8x16.GetFontHeight();
-				if(x >= 0 && y >= 0)
-					cidrRend.DrawText(shaderText, x, y, Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
+				if ((mx - shaderRectSize / 2.f - (shaderText.length() * Cidr::Fonts::Raster8x16.GetFontWidth()) / 2) >= 0 && my-shaderRectSize-Cidr::Fonts::Raster8x16.GetFontHeight() >= 0)
+					cidrRend.DrawText(shaderText, mx-shaderRectSize - (Cidr::Fonts::Raster8x16.GetFontWidth() * shaderText.length()) / 2 + shaderRectSize/2, my-shaderRectSize-Cidr::Fonts::Raster8x16.GetFontHeight(), Cidr::TextAlignment::TL, Cidr::Fonts::Raster8x16, 1, Cidr::RGBA::White, Cidr::RGBA::Transparent, Cidr::RGBA::Black, 1, 1);
 			}
 		}
 		
@@ -354,13 +353,13 @@ int main(int argc, char** argv) {
 		/* APPLY SHADER */
 		if(currentShader != nullptr) {
 			if(currentShader == &blurShader) {
-				cidrRend.FillRectangle(&hBlurShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
-				cidrRend.FillRectangle(&vBlurShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
+				cidrRend.FillRectangle(&hBlurShader, mx-shaderRectSize, my-shaderRectSize, shaderRectSize, shaderRectSize);
+				cidrRend.FillRectangle(&vBlurShader, mx-shaderRectSize, my-shaderRectSize, shaderRectSize, shaderRectSize);
 			}
 			else {
-				cidrRend.FillRectangle(currentShader, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);				
+				cidrRend.FillRectangle(currentShader, mx-shaderRectSize, my-shaderRectSize, shaderRectSize, shaderRectSize);				
 			}
-			cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderSize, my-shaderSize, shaderSize, shaderSize);
+			cidrRend.DrawRectangle({0xe0, 0xef, 0xff}, mx-shaderRectSize, my-shaderRectSize, shaderRectSize, shaderRectSize);
 		}
 		
 		/* UPDATE SCREEN */
