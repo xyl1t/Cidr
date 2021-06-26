@@ -2127,6 +2127,7 @@ inline RGBA alphaBlendColor(const cdr::RGBA& color1, const cdr::RGBA& color2){
 
 
 #ifdef CIDR_IMPLEMENTATION
+#undef CIDR_IMPLEMENTATION
 
 #pragma region RENDERER_CPP
 /********************************
@@ -13503,8 +13504,5 @@ STBIWDEF int stbi_write_jpg(char const *filename, int x, int y, int comp, const 
 #endif // STB_IMAGE_WRITE_IMPLEMENTATION
 
 #pragma endregion STB_IMAGE_WRITE_IMPLEMENTATION
-
-#else
-#error Seems like you forgot to add '#define CIDR_IMPLEMENTATION' before including 'cidr.h', have you read the README? :P
 
 #endif
