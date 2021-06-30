@@ -118,6 +118,8 @@ private:
 	uint32_t* pixels {nullptr};
 	int width {0};
 	int height {0};
+	int globalX;
+	int globalY;
 	
 private:
 	/* UTILITY FUNCTIONS */

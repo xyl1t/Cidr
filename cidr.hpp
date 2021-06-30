@@ -2081,6 +2081,10 @@ private:
 	int width {0};
 	int height {0};
 	
+	int globalX = 0;
+	int globalY = 0;
+
+	
 private:
 	/* UTILITY FUNCTIONS */
 	inline int getIndex(const Point& p) const {
@@ -2149,17 +2153,21 @@ static inline float lerp(float a, float b, float t) {
 cdr::Renderer::Renderer(uint32_t* pixels, int width, int height) 
 	: pixels{pixels}, 
 	width{width}, 
-	height{height} {
+	height{height}, 
+	globalX(0), globalY(0) {
 }
 
 void cdr::Renderer::Clear() {
 	memset(pixels, 0, width * height * sizeof(uint32_t));
+	globalX = globalY = 0;
 }
 void cdr::Renderer::Clear(const RGBA& color) {
 	std::fill(pixels, pixels + width * height, RGBtoUINT(color));
+	globalX = globalY = 0;
 }
 void cdr::Renderer::Clear(uint32_t color) {
 	std::fill(pixels, pixels + width * height, color);
+	globalX = globalY = 0;
 }
 
 void cdr::Renderer::DrawPoint(const cdr::RGBA& color, const Point& p) {
@@ -3035,8 +3043,6 @@ void cdr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, i
 }
 
 void cdr::Renderer::DrawText(const std::string_view text, int x, int y, cdr::TextAlignment ta, const Font& font, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
-	static int globalX = 0;
-	static int globalY = 0;
 	int startX = 0;
 	if (x < 0 || y < 0) {
 		startX = globalX;

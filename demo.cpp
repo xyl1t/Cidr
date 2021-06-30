@@ -323,6 +323,7 @@ int main(int argc, char** argv) {
 				if ((mx - shaderRectSize / 2.f - (shaderText.length() * cdr::Fonts::Raster8x16.GetFontWidth()) / 2) >= 0 && my-shaderRectSize-cdr::Fonts::Raster8x16.GetFontHeight() >= 0)
 					cidrRend.DrawText(shaderText, mx-shaderRectSize - (cdr::Fonts::Raster8x16.GetFontWidth() * shaderText.length()) / 2 + shaderRectSize/2, my-shaderRectSize-cdr::Fonts::Raster8x16.GetFontHeight(), cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
 			}
+			cidrRend.DrawText("test");
 		}
 		
 		int seed = 6123434;
