@@ -41,7 +41,7 @@ public:
 	void Clear(uint32_t color); 
 	
 	/* CORE DRAWING FUNCTIONS */
-	void DrawPoint(const RGBA& color, const Point& p);
+	void DrawPixel(const RGBA& color, const Point& p);
 	void DrawLine(const RGBA& color, const Point& start, const Point& end, bool AA = false, bool GC = false);
 	void DrawRectangle(const RGBA& color, Rectangle rectangle);
 	void FillRectangle(const RGBA& color, Rectangle rectangle);
@@ -59,7 +59,7 @@ public:
 	void DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, Point p1, Point p2, Point p3);
 	
 	/* DRAWING FUNCTION OVERLOADS */
-	inline void DrawPoint(const RGBA& color, int x, int y) { DrawPoint(color, Point(x, y)); }
+	inline void DrawPixel(const RGBA& color, int x, int y) { DrawPixel(color, Point(x, y)); }
 	inline void DrawLine(const RGBA& color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(color, Point{x1, y1}, Point{x2, y2}, AA, GC); }
 	inline void DrawRectangle(const RGBA& color, int x, int y, int width, int height) { DrawRectangle(color, Rectangle{x, y, width, height}); }
 	inline void FillRectangle(const RGBA& color, int x, int y, int width, int height) { FillRectangle(color, Rectangle{x,y, width, height}); }
@@ -74,7 +74,7 @@ public:
 	inline void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(shader, Point{x1, y1}, Point{x2, y2}, Point{x3, y3} ); }
 	inline void DrawBitmap(const Bitmap& bitmap, FPoint destLocation, int destWidth, int destHeight, FPoint srcLocation, int srcWidth, int srcHeight) { DrawBitmap(bitmap, destLocation.x, destLocation.y, destWidth, destHeight, srcLocation.x, srcLocation.y, srcWidth, srcHeight); }
 	
-	inline void DrawPoint(uint32_t color, const Point& p) { DrawPoint(RGBA{color}, p); }
+	inline void DrawPixel(uint32_t color, const Point& p) { DrawPixel(RGBA{color}, p); }
 	inline void DrawLine(uint32_t color, const Point& start, const Point& end, bool AA = false, bool GC = false) { DrawLine(RGBA{color}, start, end, AA, GC); }
 	inline void DrawRectangle(uint32_t color, Rectangle rectangle) { DrawRectangle(RGBA{color}, rectangle); }	
 	inline void FillRectangle(uint32_t color, Rectangle rectangle) { FillRectangle(RGBA{color}, rectangle); }
@@ -85,7 +85,7 @@ public:
 	inline void FillTriangle(uint32_t color1, uint32_t color2, uint32_t color3, Point p1, Point p2, Point p3) { FillTriangle(RGBA{color1}, RGBA{color2}, RGBA{color3}, p1, p2, p3); }
 	inline void DrawBitmap(const Bitmap& bitmap, FRectangle destRect, FRectangle srcRect) { DrawBitmap(bitmap, destRect.x, destRect.y, destRect.width, destRect.height, srcRect.x, srcRect.y, srcRect.width, srcRect.height); }
 	
-	inline void DrawPoint(uint32_t color, int x, int y) { DrawPoint(RGBA{color}, Point{x, y}); }
+	inline void DrawPixel(uint32_t color, int x, int y) { DrawPixel(RGBA{color}, Point{x, y}); }
 	inline void DrawLine(uint32_t color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(RGBA{color}, Point{x1, y1}, Point{x2, y2}, AA, GC); }
 	inline void DrawRectangle(uint32_t color, int x, int y, int width, int height) { DrawRectangle(RGBA{color}, Rectangle{x, y, width, height}); }
 	inline void FillRectangle(uint32_t color, int x, int y, int width, int height) { FillRectangle(RGBA{color}, Rectangle{x, y, width, height}); }
@@ -133,6 +133,7 @@ private:
 	void drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y);
 	bool clampCoords(float& x, float& y, int width, int height);
 	void constructFontBitmap(Font f);
+	RGBA sampleTexture(const cdr::Bitmap& b, float x, float y);
 };
 
 inline RGB alphaBlendColor(const cdr::RGB& color1, const cdr::RGB& color2, float alpha) {

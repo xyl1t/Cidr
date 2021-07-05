@@ -11,7 +11,7 @@ include("FindSDL2.cmake")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
-	file(GLOB SRC "${CMAKE_SOURCE_DIR}/demo.cpp" "${CMAKE_SOURCE_DIR}/src/*" ${INCLUDE_DIR}/*)
+	file(GLOB SRC "${CMAKE_SOURCE_DIR}/demo.cpp" "${CMAKE_SOURCE_DIR}/src/*")
 else()
 	file(GLOB SRC "${CMAKE_SOURCE_DIR}/demo.cpp" "${CMAKE_SOURCE_DIR}/cidr.hpp")
 endif()

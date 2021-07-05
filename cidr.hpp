@@ -2003,7 +2003,7 @@ public:
 	void Clear(uint32_t color); 
 	
 	/* CORE DRAWING FUNCTIONS */
-	void DrawPoint(const RGBA& color, const Point& p);
+	void DrawPixel(const RGBA& color, const Point& p);
 	void DrawLine(const RGBA& color, const Point& start, const Point& end, bool AA = false, bool GC = false);
 	void DrawRectangle(const RGBA& color, Rectangle rectangle);
 	void FillRectangle(const RGBA& color, Rectangle rectangle);
@@ -2021,7 +2021,7 @@ public:
 	void DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, Point p1, Point p2, Point p3);
 	
 	/* DRAWING FUNCTION OVERLOADS */
-	inline void DrawPoint(const RGBA& color, int x, int y) { DrawPoint(color, Point(x, y)); }
+	inline void DrawPixel(const RGBA& color, int x, int y) { DrawPixel(color, Point(x, y)); }
 	inline void DrawLine(const RGBA& color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(color, Point{x1, y1}, Point{x2, y2}, AA, GC); }
 	inline void DrawRectangle(const RGBA& color, int x, int y, int width, int height) { DrawRectangle(color, Rectangle{x, y, width, height}); }
 	inline void FillRectangle(const RGBA& color, int x, int y, int width, int height) { FillRectangle(color, Rectangle{x,y, width, height}); }
@@ -2036,7 +2036,7 @@ public:
 	inline void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(shader, Point{x1, y1}, Point{x2, y2}, Point{x3, y3} ); }
 	inline void DrawBitmap(const Bitmap& bitmap, FPoint destLocation, int destWidth, int destHeight, FPoint srcLocation, int srcWidth, int srcHeight) { DrawBitmap(bitmap, destLocation.x, destLocation.y, destWidth, destHeight, srcLocation.x, srcLocation.y, srcWidth, srcHeight); }
 	
-	inline void DrawPoint(uint32_t color, const Point& p) { DrawPoint(RGBA{color}, p); }
+	inline void DrawPixel(uint32_t color, const Point& p) { DrawPixel(RGBA{color}, p); }
 	inline void DrawLine(uint32_t color, const Point& start, const Point& end, bool AA = false, bool GC = false) { DrawLine(RGBA{color}, start, end, AA, GC); }
 	inline void DrawRectangle(uint32_t color, Rectangle rectangle) { DrawRectangle(RGBA{color}, rectangle); }	
 	inline void FillRectangle(uint32_t color, Rectangle rectangle) { FillRectangle(RGBA{color}, rectangle); }
@@ -2047,7 +2047,7 @@ public:
 	inline void FillTriangle(uint32_t color1, uint32_t color2, uint32_t color3, Point p1, Point p2, Point p3) { FillTriangle(RGBA{color1}, RGBA{color2}, RGBA{color3}, p1, p2, p3); }
 	inline void DrawBitmap(const Bitmap& bitmap, FRectangle destRect, FRectangle srcRect) { DrawBitmap(bitmap, destRect.x, destRect.y, destRect.width, destRect.height, srcRect.x, srcRect.y, srcRect.width, srcRect.height); }
 	
-	inline void DrawPoint(uint32_t color, int x, int y) { DrawPoint(RGBA{color}, Point{x, y}); }
+	inline void DrawPixel(uint32_t color, int x, int y) { DrawPixel(RGBA{color}, Point{x, y}); }
 	inline void DrawLine(uint32_t color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(RGBA{color}, Point{x1, y1}, Point{x2, y2}, AA, GC); }
 	inline void DrawRectangle(uint32_t color, int x, int y, int width, int height) { DrawRectangle(RGBA{color}, Rectangle{x, y, width, height}); }
 	inline void FillRectangle(uint32_t color, int x, int y, int width, int height) { FillRectangle(RGBA{color}, Rectangle{x, y, width, height}); }
@@ -2170,7 +2170,7 @@ void cdr::Renderer::Clear(uint32_t color) {
 	globalX = globalY = 0;
 }
 
-void cdr::Renderer::DrawPoint(const cdr::RGBA& color, const Point& p) {
+void cdr::Renderer::DrawPixel(const cdr::RGBA& color, const Point& p) {
 	if(color.a != 0)
 		pixels[getIndex(p.x, p.y)] = RGBtoUINT(color);
 }
@@ -2193,7 +2193,7 @@ void cdr::Renderer::DrawLine(const cdr::RGBA& color, const Point& start, const P
 		
 		for(int i {0}; i < biggest; i++) {
 			// Plot point in current location 
-			DrawPoint(color, std::round(p.x), std::round(p.y));
+			DrawPixel(color, std::round(p.x), std::round(p.y));
 			// step further in line 
 			p += step;
 		}
@@ -2212,12 +2212,12 @@ void cdr::Renderer::DrawLine(const cdr::RGBA& color, const Point& start, const P
 					RGBA result2 {alphaBlendColorGammaCorrected(GetPixel(p.x, p.y),     color, AAValue2 * 255.f)};
 					result1.a = result1.a * color.a / 255.f;
 					result2.a = result2.a * color.a / 255.f;
-					DrawPoint(alphaBlendColor(GetPixel(p.x + 1, p.y), result1, result1.a), p.x + 1, p.y);
-					DrawPoint(alphaBlendColor(GetPixel(p.x, p.y),     result2, result2.a), p.x,     p.y);
+					DrawPixel(alphaBlendColor(GetPixel(p.x + 1, p.y), result1, result1.a), p.x + 1, p.y);
+					DrawPixel(alphaBlendColor(GetPixel(p.x, p.y),     result2, result2.a), p.x,     p.y);
 				}
 				else {
-					DrawPoint(alphaBlendColor(GetPixel(p.x + 1, p.y), color, AAValue1 * color.a), p.x + 1, p.y);
-					DrawPoint(alphaBlendColor(GetPixel(p.x,     p.y), color, AAValue2 * color.a), p.x,     p.y); 
+					DrawPixel(alphaBlendColor(GetPixel(p.x + 1, p.y), color, AAValue1 * color.a), p.x + 1, p.y);
+					DrawPixel(alphaBlendColor(GetPixel(p.x,     p.y), color, AAValue2 * color.a), p.x,     p.y); 
 				}
 			}
 			// line is shallow
@@ -2231,12 +2231,12 @@ void cdr::Renderer::DrawLine(const cdr::RGBA& color, const Point& start, const P
 					RGBA result2 {alphaBlendColorGammaCorrected(GetPixel(p.x, p.y),     color, AAValue2 * 255.f)};
 					result1.a = result1.a * color.a / 255.f;
 					result2.a = result2.a * color.a / 255.f;
-					DrawPoint(alphaBlendColor(GetPixel(p.x, p.y + 1), result1, result1.a), p.x, p.y + 1);
-					DrawPoint(alphaBlendColor(GetPixel(p.x, p.y),     result2, result2.a), p.x, p.y);
+					DrawPixel(alphaBlendColor(GetPixel(p.x, p.y + 1), result1, result1.a), p.x, p.y + 1);
+					DrawPixel(alphaBlendColor(GetPixel(p.x, p.y),     result2, result2.a), p.x, p.y);
 				}
 				else {
-					DrawPoint(alphaBlendColor(GetPixel(p.x, p.y + 1), color, AAValue1 * color.a), p.x, p.y + 1);
-					DrawPoint(alphaBlendColor(GetPixel(p.x, p.y),     color, AAValue2 * color.a), p.x, p.y);
+					DrawPixel(alphaBlendColor(GetPixel(p.x, p.y + 1), color, AAValue1 * color.a), p.x, p.y + 1);
+					DrawPixel(alphaBlendColor(GetPixel(p.x, p.y),     color, AAValue2 * color.a), p.x, p.y);
 				}
 			}
 			
@@ -2276,19 +2276,19 @@ void cdr::Renderer::DrawRectangle(const RGBA& color, Rectangle rectangle) {
 	for(int i = clampedLocation.x + 1; i < clampedLocation.x + clampedWidth; i++) {
 		// top side
 		if(rectangle.y >= 0)
-			DrawPoint(color, i, clampedLocation.y);
+			DrawPixel(color, i, clampedLocation.y);
 		// bottom side
 		if(clampedLocation.y + rectangle.height - 1 < this->height)
-			DrawPoint(color, i, clampedLocation.y + rectangle.height - 1);
+			DrawPixel(color, i, clampedLocation.y + rectangle.height - 1);
 	}
 	// loop till the itrating value hits the rectangle end or if it goes outside of the screen
 	for(int i = clampedLocation.y; i < clampedLocation.y + clampedHeight; i++) {
 		// left side
 		if(rectangle.x >= 0)
-			DrawPoint(color, clampedLocation.x, i);
+			DrawPixel(color, clampedLocation.x, i);
 		// right side
 		if(clampedLocation.x + rectangle.width - 1< this->width)
-			DrawPoint(color, clampedLocation.x + rectangle.width - 1, i);
+			DrawPixel(color, clampedLocation.x + rectangle.width - 1, i);
 	}
 }
 void cdr::Renderer::FillRectangle(const RGBA& color, Rectangle rectangle) {
@@ -2297,7 +2297,7 @@ void cdr::Renderer::FillRectangle(const RGBA& color, Rectangle rectangle) {
 	if(rectangle.y >= this->height) return;
 	
 	if(rectangle.width == 1 && rectangle.height == 1) { 
-		DrawPoint(color, rectangle.x, rectangle.y);
+		DrawPixel(color, rectangle.x, rectangle.y);
 		return;
 	}
 	
@@ -2362,7 +2362,7 @@ void cdr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int x
 
 void cdr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
 	if(radius < 1) return;
-	if(radius == 1) DrawPoint(color, centreLocation);
+	if(radius == 1) DrawPixel(color, centreLocation);
 	
 	float x{static_cast<float>(radius)};
 	float y{};
@@ -2371,49 +2371,49 @@ void cdr::Renderer::DrawCircle(const RGBA& color, const Point& centreLocation, i
 		x = sqrt(x * x - 2 * y - 1);
 		
 		if(!AA) {
-			DrawPoint(color, (int) x + centreLocation.x, (int) y + centreLocation.y);	
-			DrawPoint(color, (int)-x + centreLocation.x, (int) y + centreLocation.y);
-			DrawPoint(color, (int) x + centreLocation.x, (int)-y + centreLocation.y);
-			DrawPoint(color, (int)-x + centreLocation.x, (int)-y + centreLocation.y);
-			DrawPoint(color, (int) y + centreLocation.x, (int) x + centreLocation.y);
-			DrawPoint(color, (int)-y + centreLocation.x, (int) x + centreLocation.y);
-			DrawPoint(color, (int) y + centreLocation.x, (int)-x + centreLocation.y);
-			DrawPoint(color, (int)-y + centreLocation.x, (int)-x + centreLocation.y);
+			DrawPixel(color, (int) x + centreLocation.x, (int) y + centreLocation.y);	
+			DrawPixel(color, (int)-x + centreLocation.x, (int) y + centreLocation.y);
+			DrawPixel(color, (int) x + centreLocation.x, (int)-y + centreLocation.y);
+			DrawPixel(color, (int)-x + centreLocation.x, (int)-y + centreLocation.y);
+			DrawPixel(color, (int) y + centreLocation.x, (int) x + centreLocation.y);
+			DrawPixel(color, (int)-y + centreLocation.x, (int) x + centreLocation.y);
+			DrawPixel(color, (int) y + centreLocation.x, (int)-x + centreLocation.y);
+			DrawPixel(color, (int)-y + centreLocation.x, (int)-x + centreLocation.y);
 		}
 		else {
 			float AAValue1 = 255 * (x - static_cast<int>(x));
 			float AAValue2 = 255 * (1 - (x - static_cast<int>(x)));
 			
-			DrawPoint(alphaBlendColor(GetPixel((int) x + centreLocation.x, (int) y + centreLocation.y), color, AAValue1), (int)x + centreLocation.x, (int)y + centreLocation.y);
-			DrawPoint(alphaBlendColor(GetPixel((int) x + centreLocation.x - 1, (int) y + centreLocation.y), color, AAValue2), (int) x + centreLocation.x - 1, (int) y + centreLocation.y);
+			DrawPixel(alphaBlendColor(GetPixel((int) x + centreLocation.x, (int) y + centreLocation.y), color, AAValue1), (int)x + centreLocation.x, (int)y + centreLocation.y);
+			DrawPixel(alphaBlendColor(GetPixel((int) x + centreLocation.x - 1, (int) y + centreLocation.y), color, AAValue2), (int) x + centreLocation.x - 1, (int) y + centreLocation.y);
 			
-			DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int) y + centreLocation.y), color, AAValue1), (int)-x + centreLocation.x, (int) y + centreLocation.y);
-			DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int) y + centreLocation.y), color, AAValue2), (int)-x + centreLocation.x + 1, (int) y + centreLocation.y);
+			DrawPixel(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int) y + centreLocation.y), color, AAValue1), (int)-x + centreLocation.x, (int) y + centreLocation.y);
+			DrawPixel(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int) y + centreLocation.y), color, AAValue2), (int)-x + centreLocation.x + 1, (int) y + centreLocation.y);
 			
-			DrawPoint(alphaBlendColor(GetPixel((int) x + centreLocation.x, (int)-y + centreLocation.y), color, AAValue1), (int) x + centreLocation.x, (int)-y + centreLocation.y);
-			DrawPoint(alphaBlendColor(GetPixel((int) x + centreLocation.x - 1, (int)-y + centreLocation.y), color, AAValue2), (int) x + centreLocation.x - 1, (int)-y + centreLocation.y);
+			DrawPixel(alphaBlendColor(GetPixel((int) x + centreLocation.x, (int)-y + centreLocation.y), color, AAValue1), (int) x + centreLocation.x, (int)-y + centreLocation.y);
+			DrawPixel(alphaBlendColor(GetPixel((int) x + centreLocation.x - 1, (int)-y + centreLocation.y), color, AAValue2), (int) x + centreLocation.x - 1, (int)-y + centreLocation.y);
 			
-			DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int)-y + centreLocation.y), color, AAValue1), (int)-x + centreLocation.x, (int)-y + centreLocation.y);
-			DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int)-y + centreLocation.y), color, AAValue2), (int)-x + centreLocation.x + 1, (int)-y + centreLocation.y);
+			DrawPixel(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int)-y + centreLocation.y), color, AAValue1), (int)-x + centreLocation.x, (int)-y + centreLocation.y);
+			DrawPixel(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int)-y + centreLocation.y), color, AAValue2), (int)-x + centreLocation.x + 1, (int)-y + centreLocation.y);
 			
-			DrawPoint(alphaBlendColor(GetPixel((int) y + centreLocation.x, (int) x + centreLocation.y), color, AAValue1), (int) y + centreLocation.x, (int) x + centreLocation.y);
-			DrawPoint(alphaBlendColor(GetPixel((int) y + centreLocation.x, (int) x + centreLocation.y - 1), color, AAValue2), (int) y + centreLocation.x, (int) x + centreLocation.y - 1);
+			DrawPixel(alphaBlendColor(GetPixel((int) y + centreLocation.x, (int) x + centreLocation.y), color, AAValue1), (int) y + centreLocation.x, (int) x + centreLocation.y);
+			DrawPixel(alphaBlendColor(GetPixel((int) y + centreLocation.x, (int) x + centreLocation.y - 1), color, AAValue2), (int) y + centreLocation.x, (int) x + centreLocation.y - 1);
 			
-			DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int) x + centreLocation.y), color, AAValue1), (int)-y + centreLocation.x, (int) x + centreLocation.y);
-			DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int) x + centreLocation.y - 1), color, AAValue2), (int)-y + centreLocation.x, (int) x + centreLocation.y - 1);
+			DrawPixel(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int) x + centreLocation.y), color, AAValue1), (int)-y + centreLocation.x, (int) x + centreLocation.y);
+			DrawPixel(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int) x + centreLocation.y - 1), color, AAValue2), (int)-y + centreLocation.x, (int) x + centreLocation.y - 1);
 			
-			DrawPoint(alphaBlendColor(GetPixel((int) y + centreLocation.x, (int)-x + centreLocation.y), color, AAValue1), (int) y + centreLocation.x, (int)-x + centreLocation.y);
-			DrawPoint(alphaBlendColor(GetPixel((int) y + centreLocation.x, (int)-x + centreLocation.y + 1), color, AAValue2), (int) y + centreLocation.x, (int)-x + centreLocation.y + 1);
+			DrawPixel(alphaBlendColor(GetPixel((int) y + centreLocation.x, (int)-x + centreLocation.y), color, AAValue1), (int) y + centreLocation.x, (int)-x + centreLocation.y);
+			DrawPixel(alphaBlendColor(GetPixel((int) y + centreLocation.x, (int)-x + centreLocation.y + 1), color, AAValue2), (int) y + centreLocation.x, (int)-x + centreLocation.y + 1);
 			
-			DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y), color, AAValue1), (int)-y + centreLocation.x, (int)-x + centreLocation.y);
-			DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y + 1), color, AAValue2), (int)-y + centreLocation.x, (int)-x + centreLocation.y + 1);
+			DrawPixel(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y), color, AAValue1), (int)-y + centreLocation.x, (int)-x + centreLocation.y);
+			DrawPixel(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y + 1), color, AAValue2), (int)-y + centreLocation.x, (int)-x + centreLocation.y + 1);
 		}
 		y++;
 	}
 }
 void cdr::Renderer::FillCircle(const RGBA& color, const Point& centreLocation, int radius, bool AA) {
 	if(radius < 1) return;
-	if(radius == 1) DrawPoint(color, centreLocation);
+	if(radius == 1) DrawPixel(color, centreLocation);
 	
 	float x{static_cast<float>(radius)};
 	float y{};
@@ -2423,36 +2423,36 @@ void cdr::Renderer::FillCircle(const RGBA& color, const Point& centreLocation, i
 		
 		for(int i = (int)-x + centreLocation.x; i < (int)x + centreLocation.x; i++) {
 			if(!AA || (i != (int)-x + centreLocation.x)){
-				DrawPoint(color, i, (int)y + centreLocation.y);
-				DrawPoint(color, i, (int)-y + centreLocation.y);
+				DrawPixel(color, i, (int)y + centreLocation.y);
+				DrawPixel(color, i, (int)-y + centreLocation.y);
 			}
 			else {
 				float AAValue1 = 255 * (x - static_cast<int>(x));
 				float AAValue2 = 255 * (1 - (x - static_cast<int>(x)));
 				
-				DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int)y + centreLocation.y), color, AAValue1), (int)-x + centreLocation.x, (int)y + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int)y + centreLocation.y), color, AAValue2), (int)-x + centreLocation.x + 1, (int)y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int)y + centreLocation.y), color, AAValue1), (int)-x + centreLocation.x, (int)y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int)y + centreLocation.y), color, AAValue2), (int)-x + centreLocation.x + 1, (int)y + centreLocation.y);
 				
-				DrawPoint(alphaBlendColor(GetPixel((int)x + centreLocation.x, (int)y + centreLocation.y), color, AAValue1), (int)x + centreLocation.x, (int)y + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)x + centreLocation.x - 1, (int)y + centreLocation.y), color, AAValue2), (int)x + centreLocation.x - 1, (int)y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)x + centreLocation.x, (int)y + centreLocation.y), color, AAValue1), (int)x + centreLocation.x, (int)y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)x + centreLocation.x - 1, (int)y + centreLocation.y), color, AAValue2), (int)x + centreLocation.x - 1, (int)y + centreLocation.y);
 				
-				DrawPoint(alphaBlendColor(GetPixel((int)x + centreLocation.x, (int)-y + centreLocation.y), color, AAValue1), (int)x + centreLocation.x, (int)-y + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)x + centreLocation.x - 1, (int)-y + centreLocation.y), color, AAValue2), (int)x + centreLocation.x - 1, (int)-y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)x + centreLocation.x, (int)-y + centreLocation.y), color, AAValue1), (int)x + centreLocation.x, (int)-y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)x + centreLocation.x - 1, (int)-y + centreLocation.y), color, AAValue2), (int)x + centreLocation.x - 1, (int)-y + centreLocation.y);
 
-				DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int)-y + centreLocation.y), color, AAValue1), (int)-x + centreLocation.x, (int)-y + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int)-y + centreLocation.y), color, AAValue2), (int)-x + centreLocation.x + 1, (int)-y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int)-y + centreLocation.y), color, AAValue1), (int)-x + centreLocation.x, (int)-y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int)-y + centreLocation.y), color, AAValue2), (int)-x + centreLocation.x + 1, (int)-y + centreLocation.y);
 				
-				DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)x + centreLocation.y), color, AAValue1), (int)-y + centreLocation.x, (int)x + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)x + centreLocation.y - 1), color, AAValue2), (int)-y + centreLocation.x, (int)x + centreLocation.y - 1);
+				DrawPixel(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)x + centreLocation.y), color, AAValue1), (int)-y + centreLocation.x, (int)x + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)x + centreLocation.y - 1), color, AAValue2), (int)-y + centreLocation.x, (int)x + centreLocation.y - 1);
 				
-				DrawPoint(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)x + centreLocation.y), color, AAValue1), (int)y + centreLocation.x, (int)x + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)x + centreLocation.y - 1), color, AAValue2), (int)y + centreLocation.x, (int)x + centreLocation.y - 1);
+				DrawPixel(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)x + centreLocation.y), color, AAValue1), (int)y + centreLocation.x, (int)x + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)x + centreLocation.y - 1), color, AAValue2), (int)y + centreLocation.x, (int)x + centreLocation.y - 1);
 
-				DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y), color, AAValue1), (int)-y + centreLocation.x, (int)-x + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y + 1), color, AAValue2), (int)-y + centreLocation.x, (int)-x + centreLocation.y + 1);
+				DrawPixel(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y), color, AAValue1), (int)-y + centreLocation.x, (int)-x + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y + 1), color, AAValue2), (int)-y + centreLocation.x, (int)-x + centreLocation.y + 1);
 								
-				DrawPoint(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)-x + centreLocation.y), color, AAValue1), (int)y + centreLocation.x, (int)-x + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)-x + centreLocation.y + 1), color, AAValue2), (int)y + centreLocation.x, (int)-x + centreLocation.y + 1);
+				DrawPixel(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)-x + centreLocation.y), color, AAValue1), (int)y + centreLocation.x, (int)-x + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)-x + centreLocation.y + 1), color, AAValue2), (int)y + centreLocation.x, (int)-x + centreLocation.y + 1);
 			}
 		}
 		
@@ -2461,7 +2461,7 @@ void cdr::Renderer::FillCircle(const RGBA& color, const Point& centreLocation, i
 }
 void cdr::Renderer::FillCircle(RGBA (*shader)(const Renderer& renderer, int x, int y), const Point& centreLocation, int radius, bool AA) {
 	if(radius < 1) return;
-	if(radius == 1) DrawPoint(shader(*this, centreLocation.x, centreLocation.y), centreLocation);
+	if(radius == 1) DrawPixel(shader(*this, centreLocation.x, centreLocation.y), centreLocation);
 	
 	float x{static_cast<float>(radius)};
 	float y{};
@@ -2485,36 +2485,36 @@ void cdr::Renderer::FillCircle(RGBA (*shader)(const Renderer& renderer, int x, i
 		for(int i = (int)-x + centreLocation.x; i < (int)x + centreLocation.x; i++) {
 			if(!AA || (i != (int)-x + centreLocation.x)) {
 				int ni = i - centreLocation.x + radius;
-				DrawPoint(shadedPixels[ni][y + radius], i, (int)y + centreLocation.y);
-				DrawPoint(shadedPixels[ni][-y + radius], i, (int)-y + centreLocation.y);
+				DrawPixel(shadedPixels[ni][y + radius], i, (int)y + centreLocation.y);
+				DrawPixel(shadedPixels[ni][-y + radius], i, (int)-y + centreLocation.y);
 			}
 			else  {
 				float AAValue1 = 255 * (x - static_cast<int>(x));
 				float AAValue2 = 255 * (1 - (x - static_cast<int>(x)));
 				
-				DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int)y + centreLocation.y), shadedPixels[(int)-x + radius][y + radius], AAValue1), (int)-x + centreLocation.x, (int)y + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int)y + centreLocation.y), shadedPixels[(int)-x + 1 + radius][y + radius], AAValue2), (int)-x + centreLocation.x + 1, (int)y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int)y + centreLocation.y), shadedPixels[(int)-x + radius][y + radius], AAValue1), (int)-x + centreLocation.x, (int)y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int)y + centreLocation.y), shadedPixels[(int)-x + 1 + radius][y + radius], AAValue2), (int)-x + centreLocation.x + 1, (int)y + centreLocation.y);
 				
-				DrawPoint(alphaBlendColor(GetPixel((int)x + centreLocation.x, (int)y + centreLocation.y), shadedPixels[(int)x + radius][y + radius], AAValue1), (int)x + centreLocation.x, (int)y + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)x + centreLocation.x - 1, (int)y + centreLocation.y), shadedPixels[(int)x - 1 + radius][y + radius], AAValue2), (int)x + centreLocation.x - 1, (int)y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)x + centreLocation.x, (int)y + centreLocation.y), shadedPixels[(int)x + radius][y + radius], AAValue1), (int)x + centreLocation.x, (int)y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)x + centreLocation.x - 1, (int)y + centreLocation.y), shadedPixels[(int)x - 1 + radius][y + radius], AAValue2), (int)x + centreLocation.x - 1, (int)y + centreLocation.y);
 				
-				DrawPoint(alphaBlendColor(GetPixel((int)x + centreLocation.x, (int)-y + centreLocation.y), shadedPixels[(int)x + radius][-y + radius], AAValue1), (int)x + centreLocation.x, (int)-y + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)x + centreLocation.x - 1, (int)-y + centreLocation.y), shadedPixels[(int)x - 1 + radius][-y + radius], AAValue2), (int)x + centreLocation.x - 1, (int)-y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)x + centreLocation.x, (int)-y + centreLocation.y), shadedPixels[(int)x + radius][-y + radius], AAValue1), (int)x + centreLocation.x, (int)-y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)x + centreLocation.x - 1, (int)-y + centreLocation.y), shadedPixels[(int)x - 1 + radius][-y + radius], AAValue2), (int)x + centreLocation.x - 1, (int)-y + centreLocation.y);
 
-				DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int)-y + centreLocation.y), shadedPixels[(int)-x + radius][-y + radius], AAValue1), (int)-x + centreLocation.x, (int)-y + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int)-y + centreLocation.y), shadedPixels[(int)-x + 1 + radius][-y + radius], AAValue2), (int)-x + centreLocation.x + 1, (int)-y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)-x + centreLocation.x, (int)-y + centreLocation.y), shadedPixels[(int)-x + radius][-y + radius], AAValue1), (int)-x + centreLocation.x, (int)-y + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)-x + centreLocation.x + 1, (int)-y + centreLocation.y), shadedPixels[(int)-x + 1 + radius][-y + radius], AAValue2), (int)-x + centreLocation.x + 1, (int)-y + centreLocation.y);
 				
-				DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)x + centreLocation.y), shadedPixels[-y + radius][(int)x + radius], AAValue1), (int)-y + centreLocation.x, (int)x + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)x + centreLocation.y - 1), shadedPixels[-y + radius][(int)x + radius - 1], AAValue2), (int)-y + centreLocation.x, (int)x + centreLocation.y - 1);
+				DrawPixel(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)x + centreLocation.y), shadedPixels[-y + radius][(int)x + radius], AAValue1), (int)-y + centreLocation.x, (int)x + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)x + centreLocation.y - 1), shadedPixels[-y + radius][(int)x + radius - 1], AAValue2), (int)-y + centreLocation.x, (int)x + centreLocation.y - 1);
 				
-				DrawPoint(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)x + centreLocation.y), shadedPixels[y + radius][(int)x + radius], AAValue1), (int)y + centreLocation.x, (int)x + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)x + centreLocation.y - 1), shadedPixels[y + radius][(int)x + radius - 1], AAValue2), (int)y + centreLocation.x, (int)x + centreLocation.y - 1);
+				DrawPixel(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)x + centreLocation.y), shadedPixels[y + radius][(int)x + radius], AAValue1), (int)y + centreLocation.x, (int)x + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)x + centreLocation.y - 1), shadedPixels[y + radius][(int)x + radius - 1], AAValue2), (int)y + centreLocation.x, (int)x + centreLocation.y - 1);
 
-				DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y), shadedPixels[-y + radius][(int)-x + radius], AAValue1), (int)-y + centreLocation.x, (int)-x + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y + 1), shadedPixels[-y + radius][(int)-x + radius + 1], AAValue2), (int)-y + centreLocation.x, (int)-x + centreLocation.y + 1);
+				DrawPixel(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y), shadedPixels[-y + radius][(int)-x + radius], AAValue1), (int)-y + centreLocation.x, (int)-x + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)-y + centreLocation.x, (int)-x + centreLocation.y + 1), shadedPixels[-y + radius][(int)-x + radius + 1], AAValue2), (int)-y + centreLocation.x, (int)-x + centreLocation.y + 1);
 								
-				DrawPoint(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)-x + centreLocation.y), shadedPixels[y + radius][(int)-x + radius], AAValue1), (int)y + centreLocation.x, (int)-x + centreLocation.y);
-				DrawPoint(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)-x + centreLocation.y + 1), shadedPixels[y + radius][(int)-x + radius + 1], AAValue2), (int)y + centreLocation.x, (int)-x + centreLocation.y + 1);
+				DrawPixel(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)-x + centreLocation.y), shadedPixels[y + radius][(int)-x + radius], AAValue1), (int)y + centreLocation.x, (int)-x + centreLocation.y);
+				DrawPixel(alphaBlendColor(GetPixel((int)y + centreLocation.x, (int)-x + centreLocation.y + 1), shadedPixels[y + radius][(int)-x + radius + 1], AAValue2), (int)y + centreLocation.x, (int)-x + centreLocation.y + 1);
 			}
 		}
 		
@@ -2593,10 +2593,10 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 				// }
 				
 				if(!clampCoords(clampedXLerp, clampedYLerp, texture.GetWidth(), texture.GetHeight()) && OutOfBoundsType == OutOfBoundsType::ClampToBorder) {
-					DrawPoint(ClampToBorderColor, j, i);
+					DrawPixel(ClampToBorderColor, j, i);
 				} else {
 					if(ScaleType == ScaleType::Nearest) {
-						DrawPoint(texture.GetPixel(clampedXLerp, clampedYLerp), j, i);
+						DrawPixel(texture.GetPixel(clampedXLerp, clampedYLerp), j, i);
 					} else {
 						clampedXLerp -= 0.5;
 						clampedYLerp -= 0.5;
@@ -2625,7 +2625,7 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 							cB * diffy
 						};
 						
-						DrawPoint(texel, j, i);
+						DrawPixel(texel, j, i);
 					}
 				}
 				
@@ -2677,10 +2677,10 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 				// }
 				
 				if(!clampCoords(clampedXLerp, clampedYLerp, texture.GetWidth(), texture.GetHeight()) && OutOfBoundsType == OutOfBoundsType::ClampToBorder) {
-					DrawPoint(ClampToBorderColor, j, i);
+					DrawPixel(ClampToBorderColor, j, i);
 				} else {
 					if(ScaleType == ScaleType::Nearest) {
-						DrawPoint(texture.GetPixel(clampedXLerp, clampedYLerp), j, i);
+						DrawPixel(texture.GetPixel(clampedXLerp, clampedYLerp), j, i);
 					} else {
 						clampedXLerp -= 0.5;
 						clampedYLerp -= 0.5;
@@ -2709,7 +2709,7 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 							cB * diffy
 						};
 						
-						DrawPoint(texel, j, i);
+						DrawPixel(texel, j, i);
 					}
 				}
 
@@ -2897,7 +2897,7 @@ void cdr::Renderer::drawScanLine(uint32_t color, int startX, int endX, int y) {
 	// std::fill_n(pixels + getIndex(startX, y), endX - startX, color);
 	for(int i = startX; i <= endX; i++) {
 		// if(GetPixel(i,y).r)
-		DrawPoint(color, i, y);
+		DrawPixel(color, i, y);
 	}
 }
 void cdr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y) {
@@ -2912,7 +2912,7 @@ void cdr::Renderer::drawScanLine(const RGBA& color1, const RGBA& color2, int sta
 	float aLerp{static_cast<float>(color1.a)};
 	
 	for (int i = startX; i < endX; i++) {
-		DrawPoint({(uint8_t)rLerp, (uint8_t)gLerp, (uint8_t)bLerp, (uint8_t)aLerp}, i, y);
+		DrawPixel({(uint8_t)rLerp, (uint8_t)gLerp, (uint8_t)bLerp, (uint8_t)aLerp}, i, y);
 		
 		rLerp += rStep;
 		gLerp += gStep;
@@ -2983,7 +2983,7 @@ void cdr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, i
 						fooY = (int)((jSrc + (jSrc < 0 ? 1/(cy*cy) : 0)) / bitmap.GetHeight()) % 2 + (jSrc < 0 ? 1 : 0);
 					}
 					else if(OutOfBoundsType == OutOfBoundsType::ClampToBorder) {
-						DrawPoint(ClampToBorderColor, iDest, jDest);
+						DrawPixel(ClampToBorderColor, iDest, jDest);
 						continue;
 					}
 				}
@@ -3005,7 +3005,7 @@ void cdr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, i
 						iSrc = ceil(iSrc);
 					if(fooY) 
 						jSrc = ceil(jSrc);
-					DrawPoint(bitmap.GetPixel(iSrc, jSrc), iDest, jDest);
+					DrawPixel(bitmap.GetPixel(iSrc, jSrc), iDest, jDest);
 				} else { 
 					// TODO: cheßck if downscaling works properly
 					// NOTE: subtract 0.5 in order to put the point in the centre of the pixel
@@ -3035,7 +3035,7 @@ void cdr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, i
 						cB * jSrcFraction 
 					};
 					
-					DrawPoint(c, iDest, jDest);
+					DrawPixel(c, iDest, jDest);
 				}
 			}
 		}
@@ -3144,11 +3144,11 @@ void cdr::Renderer::DrawText(const std::string_view text, int x, int y, cdr::Tex
 					continue;
 					
 					if(letterPixel == RGB::Black && bColor != RGBA::Transparent && GetPixel(subX, subY) != shadowColor) {
-						DrawPoint(bColor, subX, subY);
+						DrawPixel(bColor, subX, subY);
 					} else if(letterPixel == RGB::White){
-						DrawPoint(fColor, subX, subY);
+						DrawPixel(fColor, subX, subY);
 						if(font.GetPixel(letterX * fontSizeWidth + i/size + shadowOffsetX, letterY * fontSizeHeight + j/size + shadowOffsetY) == RGB::Black) {
-							DrawPoint(shadowColor, subX + shadowOffsetX*size, subY + shadowOffsetY*size);
+							DrawPixel(shadowColor, subX + shadowOffsetX*size, subY + shadowOffsetY*size);
 						}
 					}
 				}
