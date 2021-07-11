@@ -56,7 +56,7 @@ public:
 	void DrawBitmap(const Bitmap& bitmap, float destX, float destY, int destWidth, int destHeight, float srcX, float srcY, int srcWidth, int srcHeight);
 	void DrawText(const std::string_view text, int x = -1, int y = -1, TextAlignment ta = TextAlignment::TL, const Font& f = cdr::Fonts::Raster8x12, float size = 1, const RGBA& fColor = RGB::White, const RGBA& bColor = RGBA::Transparent, const RGBA& shadowColor = RGBA::Transparent, int shadowOffsetX = 1, int shadowOffsetY = 1);
 
-	void DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, Point p1, Point p2, Point p3);
+	void DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, FPoint p1, FPoint p2, FPoint p3);
 	
 	/* DRAWING FUNCTION OVERLOADS */
 	inline void DrawPixel(const RGBA& color, int x, int y) { DrawPixel(color, Point(x, y)); }
@@ -68,7 +68,7 @@ public:
 	inline void FillCircle(const RGBA& color, int centreX, int centreY, int radius, bool AA = false) { FillCircle(color, Point{centreX,centreY}, radius, AA); }
 	inline void FillCircle(RGBA (*shader)(const Renderer& renderer, int x, int y), int centreX, int centreY, int radius, bool AA = false) { FillCircle(shader, Point{centreX,centreY}, radius, AA); }
 	inline void DrawTriangle(const RGBA& color, int x1, int y1, int x2, int y2, int x3, int y3, bool AA = false, bool GC = false) { DrawTriangle(color, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}, AA, GC ); }
-	inline void DrawTriangle(const Bitmap& texture, float tx1, float ty1, float tx2, float ty2, float tx3, float ty3, int x1, int y1, int x2, int y2, int x3, int y3) { DrawTriangle(texture, FPoint{tx1, ty1}, FPoint{tx2, ty2}, FPoint{tx3, ty3}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}); }
+	inline void DrawTriangle(const Bitmap& texture, float tx1, float ty1, float tx2, float ty2, float tx3, float ty3, float x1, float y1, float x2, float y2, float x3, float y3) { DrawTriangle(texture, FPoint{tx1, ty1}, FPoint{tx2, ty2}, FPoint{tx3, ty3}, FPoint{x1, y1}, FPoint{x2, y2}, FPoint{x3, y3}); }
 	inline void FillTriangle(const RGBA& color, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(color, Point{x1, y1}, Point{x2, y2}, Point{x3, y3} ); }
 	inline void FillTriangle(RGBA color1, RGBA color2, RGBA color3, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(color1, color2, color3, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}); }
 	inline void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(shader, Point{x1, y1}, Point{x2, y2}, Point{x3, y3} ); }
@@ -129,6 +129,9 @@ private:
 	inline int getIndex(int x, int y) const {
 		return x + y * width;
 	}
+	inline float edgeFunc (const FPoint& a, const FPoint& b, const FPoint& c) {
+		return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
+	};
 	void drawScanLine(uint32_t color, int startX, int endX, int y);
 	void drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y);
 	bool clampCoords(float& x, float& y, int width, int height);
