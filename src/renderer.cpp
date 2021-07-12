@@ -22,7 +22,7 @@
 #include "timer.hpp"
 
 static inline double lerp(double a, double b, double t) {
-	return (1 - t) * a + t * b;
+	return a + t * (b - a);
 }
 
 cdr::Renderer::Renderer(uint32_t* pixels, int width, int height) 
@@ -402,6 +402,10 @@ void cdr::Renderer::DrawTriangle(const RGBA& color, const Point& p1, const Point
 	DrawLine(color, p2, p3, AA, GC);
 	DrawLine(color, p3, p1, AA, GC);
 }
+struct DPoint {
+	double x;
+	double y;
+} lerpCoordV1, lerpCoordV2;
 void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, FPoint p1, FPoint p2, FPoint p3) {
 	// sort top most point
 	if(p1.y > p2.y) {
@@ -417,10 +421,6 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 		std::swap(tp1, tp2);
 	}
 	
-	// std::cout << "p1: " << p1.x << "; " << p1.y << std::endl;
-	// std::cout << "p2: " << p2.x << "; " << p2.y << std::endl;
-	// std::cout << "p3: " << p3.x << "; " << p3.y << std::endl << std::endl;
-
 	Timer t{};	
 	
 	tp1.x *= texture.GetWidth();
@@ -431,17 +431,67 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 	tp3.y *= texture.GetHeight();
 
 
-	struct DPoint {
-		double x;
-		double y;
-	} lerpCoordV1, lerpCoordV2;
+// #define cdr_barycentric
+#ifndef cdr_barycentric
 	
-
-	// #define newalgo
-	#define newnewalgo
+	for (int y = std::ceil(p1.y); y < std::ceil(p2.y); y++) {
+		double t1 = (y - p1.y) / (double)(p3.y - p1.y);
+		double t2 = (y - p1.y) / (double)(p2.y - p1.y);
+		
+		double min = lerp(p1.x, p3.x, t1);
+		double max = lerp(p1.x, p2.x, t2);
+		int startX = std::ceil(min);
+		int endX = std::ceil(max);
+		
+		lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+		lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+		
+		lerpCoordV2.x = lerp(tp1.x, tp2.x, t2);
+		lerpCoordV2.y = lerp(tp1.y, tp2.y, t2);
+		
+		if (min > max) {
+			std::swap(startX, endX);
+			std::swap(min, max);
+			std::swap(lerpCoordV1, lerpCoordV2);
+		}
+		
+		for (int x = startX; x < endX; x++) {
+			DrawPixel(sampleTexture(texture, 
+				lerp(lerpCoordV1.x, lerpCoordV2.x, (x - min) / (max - min)), 
+				lerp(lerpCoordV1.y, lerpCoordV2.y, (x - min) / (max - min))), 
+				x, y);
+		}
+	}
 	
-	#ifdef newalgo
+	for (int y = std::ceil(p2.y); y < std::ceil(p3.y); y++) {
+		double t1 = (y - p1.y) / (double)(p3.y - p1.y);
+		double t2 = (y - p2.y) / (double)(p3.y - p2.y);
+		
+		double min = lerp(p1.x, p3.x, t1);
+		double max = lerp(p2.x, p3.x, t2);
+		int startX = std::ceil(min);
+		int endX = std::ceil(max);
 
+		lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+		lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+		
+		lerpCoordV2.x = lerp(tp2.x, tp3.x, t2);
+		lerpCoordV2.y = lerp(tp2.y, tp3.y, t2);
+		
+		if (min > max) {
+			std::swap(startX, endX);
+			std::swap(min, max);
+			std::swap(lerpCoordV1, lerpCoordV2);
+		}
+		
+		for (int x = startX; x < endX; x++) {
+			DrawPixel(sampleTexture(texture, 
+				lerp(lerpCoordV1.x, lerpCoordV2.x, (x - min) / (max - min)), 
+				lerp(lerpCoordV1.y, lerpCoordV2.y, (x - min) / (max - min))), 
+				x, y);
+		}
+	}
+#else
 	float leftStep{};
 	if (p3.y - p1.y != 0) {
 		leftStep = (p3.x - p1.x) / (p3.y - p1.y);
@@ -531,238 +581,14 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 		left += leftStep;
 		right += rightStep;
 	}
-	
-	#elif defined(newnewalgo) 
-
-	double leftStep{};
-	if (p3.y - p1.y != 0) {
-		leftStep = (p3.x - p1.x) / (p3.y - p1.y);
-	}
-	double rightStep{};
-	if (p2.y - p1.y != 0) {
-		rightStep = (p2.x - p1.x) / (p2.y - p1.y);
-	}
-	
-	double left = p1.x + (std::ceil(p1.y) - p1.y) * leftStep;
-	double right = p1.x + (std::ceil(p1.y) - p1.y) * rightStep;
-
-	for (int y = std::ceil(p1.y); y < std::ceil(p2.y); y++) {
-		
-		double t1 = (y - p1.y) / (double)(p3.y - p1.y);
-		double t2 = (y - p1.y) / (double)(p2.y - p1.y);
-			
-		int startX = std::ceil(left);
-		int endX = std::ceil(right);
-		double min = left;
-		double max = right;
-		
-		lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
-		lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
-		
-		lerpCoordV2.x = lerp(tp1.x, tp2.x, t2);
-		lerpCoordV2.y = lerp(tp1.y, tp2.y, t2);
-		
-		if (min > max) {
-			std::swap(startX, endX);
-			std::swap(min, max);
-			std::swap(lerpCoordV1, lerpCoordV2);
-		}
-		
-		double xStep{};
-		double yStep{};
-		
-		if(max - min != 0) {
-			xStep = (lerpCoordV2.x - lerpCoordV1.x) / (endX - startX);
-			yStep = (lerpCoordV2.y - lerpCoordV1.y) / (endX - startX);
-		}
-		
-		double xLerp{lerpCoordV1.x};
-		double yLerp{lerpCoordV1.y};
-		
-		for (int x = startX; x < endX; x++) {
-			
-			// DrawPixel(RGB::Red, x, y);
-			
-			// double xLerp = lerp(lerpCoordV1.x, lerpCoordV2.x, (x - min) / (double)(max - min));
-			// double yLerp = lerp(lerpCoordV1.y, lerpCoordV2.y, (x - min) / (double)(max - min));
-			DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y);
-			
-			// xLerp += xStep;
-			// yLerp += yStep;
-			xLerp = lerpCoordV1.x + (xStep * (x - min));
-			yLerp = lerpCoordV1.y + (yStep * (x - min));
-		}
-		
-		left += leftStep;
-		right += rightStep;
-	}
-	
-	if (p3.y - p2.y != 0) {
-		rightStep = (p3.x - p2.x) / (p3.y - p2.y);
-	}
-	// right = p1.x + (std::ceil(p1.y) - p1.y) * rightStep
-	right = p2.x + (std::ceil(p2.y) - p2.y) * rightStep;
-	
-	for (int y = std::ceil(p2.y); y < std::ceil(p3.y); y++) {
-		double t1 = (y - p1.y) / (double)(p3.y - p1.y);
-		double t2 = (y - p2.y) / (double)(p3.y - p2.y);
-			
-		int startX = std::ceil(left);
-		int endX = std::ceil(right);
-		double min = left;
-		double max = right;
-
-		lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
-		lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
-		
-		lerpCoordV2.x = lerp(tp2.x, tp3.x, t2);
-		lerpCoordV2.y = lerp(tp2.y, tp3.y, t2);
-		
-		if (min > max) {
-			std::swap(startX, endX);
-			std::swap(min, max);
-			std::swap(lerpCoordV1, lerpCoordV2);
-		}
-		
-		double xStep{};
-		double yStep{};
-		
-		if(max - min != 0) {
-			xStep = (lerpCoordV2.x - lerpCoordV1.x) / (endX - startX);
-			yStep = (lerpCoordV2.y - lerpCoordV1.y) / (endX - startX);
-		}
-		
-		double xLerp{lerpCoordV1.x};
-		double yLerp{lerpCoordV1.y};
-		
-		for (int x = startX; x < endX; x++) {
-			
-			// DrawPixel(RGB::Red, x, y);
-			
-			// double xLerp = lerp(lerpCoordV1.x, lerpCoordV2.x, (x - min) / (double)(max - min));
-			// double yLerp = lerp(lerpCoordV1.y, lerpCoordV2.y, (x - min) / (double)(max - min));
-			DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y);
-			
-			// xLerp += xStep;
-			// yLerp += yStep;
-			xLerp = lerpCoordV1.x + (xStep * (x - min));
-			yLerp = lerpCoordV1.y + (yStep * (x - min));
-		}
-		
-		left += leftStep;
-		right += rightStep;
-	}
-	
-	#else
-	
-	// std::cout << "tp1: " << tp1.x << "; " << tp1.y << std::endl;
-	// std::cout << "tp2: " << tp2.x << "; " << tp2.y << std::endl;
-	// std::cout << "tp3: " << tp3.x << "; " << tp3.y << std::endl << std::endl;
-	
-	if(p3.y - p1.y > 0) {
-		double x1 = 0;
-		double x2 = 0;
-		// FPoint lerpCoordV1{}; // vertical lerp coord from side 1
-		// FPoint lerpCoordV2{}; // vertical lerp coord from side 2
-		
-		for (int i = p1.y; i < p2.y; i++) {
-			double t1 = (i - p1.y) / (double)(p3.y - p1.y);
-			double t2 = (i - p1.y) / (double)(p2.y - p1.y);
-			x1 = lerp(p1.x, p3.x, t1);
-			x2 = lerp(p1.x, p2.x, t2);
-			
-			lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
-			lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
-			
-			lerpCoordV2.x = lerp(tp1.x, tp2.x, t2);
-			lerpCoordV2.y = lerp(tp1.y, tp2.y, t2);
-			
-			if(x1 > x2) {
-				std::swap(x1, x2);
-				std::swap(lerpCoordV1, lerpCoordV2);
-			}
-			
-			int startX = x1;
-			int endX = x2;
-			
-			double xStep{};
-			double yStep{};
-			
-			if(endX - startX != 0) {
-				xStep = (lerpCoordV2.x - lerpCoordV1.x) / (x2 - x1);
-				yStep = (lerpCoordV2.y - lerpCoordV1.y) / (x2 - x1);
-			}
-			
-			double xLerp{lerpCoordV1.x};
-			double yLerp{lerpCoordV1.y};
-			
-			for (int j = startX; j < endX; j++) {
-				double clampedXLerp = xLerp;
-				double clampedYLerp = yLerp;
-				
-				// clampedXLerp = lerp((lerpCoordV1.x), (lerpCoordV2.x), (j - startX) / (double)(endX - startX));
-				// clampedYLerp = lerp((lerpCoordV1.y), (lerpCoordV2.y), (j - startX) / (double)(endX - startX));
-				// DrawPixel(sampleTexture(texture, clampedXLerp, clampedYLerp), j, i);
-				DrawPixel(sampleTexture(texture, xLerp, yLerp), j, i);
-				
-				xLerp += xStep;
-				yLerp += yStep;
-			}
-		}
-		
-		for (int i = p2.y; i < p3.y; i++)	{
-			double t1 = (i - p1.y) / (double)(p3.y - p1.y);
-			double t2 = (i - p2.y) / (double)(p3.y - p2.y);
-			x1 = lerp(p1.x, p3.x, t1);
-			x2 = lerp(p2.x, p3.x, t2);
-			
-			lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
-			lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
-			
-			lerpCoordV2.x = lerp(tp2.x, tp3.x, t2);
-			lerpCoordV2.y = lerp(tp2.y, tp3.y, t2);
-			
-			if(x1 > x2) {
-				std::swap(x1, x2);
-				std::swap(lerpCoordV1, lerpCoordV2);
-			}
-			
-			int startX = x1;
-			int endX = x2;
-			
-			double xStep{};
-			double yStep{};
-			
-			if(endX - startX != 0) {
-				xStep = (lerpCoordV2.x - lerpCoordV1.x) / (x2 - x1);
-				yStep = (lerpCoordV2.y - lerpCoordV1.y) / (x2 - x1);
-			}
-			
-			double xLerp{lerpCoordV1.x};
-			double yLerp{lerpCoordV1.y};
-			
-			for (int j = startX; j < endX; j++) {
-				double clampedXLerp = xLerp;
-				double clampedYLerp = yLerp;
-				
-				// clampedXLerp = lerp((lerpCoordV1.x), (lerpCoordV2.x), (j - startX) / (double)(endX - startX));
-				// clampedYLerp = lerp((lerpCoordV1.y), (lerpCoordV2.y), (j - startX) / (double)(endX - startX));
-				// DrawPixel(sampleTexture(texture, clampedXLerp, clampedYLerp), j, i);
-				DrawPixel(sampleTexture(texture, xLerp, yLerp), j, i);
-				
-				xLerp += xStep;
-				yLerp += yStep;
-			}
-		}
-	}
-	#endif
+#endif
 	
 	static int counter = 0;
-	static float accumulation = 0;
+	static double accumulation = 0;
 	counter++;
-	accumulation += t.elapsed()/1000;
+	accumulation += t.elapsed()*1000;
 	
-	if (counter > 64) {
+	if (counter > 128) {
 		std::cout << "speed: " << accumulation/counter << std::endl;
 		counter = 0;
 		accumulation = 0;
@@ -1350,3 +1176,525 @@ bool cdr::Renderer::clampCoords(float& x, float& y, int width, int height) {
 	// NOTE: return false if coordinates are out of bounds of the bitmap	
 	return false;
 }
+
+#if 0
+void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, FPoint p1, FPoint p2, FPoint p3) {
+	// sort top most point
+	if(p1.y > p2.y) {
+		std::swap(p1, p2);
+		std::swap(tp1, tp2);
+	}
+	if(p2.y > p3.y) {
+		std::swap(p2, p3);
+		std::swap(tp2, tp3);
+	}
+	if(p1.y > p2.y) {
+		std::swap(p1, p2);
+		std::swap(tp1, tp2);
+	}
+	
+	// std::cout << "p1: " << p1.x << "; " << p1.y << std::endl;
+	// std::cout << "p2: " << p2.x << "; " << p2.y << std::endl;
+	// std::cout << "p3: " << p3.x << "; " << p3.y << std::endl << std::endl;
+
+	Timer t{};	
+	
+	tp1.x *= texture.GetWidth();
+	tp2.x *= texture.GetWidth();
+	tp3.x *= texture.GetWidth();
+	tp1.y *= texture.GetHeight();
+	tp2.y *= texture.GetHeight();
+	tp3.y *= texture.GetHeight();
+
+
+	struct DPoint {
+		double x;
+		double y;
+	} lerpCoordV1, lerpCoordV2;
+	
+
+	// #define barycentric
+	// #define accumulation
+	// #define lerp
+	// #define lerp_for_triangle_sides
+	
+	#ifdef barycentric
+
+	float leftStep{};
+	if (p3.y - p1.y != 0) {
+		leftStep = (p3.x - p1.x) / (p3.y - p1.y);
+	}
+	float rightStep{};
+	if (p2.y - p1.y != 0) {
+		rightStep = (p2.x - p1.x) / (p2.y - p1.y);
+	}
+	
+	float left = p1.x + (std::ceil(p1.y) - p1.y) * leftStep;
+	float right = p1.x + (std::ceil(p1.y) - p1.y) * rightStep;
+	
+	// float denom = edgeFunc(p1, p2, p3);// (p2.y - p3.y)*(p1.x - p3.x) + (p3.x - p2.x)*(p1.y - p3.y);
+	float denom = (p3.x - p1.x)*(p2.y - p1.y) - (p3.y - p1.y)*(p2.x - p1.x);// (p2.y - p3.y)*(p1.x - p3.x) + (p3.x - p2.x)*(p1.y - p3.y);
+	float w1{};
+	float w2{};
+	float w3{};
+
+	for (int y = std::ceil(p1.y); y < std::ceil(p2.y); y++) {
+		int min = std::ceil(left);
+		int max = std::ceil(right);
+		
+		if (min > max) {
+			std::swap(min, max);
+		}
+		
+		for (int x = min; x < max; x++) {
+			
+			// DrawPixel(RGB::Red, x, y);
+			
+			w1 = ((x - p2.x)*(p3.y - p2.y) - (y - p2.y)*(p3.x - p2.x)) / denom;
+			w2 = ((x - p3.x)*(p1.y - p3.y) - (y - p3.y)*(p1.x - p3.x)) / denom;
+			w3 = ((x - p1.x)*(p2.y - p1.y) - (y - p1.y)*(p2.x - p1.x)) / denom;
+			
+			// w1 = ((p2.y - p3.y)*(x - p3.x) + (p3.x - p2.x)*(y - p3.y)) / denom;
+			// w2 = ((p3.y - p1.y)*(x - p3.x) + (p1.x - p3.x)*(y - p3.y)) / denom;
+			// w3 = 1.f - w1 - w2;
+			
+			float t = (w1 * tp1.x + w2 * tp2.x + w3 * tp3.x);
+			float s = (w1 * tp1.y + w2 * tp2.y + w3 * tp3.y);
+			
+			DrawPixel(sampleTexture(texture, 
+				t, s),
+				x, y);
+		}
+		
+		left += leftStep;
+		right += rightStep;
+	}
+	
+	if (p3.y - p2.y != 0) {
+		rightStep = (p3.x - p2.x) / (p3.y - p2.y);
+	}
+	// right = p1.x + (std::ceil(p1.y) - p1.y) * rightStep
+	right = p2.x + (std::ceil(p2.y) - p2.y) * rightStep;
+	
+	for (int y = std::ceil(p2.y); y < std::ceil(p3.y); y++) {
+		int min = std::ceil(left);
+		int max = std::ceil(right);
+		
+		if (min > max) {
+			std::swap(min, max);
+		}
+		
+		for (int x = min; x < max; x++) {
+			
+			// DrawPixel(RGB::Green, x, y);
+			
+			// FPoint p {float(x), float(y)};
+			w1 = ((x - p2.x)*(p3.y - p2.y) - (y - p2.y)*(p3.x - p2.x)) / denom;
+			w2 = ((x - p3.x)*(p1.y - p3.y) - (y - p3.y)*(p1.x - p3.x)) / denom;
+			w3 = ((x - p1.x)*(p2.y - p1.y) - (y - p1.y)*(p2.x - p1.x)) / denom;
+			
+			// w1 = ((p2.y - p3.y)*(x - p3.x) + (p3.x - p2.x)*(y - p3.y)) / denom;
+			// w2 = ((p3.y - p1.y)*(x - p3.x) + (p1.x - p3.x)*(y - p3.y)) / denom;
+			// w3 = 1.f - w1 - w2;
+			
+			float t = (w1 * tp1.x + w2 * tp2.x + w3 * tp3.x);
+			float s = (w1 * tp1.y + w2 * tp2.y + w3 * tp3.y);
+			
+			DrawPixel(sampleTexture(texture, 
+				t, 
+				s),
+				x, y);
+		}
+		
+		left += leftStep;
+		right += rightStep;
+	}
+	
+	
+	
+	#elif defined(lerp_for_triangle_sides)
+	
+		struct DPoint {
+		double x;
+		double y;
+	} lerpCoordV1, lerpCoordV2;
+	
+	for (int y = std::ceil(p1.y); y < std::ceil(p2.y); y++) {
+		
+		double t1 = (y - p1.y) / (double)(p3.y - p1.y);
+		double t2 = (y - p1.y) / (double)(p2.y - p1.y);
+			
+		double min = lerp(p1.x, p3.x, t1);
+		double max = lerp(p1.x, p2.x, t2);
+		
+		int startX = std::ceil(min);
+		int endX = std::ceil(max);
+		
+		lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+		lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+		
+		lerpCoordV2.x = lerp(tp1.x, tp2.x, t2);
+		lerpCoordV2.y = lerp(tp1.y, tp2.y, t2);
+		
+		if (min > max) {
+			std::swap(startX, endX);
+			std::swap(min, max);
+			std::swap(lerpCoordV1, lerpCoordV2);
+		}
+		
+		for (int x = startX; x < endX; x++) {
+			double xLerp = lerp(lerpCoordV1.x, lerpCoordV2.x, (x - min) / (double)(max - min));
+			double yLerp = lerp(lerpCoordV1.y, lerpCoordV2.y, (x - min) / (double)(max - min));
+			DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y);
+		}
+	}
+	
+	for (int y = std::ceil(p2.y); y < std::ceil(p3.y); y++) {
+		double t1 = (y - p1.y) / (double)(p3.y - p1.y);
+		double t2 = (y - p2.y) / (double)(p3.y - p2.y);
+			
+		double min = lerp(p1.x, p3.x, t1);
+		double max = lerp(p2.x, p3.x, t2);
+		
+		int startX = std::ceil(min);
+		int endX = std::ceil(max);
+
+		lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+		lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+		
+		lerpCoordV2.x = lerp(tp2.x, tp3.x, t2);
+		lerpCoordV2.y = lerp(tp2.y, tp3.y, t2);
+		
+		if (min > max) {
+			std::swap(startX, endX);
+			std::swap(min, max);
+			std::swap(lerpCoordV1, lerpCoordV2);
+		}
+		
+		for (int x = startX; x < endX; x++) {
+			double xLerp = lerp(lerpCoordV1.x, lerpCoordV2.x, (x - min) / (double)(max - min));
+			double yLerp = lerp(lerpCoordV1.y, lerpCoordV2.y, (x - min) / (double)(max - min));
+			DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y);
+		}
+	}
+	
+	
+	
+	#elif defined(accumulation) 
+
+	double leftStep{};
+	if (p3.y - p1.y != 0) {
+		leftStep = (p3.x - p1.x) / (p3.y - p1.y);
+	}
+	double rightStep{};
+	if (p2.y - p1.y != 0) {
+		rightStep = (p2.x - p1.x) / (p2.y - p1.y);
+	}
+	
+	double left = p1.x + (std::ceil(p1.y) - p1.y) * leftStep;
+	double right = p1.x + (std::ceil(p1.y) - p1.y) * rightStep;
+
+	for (int y = std::ceil(p1.y); y < std::ceil(p2.y); y++) {
+		
+		double t1 = (y - p1.y) / (double)(p3.y - p1.y);
+		double t2 = (y - p1.y) / (double)(p2.y - p1.y);
+			
+		int startX = std::ceil(left);
+		int endX = std::ceil(right);
+		double min = left;
+		double max = right;
+		
+		lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+		lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+		
+		lerpCoordV2.x = lerp(tp1.x, tp2.x, t2);
+		lerpCoordV2.y = lerp(tp1.y, tp2.y, t2);
+		
+		if (min > max) {
+			std::swap(startX, endX);
+			std::swap(min, max);
+			std::swap(lerpCoordV1, lerpCoordV2);
+		}
+		
+		double xStep{};
+		double yStep{};
+		
+		if(max - min != 0) {
+			xStep = (lerpCoordV2.x - lerpCoordV1.x) / (endX - startX);
+			yStep = (lerpCoordV2.y - lerpCoordV1.y) / (endX - startX);
+		}
+		
+		double xLerp{lerpCoordV1.x};
+		double yLerp{lerpCoordV1.y};
+		
+		for (int x = startX; x < endX; x++) {
+			
+			// DrawPixel(RGB::Red, x, y);
+			
+			DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y);
+			
+			// xLerp += xStep;
+			// yLerp += yStep;
+			xLerp = lerpCoordV1.x + (xStep * (x - min));
+			yLerp = lerpCoordV1.y + (yStep * (x - min));
+		}
+		
+		left += leftStep;
+		right += rightStep;
+	}
+	
+	if (p3.y - p2.y != 0) {
+		rightStep = (p3.x - p2.x) / (p3.y - p2.y);
+	}
+	// right = p1.x + (std::ceil(p1.y) - p1.y) * rightStep
+	right = p2.x + (std::ceil(p2.y) - p2.y) * rightStep;
+	
+	for (int y = std::ceil(p2.y); y < std::ceil(p3.y); y++) {
+		double t1 = (y - p1.y) / (double)(p3.y - p1.y);
+		double t2 = (y - p2.y) / (double)(p3.y - p2.y);
+			
+		int startX = std::ceil(left);
+		int endX = std::ceil(right);
+		double min = left;
+		double max = right;
+
+		lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+		lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+		
+		lerpCoordV2.x = lerp(tp2.x, tp3.x, t2);
+		lerpCoordV2.y = lerp(tp2.y, tp3.y, t2);
+		
+		if (min > max) {
+			std::swap(startX, endX);
+			std::swap(min, max);
+			std::swap(lerpCoordV1, lerpCoordV2);
+		}
+		
+		double xStep{};
+		double yStep{};
+		
+		if(max - min != 0) {
+			xStep = (lerpCoordV2.x - lerpCoordV1.x) / (endX - startX);
+			yStep = (lerpCoordV2.y - lerpCoordV1.y) / (endX - startX);
+		}
+		
+		double xLerp{lerpCoordV1.x};
+		double yLerp{lerpCoordV1.y};
+		
+		for (int x = startX; x < endX; x++) {
+			
+			// DrawPixel(RGB::Red, x, y);
+			
+			DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y);
+			
+			// xLerp += xStep;
+			// yLerp += yStep;
+			xLerp = lerpCoordV1.x + (xStep * (x - min));
+			yLerp = lerpCoordV1.y + (yStep * (x - min));
+		}
+		
+		left += leftStep;
+		right += rightStep;
+	}
+	
+	
+	
+	#elif defined(lerp) 
+
+	double leftStep{};
+	if (p3.y - p1.y != 0) {
+		leftStep = (p3.x - p1.x) / (p3.y - p1.y);
+	}
+	double rightStep{};
+	if (p2.y - p1.y != 0) {
+		rightStep = (p2.x - p1.x) / (p2.y - p1.y);
+	}
+	
+	double left = p1.x + (std::ceil(p1.y) - p1.y) * leftStep;
+	double right = p1.x + (std::ceil(p1.y) - p1.y) * rightStep;
+
+	for (int y = std::ceil(p1.y); y < std::ceil(p2.y); y++) {
+		
+		double t1 = (y - p1.y) / (double)(p3.y - p1.y);
+		double t2 = (y - p1.y) / (double)(p2.y - p1.y);
+			
+		int startX = std::ceil(left);
+		int endX = std::ceil(right);
+		double min = left;
+		double max = right;
+		
+		lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+		lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+		
+		lerpCoordV2.x = lerp(tp1.x, tp2.x, t2);
+		lerpCoordV2.y = lerp(tp1.y, tp2.y, t2);
+		
+		if (min > max) {
+			std::swap(startX, endX);
+			std::swap(min, max);
+			std::swap(lerpCoordV1, lerpCoordV2);
+		}
+		for (int x = startX; x < endX; x++) {
+			double xLerp = lerp(lerpCoordV1.x, lerpCoordV2.x, (x - min) / (double)(max - min));
+			double yLerp = lerp(lerpCoordV1.y, lerpCoordV2.y, (x - min) / (double)(max - min));
+			DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y);
+		}
+		
+		left += leftStep;
+		right += rightStep;
+	}
+	
+	if (p3.y - p2.y != 0) {
+		rightStep = (p3.x - p2.x) / (p3.y - p2.y);
+	}
+	// right = p1.x + (std::ceil(p1.y) - p1.y) * rightStep
+	right = p2.x + (std::ceil(p2.y) - p2.y) * rightStep;
+	
+	for (int y = std::ceil(p2.y); y < std::ceil(p3.y); y++) {
+		double t1 = (y - p1.y) / (double)(p3.y - p1.y);
+		double t2 = (y - p2.y) / (double)(p3.y - p2.y);
+			
+		int startX = std::ceil(left);
+		int endX = std::ceil(right);
+		double min = left;
+		double max = right;
+
+		lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+		lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+		
+		lerpCoordV2.x = lerp(tp2.x, tp3.x, t2);
+		lerpCoordV2.y = lerp(tp2.y, tp3.y, t2);
+		
+		if (min > max) {
+			std::swap(startX, endX);
+			std::swap(min, max);
+			std::swap(lerpCoordV1, lerpCoordV2);
+		}
+		for (int x = startX; x < endX; x++) {
+			double xLerp = lerp(lerpCoordV1.x, lerpCoordV2.x, (x - min) / (double)(max - min));
+			double yLerp = lerp(lerpCoordV1.y, lerpCoordV2.y, (x - min) / (double)(max - min));
+			DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y);
+		}
+		
+		left += leftStep;
+		right += rightStep;
+	}
+	
+	
+	
+	#else // original algorithm
+	
+	// std::cout << "tp1: " << tp1.x << "; " << tp1.y << std::endl;
+	// std::cout << "tp2: " << tp2.x << "; " << tp2.y << std::endl;
+	// std::cout << "tp3: " << tp3.x << "; " << tp3.y << std::endl << std::endl;
+	
+	if(p3.y - p1.y > 0) {
+		double x1 = 0;
+		double x2 = 0;
+		// FPoint lerpCoordV1{}; // vertical lerp coord from side 1
+		// FPoint lerpCoordV2{}; // vertical lerp coord from side 2
+		
+		for (int i = p1.y; i < p2.y; i++) {
+			double t1 = (i - p1.y) / (double)(p3.y - p1.y);
+			double t2 = (i - p1.y) / (double)(p2.y - p1.y);
+			x1 = lerp(p1.x, p3.x, t1);
+			x2 = lerp(p1.x, p2.x, t2);
+			
+			lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+			lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+			
+			lerpCoordV2.x = lerp(tp1.x, tp2.x, t2);
+			lerpCoordV2.y = lerp(tp1.y, tp2.y, t2);
+			
+			if(x1 > x2) {
+				std::swap(x1, x2);
+				std::swap(lerpCoordV1, lerpCoordV2);
+			}
+			
+			int startX = x1;
+			int endX = x2;
+			
+			double xStep{};
+			double yStep{};
+			
+			if(endX - startX != 0) {
+				xStep = (lerpCoordV2.x - lerpCoordV1.x) / (x2 - x1);
+				yStep = (lerpCoordV2.y - lerpCoordV1.y) / (x2 - x1);
+			}
+			
+			double xLerp{lerpCoordV1.x};
+			double yLerp{lerpCoordV1.y};
+			
+			for (int j = startX; j < endX; j++) {
+				double clampedXLerp = xLerp;
+				double clampedYLerp = yLerp;
+				
+				// clampedXLerp = lerp((lerpCoordV1.x), (lerpCoordV2.x), (j - startX) / (double)(endX - startX));
+				// clampedYLerp = lerp((lerpCoordV1.y), (lerpCoordV2.y), (j - startX) / (double)(endX - startX));
+				// DrawPixel(sampleTexture(texture, clampedXLerp, clampedYLerp), j, i);
+				DrawPixel(sampleTexture(texture, xLerp, yLerp), j, i);
+				
+				xLerp += xStep;
+				yLerp += yStep;
+			}
+		}
+		
+		for (int i = p2.y; i < p3.y; i++)	{
+			double t1 = (i - p1.y) / (double)(p3.y - p1.y);
+			double t2 = (i - p2.y) / (double)(p3.y - p2.y);
+			x1 = lerp(p1.x, p3.x, t1);
+			x2 = lerp(p2.x, p3.x, t2);
+			
+			lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
+			lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+			
+			lerpCoordV2.x = lerp(tp2.x, tp3.x, t2);
+			lerpCoordV2.y = lerp(tp2.y, tp3.y, t2);
+			
+			if(x1 > x2) {
+				std::swap(x1, x2);
+				std::swap(lerpCoordV1, lerpCoordV2);
+			}
+			
+			int startX = x1;
+			int endX = x2;
+			
+			double xStep{};
+			double yStep{};
+			
+			if(endX - startX != 0) {
+				xStep = (lerpCoordV2.x - lerpCoordV1.x) / (x2 - x1);
+				yStep = (lerpCoordV2.y - lerpCoordV1.y) / (x2 - x1);
+			}
+			
+			double xLerp{lerpCoordV1.x};
+			double yLerp{lerpCoordV1.y};
+			
+			for (int j = startX; j < endX; j++) {
+				double clampedXLerp = xLerp;
+				double clampedYLerp = yLerp;
+				
+				// clampedXLerp = lerp((lerpCoordV1.x), (lerpCoordV2.x), (j - startX) / (double)(endX - startX));
+				// clampedYLerp = lerp((lerpCoordV1.y), (lerpCoordV2.y), (j - startX) / (double)(endX - startX));
+				// DrawPixel(sampleTexture(texture, clampedXLerp, clampedYLerp), j, i);
+				DrawPixel(sampleTexture(texture, xLerp, yLerp), j, i);
+				
+				xLerp += xStep;
+				yLerp += yStep;
+			}
+		}
+	}
+	#endif
+	
+	static int counter = 0;
+	static float accumulation = 0;
+	counter++;
+	accumulation += t.elapsed()/1000;
+	
+	if (counter > 64) {
+		std::cout << "speed: " << accumulation/counter << std::endl;
+		counter = 0;
+		accumulation = 0;
+	}
+}
+#endif

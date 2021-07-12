@@ -26,7 +26,7 @@ public:
 	}
 	
 	inline double elapsed() const {
-		return (clock_t::now() - m_beg).count();
+    	return std::chrono::duration_cast<second_t>(clock_t::now() - m_beg).count();
 	}
 };
 
