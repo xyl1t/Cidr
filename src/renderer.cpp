@@ -11,6 +11,7 @@
 #include <cmath>
 #include <vector>
 #include <array>
+#include <thread>
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
@@ -405,7 +406,7 @@ void cdr::Renderer::DrawTriangle(const RGBA& color, const Point& p1, const Point
 struct DPoint {
 	double x;
 	double y;
-} lerpCoordV1, lerpCoordV2;
+} minTx, maxTx;
 void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, FPoint p1, FPoint p2, FPoint p3) {
 	// sort top most point
 	if(p1.y > p2.y) {
@@ -443,22 +444,22 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 		int startX = std::ceil(min);
 		int endX = std::ceil(max);
 		
-		lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
-		lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+		minTx.x = lerp(tp1.x, tp3.x, t1);
+		minTx.y = lerp(tp1.y, tp3.y, t1);
 		
-		lerpCoordV2.x = lerp(tp1.x, tp2.x, t2);
-		lerpCoordV2.y = lerp(tp1.y, tp2.y, t2);
+		maxTx.x = lerp(tp1.x, tp2.x, t2);
+		maxTx.y = lerp(tp1.y, tp2.y, t2);
 		
 		if (min > max) {
 			std::swap(startX, endX);
 			std::swap(min, max);
-			std::swap(lerpCoordV1, lerpCoordV2);
+			std::swap(minTx, maxTx);
 		}
 		
 		for (int x = startX; x < endX; x++) {
 			DrawPixel(sampleTexture(texture, 
-				lerp(lerpCoordV1.x, lerpCoordV2.x, (x - min) / (max - min)), 
-				lerp(lerpCoordV1.y, lerpCoordV2.y, (x - min) / (max - min))), 
+				lerp(minTx.x, maxTx.x, (x - min) / (max - min)), 
+				lerp(minTx.y, maxTx.y, (x - min) / (max - min))), 
 				x, y);
 		}
 	}
@@ -472,22 +473,22 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 		int startX = std::ceil(min);
 		int endX = std::ceil(max);
 
-		lerpCoordV1.x = lerp(tp1.x, tp3.x, t1);
-		lerpCoordV1.y = lerp(tp1.y, tp3.y, t1);
+		minTx.x = lerp(tp1.x, tp3.x, t1);
+		minTx.y = lerp(tp1.y, tp3.y, t1);
 		
-		lerpCoordV2.x = lerp(tp2.x, tp3.x, t2);
-		lerpCoordV2.y = lerp(tp2.y, tp3.y, t2);
+		maxTx.x = lerp(tp2.x, tp3.x, t2);
+		maxTx.y = lerp(tp2.y, tp3.y, t2);
 		
 		if (min > max) {
 			std::swap(startX, endX);
 			std::swap(min, max);
-			std::swap(lerpCoordV1, lerpCoordV2);
+			std::swap(minTx, maxTx);
 		}
 		
 		for (int x = startX; x < endX; x++) {
 			DrawPixel(sampleTexture(texture, 
-				lerp(lerpCoordV1.x, lerpCoordV2.x, (x - min) / (max - min)), 
-				lerp(lerpCoordV1.y, lerpCoordV2.y, (x - min) / (max - min))), 
+				lerp(minTx.x, maxTx.x, (x - min) / (max - min)), 
+				lerp(minTx.y, maxTx.y, (x - min) / (max - min))), 
 				x, y);
 		}
 	}
