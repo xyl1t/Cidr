@@ -422,8 +422,6 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 		std::swap(tp1, tp2);
 	}
 	
-	Timer t{};	
-	
 	tp1.x *= texture.GetWidth();
 	tp2.x *= texture.GetWidth();
 	tp3.x *= texture.GetWidth();
@@ -592,17 +590,6 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 		right += rightStep;
 	}
 #endif
-	
-	static int counter = 0;
-	static double accumulation = 0;
-	counter++;
-	accumulation += t.elapsedSeconds()*1000;
-	
-	if (counter > 128) {
-		std::cout << "speed: " << accumulation/counter << std::endl;
-		counter = 0;
-		accumulation = 0;
-	}
 }
 void cdr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p3) {
 	// sort top most point
