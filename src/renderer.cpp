@@ -435,6 +435,9 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 // #define cdr_barycentric
 #ifndef cdr_barycentric
 	
+	// NOTE: can we do this in one loop? will that do anything?
+	// std::thread t1 { [&](){ 
+	
 	for (int y = std::ceil(p1.y); y < std::ceil(p2.y); y++) {
 		double t1 = (y - p1.y) / (double)(p3.y - p1.y);
 		double t2 = (y - p1.y) / (double)(p2.y - p1.y);
@@ -464,6 +467,9 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 		}
 	}
 	
+	// } };
+	// std::thread t2 { [&](){ 
+	
 	for (int y = std::ceil(p2.y); y < std::ceil(p3.y); y++) {
 		double t1 = (y - p1.y) / (double)(p3.y - p1.y);
 		double t2 = (y - p2.y) / (double)(p3.y - p2.y);
@@ -492,6 +498,9 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 				x, y);
 		}
 	}
+	// }};
+	// t1.join();
+	// t2.join();
 #else
 	float leftStep{};
 	if (p3.y - p1.y != 0) {
@@ -587,7 +596,7 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 	static int counter = 0;
 	static double accumulation = 0;
 	counter++;
-	accumulation += t.elapsed()*1000;
+	accumulation += t.elapsedSeconds()*1000;
 	
 	if (counter > 128) {
 		std::cout << "speed: " << accumulation/counter << std::endl;
