@@ -292,14 +292,14 @@ int main(int argc, char** argv) {
 		cdr::Point p4{256-32, 48};
 		cdr::Point pInBetween {(p1.x + p2.x + p3.x + p4.x) / 4, (p1.y + p2.y + p3.y + p4.y) / 4};
 		
-		cidrRend.DrawTriangle(bitmap, 
+		cidrRend.DrawTriangle(triangleTexture, 
 			0 + val2/100.f, 0 - val1/100.f,
 			0 + val2/100.f, 1 - val1/100.f,
 			1 + val2/100.f, 1 - val1/100.f,
 			p1.x, p1.y,
 			p2.x, p2.y,
 			p3.x, p3.y);
-		cidrRend.DrawTriangle(bitmap, 
+		cidrRend.DrawTriangle(triangleTexture, 
 			0 + val2/100.f, 0 - val1/100.f,
 			1 + val2/100.f, 1 - val1/100.f,
 			1 + val2/100.f, 0 - val1/100.f,

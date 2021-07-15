@@ -640,35 +640,6 @@ void cdr::Renderer::FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1
 		std::swap(color1, color2);
 	}
 
-	// std::vector<int> scanBuffer((p3.y - p1.y) * 2);
-	
-	// auto scanConvertLine = [&](FPoint min, FPoint max, int side) {
-	// 	float yDist = max.y - min.y;
-	// 	float xDist = max.x - min.x;
-	// 	if (yDist <= 0) return;
-	// 	float xStep = xDist / yDist;
-	// 	float curX = min.x;
-	// 	for (int i = min.y; i < max.y; i++) {
-	// 		scanBuffer[(i - p1.y) * 2 + side] = curX;
-	// 		curX += xStep;
-	// 	}
-	// };
-	
-	// scanConvertLine(p1, p3, 0);
-	// scanConvertLine(p1, p2, 1);
-	// scanConvertLine(p2, p3, 1);
-	
-	// for (int i = 0; i < scanBuffer.size() / 2 - 1; i++) {
-	// 	int xMin = scanBuffer[i * 2];
-	// 	int xMax = scanBuffer[i * 2 + 1];
-	// 	for (int j = xMin; j < xMax; j++) {
-	// 		DrawPixel(color1, j, p1.y + i);
-	// 	}
-	// }
-
-	// return;
-
-
 	if(p3.y - p1.y != 0) {
 		float x1 = 0;
 		float x2 = 0;
@@ -929,9 +900,6 @@ void cdr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, i
 
 					float iSrcFraction = (iSrc) - (int)iSrc;
 					float jSrcFraction = (jSrc) - (int)jSrc;
-					
-					if (iDest == destX && jDest == destY)
-						std::cout << "iSrc: " << iSrc << "; jSrc: " << jSrc << std::endl;
 					
 					const RGBA& colorTL = bitmap.GetPixel(iSrc, jSrc);
 					const RGBA& colorBL = bitmap.GetPixel(iSrc, (jSrc+1 >= bitmap.GetHeight() ? bitmap.GetHeight()-1 : jSrc + 1));
