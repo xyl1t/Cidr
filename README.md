@@ -16,10 +16,6 @@ Cidr (pronounced "Sidr" which stands for "Simple Drawer" or "Simple Drawing") is
  * A simple vector library
  * And much more™ 
 
-
-#### Possibly upcoming features
- * Better triangle rasterization 
-
 Here is a small demo of what you can already do with Cidr
 ![Cidr application demo](https://i.imgur.com/Wtnibid.png)
 
