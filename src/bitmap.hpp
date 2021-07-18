@@ -45,7 +45,7 @@ public:
 	inline int GetWidth() const { return width; }
 	inline int GetHeight() const { return height; }
 	inline uint32_t* GetData() const { return data; }
-	inline uint32_t GetRawPixel(int x, int y) { return data[x + y * width]; }
+	inline uint32_t GetRawPixel(int x, int y) const { return data[x + y * width]; }
 	inline void SetRawPixel(uint32_t value, int x, int y) { data[x + y * width] = value; }
 	inline void SetRawPixel(uint8_t r, uint8_t g, uint8_t b, uint8_t a, int x, int y) { data[x + y * width] = (r << 24) + (g << 16) + (b << 8) + a; }
 	

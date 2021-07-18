@@ -416,6 +416,19 @@ public:
 	}
 };
 
+inline uint8_t getR(uint32_t colorUINT) {
+	return (colorUINT >> 24) & 0xff;
+}
+inline uint8_t getG(uint32_t colorUINT) {
+	return (colorUINT >> 16) & 0xff;
+}
+inline uint8_t getB(uint32_t colorUINT) {
+	return (colorUINT >>  8) & 0xff;
+}
+inline uint8_t getA(uint32_t colorUINT) {
+	return (colorUINT >>  0) & 0xff;
+}
+
 inline uint32_t RGBtoUINT(const RGB& colorRGB) {
 	return (colorRGB.r << 24) + (colorRGB.g << 16) + (colorRGB.b << 8) + 0xff;
 }
@@ -429,12 +442,12 @@ inline uint32_t RGBtoUINT_ABGR(const RGBA& colorRGB) {
 	return (colorRGB.a << 24) + (colorRGB.b << 16) + (colorRGB.g << 8) + colorRGB.r;
 }
 inline RGBA UINTtoRGB(uint32_t colorUINT) {
-	return {
-		static_cast<uint8_t>((colorUINT >> 24) & 0xff),
-		static_cast<uint8_t>((colorUINT >> 16) & 0xff),
-		static_cast<uint8_t>((colorUINT >>  8) & 0xff),
-		static_cast<uint8_t>((colorUINT >>  0) & 0xff)
-	};
+	return RGBA(
+		(colorUINT >> 24) & 0xff,
+		(colorUINT >> 16) & 0xff,
+		(colorUINT >>  8) & 0xff,
+		(colorUINT >>  0) & 0xff
+	);
 }
 inline uint32_t UINT_RGBAtoUINT_ABGR(uint32_t colorUINT) {
 	return (((colorUINT >>  0) & 0xff) << 24) + (((colorUINT >>  8) & 0xff) << 16) + (((colorUINT >> 16) & 0xff) << 8) + ((colorUINT >> 24) & 0xff);
@@ -715,7 +728,7 @@ public:
 	inline int GetWidth() const { return width; }
 	inline int GetHeight() const { return height; }
 	inline uint32_t* GetData() const { return data; }
-	inline uint32_t GetRawPixel(int x, int y) { return data[x + y * width]; }
+	inline uint32_t GetRawPixel(int x, int y) const { return data[x + y * width]; }
 	inline void SetRawPixel(uint32_t value, int x, int y) { data[x + y * width] = value; }
 	inline void SetRawPixel(uint8_t r, uint8_t g, uint8_t b, uint8_t a, int x, int y) { data[x + y * width] = (r << 24) + (g << 16) + (b << 8) + a; }
 	
@@ -2021,7 +2034,7 @@ public:
 	void DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, FPoint p1, FPoint p2, FPoint p3);
 	
 	/* DRAWING FUNCTION OVERLOADS */
-	inline void DrawPixel(const RGBA& color, int x, int y) { DrawPixel(color, Point(x, y)); }
+	inline void DrawPixel(const RGBA& color, int x, int y);
 	inline void DrawLine(const RGBA& color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(color, Point{x1, y1}, Point{x2, y2}, AA, GC); }
 	inline void DrawRectangle(const RGBA& color, int x, int y, int width, int height) { DrawRectangle(color, Rectangle{x, y, width, height}); }
 	inline void FillRectangle(const RGBA& color, int x, int y, int width, int height) { FillRectangle(color, Rectangle{x,y, width, height}); }
@@ -2047,7 +2060,7 @@ public:
 	inline void FillTriangle(uint32_t color1, uint32_t color2, uint32_t color3, Point p1, Point p2, Point p3) { FillTriangle(RGBA{color1}, RGBA{color2}, RGBA{color3}, p1, p2, p3); }
 	inline void DrawBitmap(const Bitmap& bitmap, FRectangle destRect, FRectangle srcRect) { DrawBitmap(bitmap, destRect.x, destRect.y, destRect.width, destRect.height, srcRect.x, srcRect.y, srcRect.width, srcRect.height); }
 	
-	inline void DrawPixel(uint32_t color, int x, int y) { DrawPixel(RGBA{color}, Point{x, y}); }
+	inline void DrawPixel(uint32_t color, int x, int y);
 	inline void DrawLine(uint32_t color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(RGBA{color}, Point{x1, y1}, Point{x2, y2}, AA, GC); }
 	inline void DrawRectangle(uint32_t color, int x, int y, int width, int height) { DrawRectangle(RGBA{color}, Rectangle{x, y, width, height}); }
 	inline void FillRectangle(uint32_t color, int x, int y, int width, int height) { FillRectangle(RGBA{color}, Rectangle{x, y, width, height}); }
@@ -2091,14 +2104,19 @@ private:
 	inline int getIndex(int x, int y) const {
 		return x + y * width;
 	}
-	inline float edgeFunc (const FPoint& a, const FPoint& b, const FPoint& c) {
-		return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
-	};
 	void drawScanLine(uint32_t color, int startX, int endX, int y);
 	void drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y);
-	bool clampCoords(float& x, float& y, int width, int height);
-	void constructFontBitmap(Font f);
-	RGBA sampleTexture(const cdr::Bitmap& b, float x, float y);
+	bool clampCoords(float& x, float& y, int width, int height) const;
+	RGBA sampleTexture(const cdr::Bitmap& b, float x, float y) const;
+	uint32_t sampleTextureRaw(const cdr::Bitmap& b, float x, float y) const;
+	bool clampCoords(int& x, int& y, int width, int height) const;
+};
+
+inline bool isInBounds(float x, float y, int w, int h) {
+	return (x >= 0 && y >= 0 && x < w && y < h);
+}
+inline float edgeFunc (const FPoint& a, const FPoint& b, const FPoint& c) {
+	return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
 };
 
 inline RGB alphaBlendColor(const cdr::RGB& color1, const cdr::RGB& color2, float alpha) {
@@ -2177,6 +2195,14 @@ void cdr::Renderer::Clear(uint32_t color) {
 void cdr::Renderer::DrawPixel(const cdr::RGBA& color, const Point& p) {
 	if(color.a != 0)
 		pixels[getIndex(p.x, p.y)] = RGBtoUINT(color);
+}
+void cdr::Renderer::DrawPixel(const cdr::RGBA& color, int x, int y) {
+	if(color.a != 0)
+		pixels[getIndex(x, y)] = RGBtoUINT(color);
+}
+void cdr::Renderer::DrawPixel(uint32_t color, int x, int y) {
+	if ((color & 0xff) != 0)
+		pixels[getIndex(x, y)] = color;
 }
 
 // TODO: Add clipping
@@ -2558,8 +2584,108 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 	tp3.y *= texture.GetHeight();
 
 
-// #define cdr_barycentric
-#ifndef cdr_barycentric
+#if !defined(cdr_linear) && !defined(cdr_barycentric)
+	for (int y = std::ceil(p1.y); y < std::ceil(p2.y); y++) {
+		double t1 = (y - std::ceil(p1.y)) / (double)(std::ceil(p3.y) - std::ceil(p1.y));
+		double t2 = (y - std::ceil(p1.y)) / (double)(std::ceil(p2.y) - std::ceil(p1.y));
+
+		double min = lerp(p1.x, p3.x, t1);
+		double max = lerp(p1.x, p2.x, t2);
+		int startX = std::ceil(min);
+		int endX = std::ceil(max);
+		
+		minTx.x = lerp(tp1.x, tp3.x, t1);
+		minTx.y = lerp(tp1.y, tp3.y, t1);
+		
+		maxTx.x = lerp(tp1.x, tp2.x, t2);
+		maxTx.y = lerp(tp1.y, tp2.y, t2);
+		
+		if (min > max) {
+			std::swap(min, max);
+			std::swap(startX, endX);
+			std::swap(minTx, maxTx);
+		}
+		
+		double xStep{};
+		double yStep{};
+		if (max - min) {
+			xStep = (maxTx.x - minTx.x) / (max - min);
+			yStep = (maxTx.y - minTx.y) / (max - min);
+		}
+		
+		double xLerp = minTx.x;
+		xLerp -= (min - startX) * xStep;
+		double yLerp = minTx.y;
+		yLerp -= (min - startX) * yStep;
+		
+		for (int x = startX; x < endX; x++) {
+			// NOTE: doing this, instead of just DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y), in order to achieve *performance*
+			if (this->ScaleType == ScaleType::Nearest) {
+				if((float)xLerp >= 0 && (float)yLerp >= 0 && (float)xLerp < texture.GetWidth() && (float)yLerp < texture.GetHeight())  {
+					pixels[getIndex(x, y)] = texture.GetRawPixel((float)xLerp, (float)yLerp);
+				} else {
+					DrawPixel(sampleTextureRaw(texture, (float)xLerp, (float)yLerp), x, y);
+				}
+			} else {
+				DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y);
+			}
+			
+			xLerp += xStep;
+			yLerp += yStep;
+		}
+	}
+	
+	for (int y = std::ceil(p2.y); y < std::ceil(p3.y); y++) {
+		double t1 = (y - std::ceil(p1.y)) / (double)(std::ceil(p3.y) - std::ceil(p1.y));
+		double t2 = (y - std::ceil(p2.y)) / (double)(std::ceil(p3.y) - std::ceil(p2.y));
+		
+		double min = lerp(p1.x, p3.x, t1);
+		double max = lerp(p2.x, p3.x, t2);
+		int startX = std::ceil(min);
+		int endX = std::ceil(max);
+
+		minTx.x = lerp(tp1.x, tp3.x, t1);
+		minTx.y = lerp(tp1.y, tp3.y, t1);
+		
+		maxTx.x = lerp(tp2.x, tp3.x, t2);
+		maxTx.y = lerp(tp2.y, tp3.y, t2);
+		
+		if (min > max) {
+			std::swap(min, max);
+			std::swap(startX, endX);
+			std::swap(minTx, maxTx);
+		}
+		
+		double xStep{};
+		double yStep{};
+		if (max - min) {
+			xStep = (maxTx.x - minTx.x) / (max - min);
+			yStep = (maxTx.y - minTx.y) / (max - min);
+		}
+		
+		double xLerp = minTx.x;
+		xLerp -= (min - startX) * xStep;
+		double yLerp = minTx.y;
+		yLerp -= (min - startX) * yStep;
+		
+		for (int x = startX; x < endX; x++) {
+			// NOTE: doing this, instead of just DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y), in order to achieve *performance*
+			if (this->ScaleType == ScaleType::Nearest) {
+				if((float)xLerp >= 0 && (float)yLerp >= 0 && (float)xLerp < texture.GetWidth() && (float)yLerp < texture.GetHeight())  {
+					pixels[getIndex(x, y)] = texture.GetRawPixel((float)xLerp, (float)yLerp);
+				} else {
+					DrawPixel(sampleTextureRaw(texture, (float)xLerp, (float)yLerp), x, y);
+				}
+			} else {
+				DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y);
+			}
+			
+			xLerp += xStep;
+			yLerp += yStep;
+		}
+	}
+	
+#elif defined(cdr_linear)
 	
 	// NOTE: can we do this in one loop? will that do anything?
 	// std::thread t1 { [&](){ 
@@ -2971,8 +3097,8 @@ void cdr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, i
 				float jSrc = (jDest - destY) / (float)cy + srcY;
 				
 				DrawPixel(sampleTexture(bitmap, iSrc, jSrc), iDest, jDest);
-				continue;
-
+								
+#ifdef 0
 				int fooX = 0;
 				int fooY = 0;
 				
@@ -3043,11 +3169,12 @@ void cdr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, i
 					
 					DrawPixel(c, iDest, jDest);
 				}
+#endif
 			}
 		}
 	}
 }
-cdr::RGBA cdr::Renderer::sampleTexture(const cdr::Bitmap& bitmap, float xSrc, float ySrc) {
+cdr::RGBA cdr::Renderer::sampleTexture(const cdr::Bitmap& bitmap, float xSrc, float ySrc) const {
 	int fooX = 0;
 	int fooY = 0;
 	
@@ -3069,11 +3196,7 @@ cdr::RGBA cdr::Renderer::sampleTexture(const cdr::Bitmap& bitmap, float xSrc, fl
 	
 	// TODO: maybe simplyify this later 
 	if(this->ScaleType == ScaleType::Nearest) {
-		if(fooX) 
-			x = ceil(x);
-		if(fooY) 
-			y = ceil(y);
-		return bitmap.GetPixel(x, y);
+		return bitmap.GetPixel(fooX ? std::ceil(x) : x, fooY ? std::ceil(y) : y);
 	} else { 
 		// TODO: cheßck if downscaling works properly
 		
@@ -3088,22 +3211,63 @@ cdr::RGBA cdr::Renderer::sampleTexture(const cdr::Bitmap& bitmap, float xSrc, fl
 		if(y < 0) y = 0;
 		if(y >= bitmap.GetHeight()) y = bitmap.GetHeight() - 1;
 
-		float iSrcFraction = (x) - (int)x;
-		float jSrcFraction = (y) - (int)y;
+		float iSrcFraction = x - int(x);
+		float jSrcFraction = y - int(y);
 		
-		const RGBA& colorTL = bitmap.GetPixel(x, y);
-		const RGBA& colorBL = bitmap.GetPixel(x, (y+1 >= bitmap.GetHeight() ? y : y + 1));
-		const RGBA& colorTR = bitmap.GetPixel((x+1 >= bitmap.GetWidth() ? x : x + 1), y);
-		const RGBA& colorBR = bitmap.GetPixel((x+1 >= bitmap.GetWidth() ? x : x + 1), (y+1 >= bitmap.GetHeight() ? y : y + 1));
+		uint32_t colorTL = bitmap.GetRawPixel(x, y);
+		uint32_t colorBL = bitmap.GetRawPixel(x, (y+1 >= bitmap.GetHeight() ? y : y + 1));
+		uint32_t colorTR = bitmap.GetRawPixel((x+1 >= bitmap.GetWidth() ? x : x + 1), y);
+		uint32_t colorBR = bitmap.GetRawPixel((x+1 >= bitmap.GetWidth() ? x : x + 1), (y+1 >= bitmap.GetHeight() ? y : y + 1));
 		
-		RGBA cT { colorTL * (1 - iSrcFraction) + colorTR * iSrcFraction };
-		RGBA cB { colorBL * (1 - iSrcFraction) + colorBR * iSrcFraction };
-		RGBA c {
-			cT * (1 - jSrcFraction) + 
-			cB * jSrcFraction 
-		};
+		return RGBA(
+			(getR(colorTL) * (1 - iSrcFraction) + getR(colorTR) * iSrcFraction) * (1 - jSrcFraction) + (getR(colorBL) * (1 - iSrcFraction) + getR(colorBR) * iSrcFraction) * jSrcFraction, 
+			(getG(colorTL) * (1 - iSrcFraction) + getG(colorTR) * iSrcFraction) * (1 - jSrcFraction) + (getG(colorBL) * (1 - iSrcFraction) + getG(colorBR) * iSrcFraction) * jSrcFraction, 
+			(getB(colorTL) * (1 - iSrcFraction) + getB(colorTR) * iSrcFraction) * (1 - jSrcFraction) + (getB(colorBL) * (1 - iSrcFraction) + getB(colorBR) * iSrcFraction) * jSrcFraction
+		);
 		
-		return c;
+		
+		// uint8_t ct_r = getR(colorTL) * (1 - iSrcFraction) + getR(colorTR) * iSrcFraction;
+		// uint8_t ct_g = getG(colorTL) * (1 - iSrcFraction) + getG(colorTR) * iSrcFraction;
+		// uint8_t ct_b = getB(colorTL) * (1 - iSrcFraction) + getB(colorTR) * iSrcFraction;
+		
+		// uint8_t cb_r = getR(colorBL) * (1 - iSrcFraction) + getR(colorBR) * iSrcFraction;
+		// uint8_t cb_g = getG(colorBL) * (1 - iSrcFraction) + getG(colorBR) * iSrcFraction;
+		// uint8_t cb_b = getB(colorBL) * (1 - iSrcFraction) + getB(colorBR) * iSrcFraction;
+		
+		// uint8_t c_r = ct_r * (1 - jSrcFraction) + cb_r * jSrcFraction;
+		// uint8_t c_g = ct_g * (1 - jSrcFraction) + cb_g * jSrcFraction;
+		// uint8_t c_b = ct_b * (1 - jSrcFraction) + cb_b * jSrcFraction;
+		
+		// return RGBA(c_r, c_g, c_b);
+
+		// RGBA cT { colorTL * (1 - iSrcFraction) + colorTR * iSrcFraction };
+		// RGBA cB { colorBL * (1 - iSrcFraction) + colorBR * iSrcFraction };
+		// RGBA c {
+		// 	cT * (1 - jSrcFraction) + 
+		// 	cB * jSrcFraction 
+		// };
+		// return c;
+	}
+}
+uint32_t cdr::Renderer::sampleTextureRaw(const cdr::Bitmap& bitmap, float xSrc, float ySrc) const {
+	if(xSrc >= 0 && ySrc >= 0 && xSrc < bitmap.GetWidth() && ySrc < bitmap.GetHeight()) {
+		return bitmap.GetRawPixel(xSrc, ySrc);
+	}  else {
+		if(OutOfBoundsType == OutOfBoundsType::ClampToBorder) {
+			return RGBtoUINT(ClampToBorderColor);
+		}
+		
+		int x (xSrc);
+		int y (ySrc);
+		clampCoords(x, y, bitmap.GetWidth(), bitmap.GetHeight());
+		int fooX = 0;
+		int fooY = 0;
+	
+		if(OutOfBoundsType == OutOfBoundsType::MirroredRepeat) {
+			fooX = (int)((xSrc + 0.000001) / bitmap.GetWidth()) % 2 + (xSrc < 0 ? 1 : 0);
+			fooY = (int)((ySrc + 0.000001) / bitmap.GetHeight()) % 2 + (ySrc < 0 ? 1 : 0);
+		}
+		return bitmap.GetRawPixel(fooX ? std::ceil(x) : x, fooY ? std::ceil(y) : y);
 	}
 }
 
@@ -3223,7 +3387,53 @@ void cdr::Renderer::DrawText(const std::string_view text, int x, int y, cdr::Tex
 }
 
 /* UTILILTY FUNCTIONS */
-bool cdr::Renderer::clampCoords(float& x, float& y, int width, int height) {
+bool cdr::Renderer::clampCoords(float& x, float& y, int width, int height) const {
+	// NOTE: return true if coordinates are in bound of bitmap size
+	if(isInBounds(x, y, width, height)) return true;
+
+	switch(OutOfBoundsType) {
+		case OutOfBoundsType::Repeat: {
+			x = std::fmod((width * ((int)std::abs(x) / width + 1) + x), width);
+			y = std::fmod((height * ((int)std::abs(y) / height + 1) + y), height);
+		} break;
+		case OutOfBoundsType::MirroredRepeat: {
+			const auto mod = [](const float a, const float n) noexcept
+			{
+				return std::fmod((std::fmod(a, n) + n), n);
+			};
+			const auto mirror = [](const float a) noexcept
+			{
+				return a >= 0.f ? a : -(1 + a);
+			};
+			const auto mirrored_repeat_x = [&](const float x) noexcept {
+				return (width - 1) - mirror(mod(x, 2 * width) - width);
+			};
+			const auto mirrored_repeat_y = [&](const float y) noexcept {
+				return (height - 1) - mirror(mod(y, 2 * height) - height);
+			};
+			
+			x = mirrored_repeat_x(x);
+			y = mirrored_repeat_y(y);
+			
+			// HACK: this + 0.001f will be problematic prob later! 
+		} break;
+		case OutOfBoundsType::ClampToEdge: {
+			if(this->ScaleType == ScaleType::Nearest) {
+				x = std::fmax(0, std::fmin(width-1, x));
+				y = std::fmax(0, std::fmin(height-1, y));
+			} else {
+				x = std::fmax(0, std::fmin(width, x));
+				y = std::fmax(0, std::fmin(height, y));
+			}
+		} break;
+		
+		// NOTE: basically OutOfBoundsType::ClampToBorder case
+		default:;
+	}
+	// NOTE: return false if coordinates are out of bounds of the bitmap	
+	return false;
+}
+bool cdr::Renderer::clampCoords(int& x, int& y, int width, int height) const {
 	// NOTE: return true if coordinates are in bound of bitmap size
 	if(x >= 0 && y >= 0 && x < width && y < height) return true;
 

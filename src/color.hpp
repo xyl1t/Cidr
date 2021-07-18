@@ -170,6 +170,19 @@ public:
 	}
 };
 
+inline uint8_t getR(uint32_t colorUINT) {
+	return (colorUINT >> 24) & 0xff;
+}
+inline uint8_t getG(uint32_t colorUINT) {
+	return (colorUINT >> 16) & 0xff;
+}
+inline uint8_t getB(uint32_t colorUINT) {
+	return (colorUINT >>  8) & 0xff;
+}
+inline uint8_t getA(uint32_t colorUINT) {
+	return (colorUINT >>  0) & 0xff;
+}
+
 inline uint32_t RGBtoUINT(const RGB& colorRGB) {
 	return (colorRGB.r << 24) + (colorRGB.g << 16) + (colorRGB.b << 8) + 0xff;
 }
@@ -183,12 +196,12 @@ inline uint32_t RGBtoUINT_ABGR(const RGBA& colorRGB) {
 	return (colorRGB.a << 24) + (colorRGB.b << 16) + (colorRGB.g << 8) + colorRGB.r;
 }
 inline RGBA UINTtoRGB(uint32_t colorUINT) {
-	return {
-		static_cast<uint8_t>((colorUINT >> 24) & 0xff),
-		static_cast<uint8_t>((colorUINT >> 16) & 0xff),
-		static_cast<uint8_t>((colorUINT >>  8) & 0xff),
-		static_cast<uint8_t>((colorUINT >>  0) & 0xff)
-	};
+	return RGBA(
+		(colorUINT >> 24) & 0xff,
+		(colorUINT >> 16) & 0xff,
+		(colorUINT >>  8) & 0xff,
+		(colorUINT >>  0) & 0xff
+	);
 }
 inline uint32_t UINT_RGBAtoUINT_ABGR(uint32_t colorUINT) {
 	return (((colorUINT >>  0) & 0xff) << 24) + (((colorUINT >>  8) & 0xff) << 16) + (((colorUINT >> 16) & 0xff) << 8) + ((colorUINT >> 24) & 0xff);

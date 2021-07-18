@@ -59,7 +59,7 @@ public:
 	void DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, FPoint p1, FPoint p2, FPoint p3);
 	
 	/* DRAWING FUNCTION OVERLOADS */
-	inline void DrawPixel(const RGBA& color, int x, int y) { DrawPixel(color, Point(x, y)); }
+	inline void DrawPixel(const RGBA& color, int x, int y);
 	inline void DrawLine(const RGBA& color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(color, Point{x1, y1}, Point{x2, y2}, AA, GC); }
 	inline void DrawRectangle(const RGBA& color, int x, int y, int width, int height) { DrawRectangle(color, Rectangle{x, y, width, height}); }
 	inline void FillRectangle(const RGBA& color, int x, int y, int width, int height) { FillRectangle(color, Rectangle{x,y, width, height}); }
@@ -85,7 +85,7 @@ public:
 	inline void FillTriangle(uint32_t color1, uint32_t color2, uint32_t color3, Point p1, Point p2, Point p3) { FillTriangle(RGBA{color1}, RGBA{color2}, RGBA{color3}, p1, p2, p3); }
 	inline void DrawBitmap(const Bitmap& bitmap, FRectangle destRect, FRectangle srcRect) { DrawBitmap(bitmap, destRect.x, destRect.y, destRect.width, destRect.height, srcRect.x, srcRect.y, srcRect.width, srcRect.height); }
 	
-	inline void DrawPixel(uint32_t color, int x, int y) { DrawPixel(RGBA{color}, Point{x, y}); }
+	inline void DrawPixel(uint32_t color, int x, int y);
 	inline void DrawLine(uint32_t color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(RGBA{color}, Point{x1, y1}, Point{x2, y2}, AA, GC); }
 	inline void DrawRectangle(uint32_t color, int x, int y, int width, int height) { DrawRectangle(RGBA{color}, Rectangle{x, y, width, height}); }
 	inline void FillRectangle(uint32_t color, int x, int y, int width, int height) { FillRectangle(RGBA{color}, Rectangle{x, y, width, height}); }
@@ -129,14 +129,19 @@ private:
 	inline int getIndex(int x, int y) const {
 		return x + y * width;
 	}
-	inline float edgeFunc (const FPoint& a, const FPoint& b, const FPoint& c) {
-		return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
-	};
 	void drawScanLine(uint32_t color, int startX, int endX, int y);
 	void drawScanLine(const RGBA& color1, const RGBA& color2, int startX, int endX, int y);
-	bool clampCoords(float& x, float& y, int width, int height);
-	void constructFontBitmap(Font f);
-	RGBA sampleTexture(const cdr::Bitmap& b, float x, float y);
+	bool clampCoords(float& x, float& y, int width, int height) const;
+	RGBA sampleTexture(const cdr::Bitmap& b, float x, float y) const;
+	uint32_t sampleTextureRaw(const cdr::Bitmap& b, float x, float y) const;
+	bool clampCoords(int& x, int& y, int width, int height) const;
+};
+
+inline bool isInBounds(float x, float y, int w, int h) {
+	return (x >= 0 && y >= 0 && x < w && y < h);
+}
+inline float edgeFunc (const FPoint& a, const FPoint& b, const FPoint& c) {
+	return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
 };
 
 inline RGB alphaBlendColor(const cdr::RGB& color1, const cdr::RGB& color2, float alpha) {
