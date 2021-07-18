@@ -480,7 +480,7 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 		for (int x = startX; x < endX; x++) {
 			// NOTE: doing this, instead of just DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y), in order to achieve *performance*
 			if (this->ScaleType == ScaleType::Nearest) {
-				if((float)xLerp >= 0 && (float)yLerp >= 0 && (float)xLerp < texture.GetWidth() && (float)yLerp < texture.GetHeight())  {
+				if((texture.GetRawPixel((float)xLerp, (float)yLerp)& 0xff) != 0 && (float)xLerp >= 0 && (float)yLerp >= 0 && (float)xLerp < texture.GetWidth() && (float)yLerp < texture.GetHeight()) {
 					pixels[getIndex(x, y)] = texture.GetRawPixel((float)xLerp, (float)yLerp);
 				} else {
 					DrawPixel(sampleTextureRaw(texture, (float)xLerp, (float)yLerp), x, y);
@@ -530,7 +530,7 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 		for (int x = startX; x < endX; x++) {
 			// NOTE: doing this, instead of just DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y), in order to achieve *performance*
 			if (this->ScaleType == ScaleType::Nearest) {
-				if((float)xLerp >= 0 && (float)yLerp >= 0 && (float)xLerp < texture.GetWidth() && (float)yLerp < texture.GetHeight())  {
+				if((texture.GetRawPixel((float)xLerp, (float)yLerp)& 0xff) != 0 && (float)xLerp >= 0 && (float)yLerp >= 0 && (float)xLerp < texture.GetWidth() && (float)yLerp < texture.GetHeight()) {
 					pixels[getIndex(x, y)] = texture.GetRawPixel((float)xLerp, (float)yLerp);
 				} else {
 					DrawPixel(sampleTextureRaw(texture, (float)xLerp, (float)yLerp), x, y);
