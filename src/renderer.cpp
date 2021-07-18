@@ -968,7 +968,7 @@ void cdr::Renderer::DrawBitmap(const Bitmap& bitmap, float destX, float destY, i
 				
 				DrawPixel(sampleTexture(bitmap, iSrc, jSrc), iDest, jDest);
 				
-#ifdef 0
+#if 0
 				int fooX = 0;
 				int fooY = 0;
 				
