@@ -22,6 +22,7 @@ public:
 	
 	vec2();
 	vec2(float x, float y);
+	vec2(const vec2&) = default;
 	
 	inline float length() const {
 		return sqrt((x * x) + (y * y));
@@ -55,6 +56,7 @@ public:
 	
 	vec3();
 	vec3(float x, float y, float z);
+	vec3(const vec3&) = default;
 
 	inline float length() const {
 		return sqrt((x * x) + (y * y) + (z * z));
@@ -95,6 +97,7 @@ public:
 
 	vec4();
 	vec4(float x, float y, float z, float w = 1.0f);
+	vec4(const vec4&) = default;
 
 	inline float length() const {
 		return sqrt((x * x) + (y * y) + (z * z));
@@ -142,6 +145,8 @@ public:
 	ivec2();
 	ivec2(int x, int y);
 	
+	ivec2(const ivec2&) = default;
+	
 	inline float length() const {
 		return sqrt((x * x) + (y * y));
 	}
@@ -170,6 +175,7 @@ public:
 	
 	ivec3();
 	ivec3(int x, int y, int z);
+	ivec3(const ivec3&) = default;
 	
 	inline float length() const {
 		return sqrt((x * x) + (y * y) + (z * z));
@@ -201,6 +207,7 @@ public:
 
 	ivec4();
 	ivec4(int x, int y, int z, int w);
+	ivec4(const ivec4&) = default;
 	
 	inline int length() const {
 		return sqrt((x * x) + (y * y) + (z * z) + (w * w));

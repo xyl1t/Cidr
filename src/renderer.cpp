@@ -1172,7 +1172,7 @@ void cdr::Renderer::DrawText(const std::string_view text, int x, int y, cdr::Tex
 	
 	int newLineCount{};
 	int caretCol{};
-	for (int letterCount = 0; letterCount < text.size(); letterCount++) {
+	for (int letterCount = 0; (unsigned)letterCount < text.size(); letterCount++) {
 		const unsigned char& letter = text[letterCount];
 		if(letter < 0 || letter > 255) continue;
 		

@@ -202,7 +202,7 @@ int main(int argc, char** argv) {
 				static_cast<uint8_t>(y - 3), 
 				static_cast<uint8_t>(255 - (x - 3))};
 		};
-		cidrRend.FillRectangle(lambda, (cdr::Rectangle){3, 3, 256, 256});
+		cidrRend.FillRectangle(lambda, cdr::Rectangle{3, 3, 256, 256});
 		
 		
 		/* DRAWING THREE TYPES OF LINES */

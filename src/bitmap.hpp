@@ -53,7 +53,7 @@ public:
 };
 
 class RGBABitmap : public BaseBitmap {
-	int components{4};
+	static constexpr int components{4};
 	
 public:
 	RGBABitmap(int width, int height);
@@ -76,6 +76,8 @@ public:
 };
 
 class RGBBitmap : public BaseBitmap {
+	static constexpr int components{3};
+	
 public:
 	RGBBitmap(int width, int height);
 	RGBBitmap(uint32_t* source, int sourceWidth, int sourceHeight);

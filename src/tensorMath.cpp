@@ -561,7 +561,7 @@ tem::mat2x2 tem::mat2x2::operator*(const float other) {
 	tem::mat2x2 temp = tem::mat2x2(*this);
 	
 	for(int i = 0; i < 4; i++) {
-		temp.mat[i] *= 2;
+		temp.mat[i] *= other;
 	}
 	
 	return temp;
@@ -570,7 +570,7 @@ tem::mat2x2 tem::mat2x2::operator/(const float other) {
 	tem::mat2x2 temp = tem::mat2x2(*this);
 	
 	for(int i = 0; i < 4; i++) {
-		temp.mat[i] /= 2;
+		temp.mat[i] /= other;
 	}
 	
 	return temp;
