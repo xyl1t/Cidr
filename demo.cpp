@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
 	memset(pixels, 0, CANVAS_WIDTH * CANVAS_HEIGHT * sizeof(uint32_t));
 	
 	cdr::Renderer cidrRend {pixels, CANVAS_WIDTH, CANVAS_HEIGHT};
+	cidrRend.EnableAlphaBlending();
 	
 	SDL_Event event;
 	bool alive = true;

@@ -47,16 +47,22 @@ void cdr::Renderer::Clear(uint32_t color) {
 }
 
 void cdr::Renderer::DrawPixel(const cdr::RGBA& color, const Point& p) {
-	if(color.a != 0)
+	if(!useAlphaBlending && color.a != 0)
 		pixels[getIndex(p.x, p.y)] = RGBtoUINT(color);
+	else
+		pixels[getIndex(p.x, p.y)] = RGBtoUINT(alphaBlendColor(pixels[getIndex(p.x, p.y)], RGBtoUINT(color)));
 }
 void cdr::Renderer::DrawPixel(const cdr::RGBA& color, int x, int y) {
-	if(color.a != 0)
+	if(!useAlphaBlending && color.a != 0)
 		pixels[getIndex(x, y)] = RGBtoUINT(color);
+	else
+		pixels[getIndex(x, y)] = RGBtoUINT(alphaBlendColor(pixels[getIndex(x, y)], RGBtoUINT(color)));
 }
 void cdr::Renderer::DrawPixel(uint32_t color, int x, int y) {
-	if ((color & 0xff) != 0)
+	if (!useAlphaBlending && (color & 0xff) != 0)
 		pixels[getIndex(x, y)] = color;
+	else
+		pixels[getIndex(x, y)] = RGBtoUINT(alphaBlendColor(pixels[getIndex(x, y)], color));
 }
 
 // TODO: Add clipping
@@ -480,7 +486,7 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 		for (int x = startX; x < endX; x++) {
 			// NOTE: doing this, instead of just DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y), in order to achieve *performance*
 			if (this->ScaleType == ScaleType::Nearest) {
-				if((texture.GetRawPixel((float)xLerp, (float)yLerp)& 0xff) != 0 && (float)xLerp >= 0 && (float)yLerp >= 0 && (float)xLerp < texture.GetWidth() && (float)yLerp < texture.GetHeight()) {
+				if (!useAlphaBlending && (texture.GetRawPixel((float)xLerp, (float)yLerp)& 0xff) != 0 && (float)xLerp >= 0 && (float)yLerp >= 0 && (float)xLerp < texture.GetWidth() && (float)yLerp < texture.GetHeight()) {
 					pixels[getIndex(x, y)] = texture.GetRawPixel((float)xLerp, (float)yLerp);
 				} else {
 					DrawPixel(sampleTextureRaw(texture, (float)xLerp, (float)yLerp), x, y);
@@ -530,7 +536,7 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 		for (int x = startX; x < endX; x++) {
 			// NOTE: doing this, instead of just DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y), in order to achieve *performance*
 			if (this->ScaleType == ScaleType::Nearest) {
-				if((texture.GetRawPixel((float)xLerp, (float)yLerp)& 0xff) != 0 && (float)xLerp >= 0 && (float)yLerp >= 0 && (float)xLerp < texture.GetWidth() && (float)yLerp < texture.GetHeight()) {
+				if (!useAlphaBlending && (texture.GetRawPixel((float)xLerp, (float)yLerp)& 0xff) != 0 && (float)xLerp >= 0 && (float)yLerp >= 0 && (float)xLerp < texture.GetWidth() && (float)yLerp < texture.GetHeight()) {
 					pixels[getIndex(x, y)] = texture.GetRawPixel((float)xLerp, (float)yLerp);
 				} else {
 					DrawPixel(sampleTextureRaw(texture, (float)xLerp, (float)yLerp), x, y);
@@ -1092,7 +1098,8 @@ cdr::RGBA cdr::Renderer::sampleTexture(const cdr::Bitmap& bitmap, float xSrc, fl
 		return RGBA(
 			(getR(colorTL) * (1 - iSrcFraction) + getR(colorTR) * iSrcFraction) * (1 - jSrcFraction) + (getR(colorBL) * (1 - iSrcFraction) + getR(colorBR) * iSrcFraction) * jSrcFraction, 
 			(getG(colorTL) * (1 - iSrcFraction) + getG(colorTR) * iSrcFraction) * (1 - jSrcFraction) + (getG(colorBL) * (1 - iSrcFraction) + getG(colorBR) * iSrcFraction) * jSrcFraction, 
-			(getB(colorTL) * (1 - iSrcFraction) + getB(colorTR) * iSrcFraction) * (1 - jSrcFraction) + (getB(colorBL) * (1 - iSrcFraction) + getB(colorBR) * iSrcFraction) * jSrcFraction
+			(getB(colorTL) * (1 - iSrcFraction) + getB(colorTR) * iSrcFraction) * (1 - jSrcFraction) + (getB(colorBL) * (1 - iSrcFraction) + getB(colorBR) * iSrcFraction) * jSrcFraction,
+			(getA(colorTL) * (1 - iSrcFraction) + getA(colorTR) * iSrcFraction) * (1 - jSrcFraction) + (getA(colorBL) * (1 - iSrcFraction) + getA(colorBR) * iSrcFraction) * jSrcFraction
 		);
 		
 		

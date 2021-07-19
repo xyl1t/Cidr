@@ -114,12 +114,17 @@ public:
 		return cdr::RGBA{pixels[getIndex(x, y)]};
 	}
 	
+	/* Toggles */
+	inline void EnableAlphaBlending() { useAlphaBlending = true; }
+	inline void DisableAlphaBlending() { useAlphaBlending = true; }
+	
 private:
 	uint32_t* pixels {nullptr};
 	int width {0};
 	int height {0};
 	int globalX;
 	int globalY;
+	bool useAlphaBlending;
 	
 private:
 	/* UTILITY FUNCTIONS */
@@ -151,6 +156,13 @@ inline RGB alphaBlendColor(const cdr::RGB& color1, const cdr::RGB& color2, float
 		static_cast<uint8_t>(color2.b * (alpha / 255.f) + color1.b * (1 - alpha / 255.f))
 	};
 }
+inline RGB alphaBlendColor(uint32_t color1, uint32_t color2, float alpha) {
+	return cdr::RGB { 
+		static_cast<uint8_t>(getR(color2) * (alpha / 255.f) + getR(color1) * (1 - alpha / 255.f)),
+		static_cast<uint8_t>(getG(color2) * (alpha / 255.f) + getG(color1) * (1 - alpha / 255.f)),
+		static_cast<uint8_t>(getB(color2) * (alpha / 255.f) + getB(color1) * (1 - alpha / 255.f))
+	};
+}
 inline RGB alphaBlendColorGammaCorrected(const cdr::RGB& color1, const cdr::RGB& color2, float alpha, float gamma = 2.2) {
 	return cdr::RGB { 
 		static_cast<uint8_t>(std::pow(std::pow(color2.r, gamma) * (alpha / 255.f) + std::pow(color1.r, gamma) * (1 - alpha / 255.f), 1.f / gamma)),
@@ -158,12 +170,28 @@ inline RGB alphaBlendColorGammaCorrected(const cdr::RGB& color1, const cdr::RGB&
 		static_cast<uint8_t>(std::pow(std::pow(color2.b, gamma) * (alpha / 255.f) + std::pow(color1.b, gamma) * (1 - alpha / 255.f), 1.f / gamma))
 	};
 }
-inline RGBA alphaBlendColor(const cdr::RGBA& color1, const cdr::RGBA& color2){
-	 // uses color2's alpha value
+inline RGB alphaBlendColorGammaCorrected(uint32_t color1, uint32_t color2, float alpha, float gamma = 2.2) {
+	return cdr::RGB { 
+		static_cast<uint8_t>(std::pow(std::pow(getR(color2), gamma) * (alpha / 255.f) + std::pow(getR(color1), gamma) * (1 - alpha / 255.f), 1.f / gamma)),
+		static_cast<uint8_t>(std::pow(std::pow(getG(color2), gamma) * (alpha / 255.f) + std::pow(getG(color1), gamma) * (1 - alpha / 255.f), 1.f / gamma)),
+		static_cast<uint8_t>(std::pow(std::pow(getB(color2), gamma) * (alpha / 255.f) + std::pow(getB(color1), gamma) * (1 - alpha / 255.f), 1.f / gamma))
+	};
+}
+// uses color2's alpha value
+inline RGBA alphaBlendColor(const cdr::RGBA& color1, const cdr::RGBA& color2) {
 	return cdr::RGBA {
 		static_cast<uint8_t>(color2.r * (color2.a / 255.f) + color1.r * (1 - color2.a / 255.f)),
 		static_cast<uint8_t>(color2.g * (color2.a / 255.f) + color1.g * (1 - color2.a / 255.f)),
 		static_cast<uint8_t>(color2.b * (color2.a / 255.f) + color1.b * (1 - color2.a / 255.f)),
+		0xff
+	};
+}
+// uses color2's alpha value
+inline RGBA alphaBlendColor(uint32_t color1, uint32_t color2) {
+	return cdr::RGBA {
+		static_cast<uint8_t>(getR(color2) * (getA(color2) / 255.f) + getR(color1) * (1 - getA(color2) / 255.f)),
+		static_cast<uint8_t>(getG(color2) * (getA(color2) / 255.f) + getG(color1) * (1 - getA(color2) / 255.f)),
+		static_cast<uint8_t>(getB(color2) * (getA(color2) / 255.f) + getB(color1) * (1 - getA(color2) / 255.f)),
 		0xff
 	};
 }
