@@ -209,8 +209,16 @@ void cdr::Renderer::FillRectangle(const RGBA& color, Rectangle rectangle) {
 	}
 	int clampedWidth {std::min(this->width - clampedLocation.x, rectangle.width)};
 	int clampedHeight {std::min(this->height - clampedLocation.y, rectangle.height)};
-	for(int i = 0; i < clampedHeight; i++) {
-		std::fill_n(pixels + getIndex(clampedLocation.x, clampedLocation.y + i), clampedWidth, RGBtoUINT(color));
+	if (!useAlphaBlending) {
+		for(int i = 0; i < clampedHeight; i++) {
+			std::fill_n(pixels + getIndex(clampedLocation.x, clampedLocation.y + i), clampedWidth, RGBtoUINT(color));
+		}
+	} else {
+		for (int x = clampedLocation.x; x < clampedLocation.x + clampedWidth; x++) {
+			for (int y = clampedLocation.y; y < clampedLocation.y + clampedHeight; y++) {
+				pixels[getIndex(x, y)] = RGBtoUINT(alphaBlendColor(pixels[getIndex(x, y)], RGBtoUINT(color)));
+			}
+		}
 	}
 }
 void cdr::Renderer::FillRectangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Rectangle rectangle) {
