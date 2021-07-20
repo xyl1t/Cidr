@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
 		}
 	}
 	
-	savingBitmapRenderer.DrawText("Cidr", 132, 128, cdr::TextAlignment::CC, cdr::Fonts::Raster8x16, 4, cdr::RGB::White, cdr::RGBA::Transparent, cdr::RGB::Black);
+	savingBitmapRenderer.DrawText("Cidr", 132, 128, {cdr::Fonts::Raster8x16, cdr::TextAlignment::CC, 4, cdr::RGB::White, cdr::RGBA::Transparent, cdr::RGB::Black});
 	
 	savingBitmap.SaveAs("savingBitmap.png", cdr::Bitmap::Formats::PNG);
 	
@@ -310,18 +310,18 @@ int main(int argc, char** argv) {
 		
 		
 		/* TEXT */
+		cidrRend.SetTextFont(cdr::Fonts::Raster8x16);
 		if(showText) {
-			cidrRend.DrawText("textured triangles", pInBetween.x - (8 * 18 / 2), pInBetween.y - 32, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGB::White, cdr::RGBA::Transparent, cdr::RGB::Black, 1, 1);
-			cidrRend.DrawText("shaded rectangle", 64, 16, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("balls", 365, 16, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("triangles", 350, 110, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("lines", 365, 220, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("combinations", 80, 270, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
-			cidrRend.DrawText("images", 335, 270, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
+			cidrRend.DrawText("textured triangles", pInBetween.x - (8 * 18 / 2), pInBetween.y - 32);
+			cidrRend.DrawText("shaded rectangle", 64, 16);
+			cidrRend.DrawText("balls", 365, 16);
+			cidrRend.DrawText("triangles", 350, 110);
+			cidrRend.DrawText("lines", 365, 220);
+			cidrRend.DrawText("combinations", 80, 270);
+			cidrRend.DrawText("images", 335, 270);
 			if(currentShader != nullptr) {
 				std::string shaderText = "shader";
-				if ((mx - shaderRectSize / 2.f - (shaderText.length() * cdr::Fonts::Raster8x16.GetFontWidth()) / 2) >= 0 && my-shaderRectSize-cdr::Fonts::Raster8x16.GetFontHeight() >= 0)
-					cidrRend.DrawText(shaderText, mx-shaderRectSize - (cdr::Fonts::Raster8x16.GetFontWidth() * shaderText.length()) / 2 + shaderRectSize/2, my-shaderRectSize-cdr::Fonts::Raster8x16.GetFontHeight(), cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1, cdr::RGBA::White, cdr::RGBA::Transparent, cdr::RGBA::Black, 1, 1);
+				cidrRend.DrawText(shaderText, mx-shaderRectSize - (cdr::Fonts::Raster8x16.GetFontWidth() * shaderText.length()) / 2 + shaderRectSize/2, my-shaderRectSize-cdr::Fonts::Raster8x16.GetFontHeight());
 			}
 		}
 		
@@ -335,16 +335,16 @@ int main(int argc, char** argv) {
 		
 		int wordCount = 0;
 		for(const std::string& word : {	"Lorem", "ipsum", "dolor", "sit", "amet,", "consectetur", "adipiscing", "elit,"	}) {
-			cidrRend.DrawText(word, 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420, cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1,
-				getRandomColor(128, 255), getRandomColor(0, 64), cdr::RGBA::Black, 1, 1);
+			cidrRend.DrawText(word, 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420, 
+				{cdr::Fonts::Raster8x16, cdr::TextAlignment::TL, 1, getRandomColor(128, 255), getRandomColor(0, 64), cdr::RGBA::Black, 1, 1});
 			wordCount += word.length();
 			cidrRend.DrawText(" ", 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420);
 			wordCount++;
 		}
 		wordCount = 0;
 		for(const std::string& word : { "sed", "do", "eiusmod", "tempor", "incididunt", "labore", "et", "dolore", "aliqua." }) {
-			cidrRend.DrawText(word, 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420 + cdr::Fonts::Raster8x16.GetFontHeight(), cdr::TextAlignment::TL, cdr::Fonts::Raster8x16, 1,
-				getRandomColor(128, 255), getRandomColor(0, 64), cdr::RGBA::Black, 1, 1);
+			cidrRend.DrawText(word, 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420 + cdr::Fonts::Raster8x16.GetFontHeight(), 
+				{cdr::Fonts::Raster8x16, cdr::TextAlignment::TL, 1, getRandomColor(128, 255), getRandomColor(0, 64), cdr::RGBA::Black, 1, 1});
 			wordCount += word.length();
 			cidrRend.DrawText(" ", 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420 + cdr::Fonts::Raster8x16.GetFontHeight());
 			wordCount++;
