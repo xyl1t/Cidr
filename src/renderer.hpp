@@ -121,6 +121,7 @@ public:
 	}
 	
 	/* SETTERS */
+	inline void SetTextStyle(const TextStyle& ts) { textStyle = ts; }
 	inline void ResetTextStyle() { textStyle = DefaultTextStyle; }
 	inline void SetTextFont(const Font& font) { textStyle.font = &font; }
 	inline void SetTextAlignment(TextAlignment ta) { textStyle.ta = ta; }
