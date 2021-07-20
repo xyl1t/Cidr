@@ -115,6 +115,10 @@ public:
 		if(x < 0 || y < 0 || x >= GetWidth() || y >= GetHeight()) return cdr::RGBA{};
 		return cdr::RGBA{pixels[getIndex(x, y)]};
 	}
+	inline uint32_t GetPixelRaw(int x, int y) const {
+		if(x < 0 || y < 0 || x >= GetWidth() || y >= GetHeight()) return -1; // NOTE: returning -1 on unsinged return type so value will be 0xffffff
+		return pixels[getIndex(x, y)];
+	}
 	
 	/* SETTERS */
 	inline void ResetTextStyle() { textStyle = DefaultTextStyle; }
@@ -195,18 +199,18 @@ inline RGB alphaBlendColorGammaCorrected(uint32_t color1, uint32_t color2, float
 // uses color2's alpha value
 inline RGBA alphaBlendColor(const cdr::RGBA& color1, const cdr::RGBA& color2) {
 	return cdr::RGBA {
-		static_cast<uint8_t>(color2.r * (color2.a / 255.f) + color1.r * (1 - color2.a / 255.f)),
-		static_cast<uint8_t>(color2.g * (color2.a / 255.f) + color1.g * (1 - color2.a / 255.f)),
-		static_cast<uint8_t>(color2.b * (color2.a / 255.f) + color1.b * (1 - color2.a / 255.f)),
+		static_cast<uint8_t>(color2.r * (color2.a / 255.f) + color1.r * (color1.a / 255.f) * (1 - color2.a / 255.f)),
+		static_cast<uint8_t>(color2.g * (color2.a / 255.f) + color1.g * (color1.a / 255.f) * (1 - color2.a / 255.f)),
+		static_cast<uint8_t>(color2.b * (color2.a / 255.f) + color1.b * (color1.a / 255.f) * (1 - color2.a / 255.f)),
 		0xff
 	};
 }
 // uses color2's alpha value
 inline RGBA alphaBlendColor(uint32_t color1, uint32_t color2) {
 	return cdr::RGBA {
-		static_cast<uint8_t>(getR(color2) * (getA(color2) / 255.f) + getR(color1) * (1 - getA(color2) / 255.f)),
-		static_cast<uint8_t>(getG(color2) * (getA(color2) / 255.f) + getG(color1) * (1 - getA(color2) / 255.f)),
-		static_cast<uint8_t>(getB(color2) * (getA(color2) / 255.f) + getB(color1) * (1 - getA(color2) / 255.f)),
+		static_cast<uint8_t>(getR(color2) * (getA(color2) / 255.f) + getR(color1) * (getA(color1) / 255.f) * (1 - getA(color2) / 255.f)),
+		static_cast<uint8_t>(getG(color2) * (getA(color2) / 255.f) + getG(color1) * (getA(color1) / 255.f) * (1 - getA(color2) / 255.f)),
+		static_cast<uint8_t>(getB(color2) * (getA(color2) / 255.f) + getB(color1) * (getA(color1) / 255.f) * (1 - getA(color2) / 255.f)),
 		0xff
 	};
 }
