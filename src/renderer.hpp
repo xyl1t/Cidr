@@ -54,8 +54,8 @@ public:
 	void FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3);
 	void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3);
 	void DrawBitmap(const Bitmap& bitmap, float destX, float destY, int destWidth, int destHeight, float srcX, float srcY, int srcWidth, int srcHeight);
-	void DrawText(const std::string_view text, int x = -1, int y = -1, TextAlignment ta = TextAlignment::TL, const Font& f = cdr::Fonts::Raster8x12, float size = 1, const RGBA& fColor = RGB::White, const RGBA& bColor = RGBA::Transparent, const RGBA& shadowColor = RGBA::Transparent, int shadowOffsetX = 1, int shadowOffsetY = 1);
-
+	void DrawText(const std::string_view text, const TextStyle& ts);
+	void DrawText(const std::string_view text, int x, int y, const TextStyle& ts);
 	void DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, FPoint p1, FPoint p2, FPoint p3);
 	
 	/* DRAWING FUNCTION OVERLOADS */
@@ -73,6 +73,8 @@ public:
 	inline void FillTriangle(RGBA color1, RGBA color2, RGBA color3, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(color1, color2, color3, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}); }
 	inline void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(shader, Point{x1, y1}, Point{x2, y2}, Point{x3, y3} ); }
 	inline void DrawBitmap(const Bitmap& bitmap, FPoint destLocation, int destWidth, int destHeight, FPoint srcLocation, int srcWidth, int srcHeight) { DrawBitmap(bitmap, destLocation.x, destLocation.y, destWidth, destHeight, srcLocation.x, srcLocation.y, srcWidth, srcHeight); }
+	inline void DrawText(const std::string_view text) { DrawText(text, textStyle); };
+	inline void DrawText(const std::string_view text, int x, int y) { DrawText(text, x, y, textStyle); };
 	
 	inline void DrawPixel(uint32_t color, const Point& p) { DrawPixel(RGBA{color}, p); }
 	inline void DrawLine(uint32_t color, const Point& start, const Point& end, bool AA = false, bool GC = false) { DrawLine(RGBA{color}, start, end, AA, GC); }
@@ -114,6 +116,17 @@ public:
 		return cdr::RGBA{pixels[getIndex(x, y)]};
 	}
 	
+	/* SETTERS */
+	inline void ResetTextStyle() { textStyle = DefaultTextStyle; }
+	inline void SetTextFont(const Font& font) { textStyle.font = &font; }
+	inline void SetTextAlignment(TextAlignment ta) { textStyle.ta = ta; }
+	inline void SetTextSize(float size) { textStyle.size = size; }
+	inline void SetTextForeColor(const RGBA& color) { textStyle.fColor = color; }
+	inline void SetTextBackColor(const RGBA& color) { textStyle.bColor = color; }
+	inline void SetTextShadowColor(const RGBA& color) { textStyle.shadowColor = color; }
+	inline void SetTextShadowOffsetX(int offset) { textStyle.shadowOffsetX = offset; }
+	inline void SetTextShadowOffsetY(int offset) { textStyle.shadowOffsetY = offset; }
+	
 	/* Toggles */
 	inline void EnableAlphaBlending() { useAlphaBlending = true; }
 	inline void DisableAlphaBlending() { useAlphaBlending = true; }
@@ -122,9 +135,11 @@ private:
 	uint32_t* pixels {nullptr};
 	int width {0};
 	int height {0};
+	bool useAlphaBlending;
+	// NOTE: text rendering related member variables
 	int globalX;
 	int globalY;
-	bool useAlphaBlending;
+	TextStyle textStyle {DefaultTextStyle};
 	
 private:
 	/* UTILITY FUNCTIONS */

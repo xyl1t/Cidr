@@ -716,7 +716,7 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 	accumulation += t.elapsedSeconds()*1000;
 	
 	if (counter > 128) {
-		std::cout << "speed: " << accumulation/counter << std::endl;
+		// std::cout << "speed: " << accumulation/counter << std::endl;
 		counter = 0;
 		accumulation = 0;
 	}
@@ -1148,16 +1148,33 @@ uint32_t cdr::Renderer::sampleTextureRaw(const cdr::Bitmap& bitmap, float xSrc, 
 	}
 }
 
-void cdr::Renderer::DrawText(const std::string_view text, int x, int y, cdr::TextAlignment ta, const Font& font, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY) {
-	int startX = 0;
-	if (x < 0 || y < 0) {
-		startX = globalX;
+void cdr::Renderer::DrawText(const std::string_view text, const TextStyle& ts) {
+	DrawText(text, globalX * ts.font->GetFontWidth(), globalY * ts.font->GetFontHeight(), ts);
+	int caretCol{};
+	for (int letterCount = 0; (unsigned)letterCount < text.size(); letterCount++) {
+		const unsigned char& letter = text[letterCount];
+		if(letter < 0 || letter > 255) continue;
+		
+		if (letter == '\n') {
+			caretCol = 0;
+			globalY++;
+			globalX = 0;
+		} else	if (letter == '\t') {
+			// NOTE: the 4 is the tab size
+			// TODO: extract the 4 to be tab size?
+			caretCol += 4 - (caretCol) % 4;
+			globalX += 4 - (globalX) % 4;
+		} else {
+			caretCol++;
+			globalX++;
+		}
 	}
-	
-	int fontSizeWidth = font.GetFontWidth();
-	int fontSizeHeight = font.GetFontHeight();
-	int charsRows = font.GetFontSheetWidth() / fontSizeWidth;
-	int charsCols = font.GetFontSheetHeight() / fontSizeHeight;
+}
+void cdr::Renderer::DrawText(const std::string_view text, int x, int y, const TextStyle& ts) {
+	int fontSizeWidth = ts.font->GetFontWidth();
+	int fontSizeHeight = ts.font->GetFontHeight();
+	int charsRows = ts.font->GetFontSheetWidth() / fontSizeWidth;
+	int charsCols = ts.font->GetFontSheetHeight() / fontSizeHeight;
 		
 	int textBoundingBoxWidth{};
 	int textBoundingBoxHeight{1};
@@ -1188,60 +1205,38 @@ void cdr::Renderer::DrawText(const std::string_view text, int x, int y, cdr::Tex
 		if (letter == '\n') {
 			newLineCount++;
 			caretCol = 0;
-			if(x == -1 || y == -1) {
-				globalY++;
-				globalX = 0;
-			}
 		} else	if (letter == '\t') {
 			// NOTE: the 4 is the tab size
 			caretCol += 4 - (caretCol) % 4;
-			if(x == -1 || y == -1) {
-				globalX += 4 - (globalX) % 4;
-			}
 		} else {
 			caretCol++;
-			if(x == -1 || y == -1) {
-				globalX++;
-			}
-			for (int i = 0; i < fontSizeWidth * size; i++) {
-				for (int j = 0; j < fontSizeHeight * size; j++) {
-					const RGB& letterPixel = font.GetPixel(letterX * fontSizeWidth + i / size, letterY * fontSizeHeight + j / size);
+			for (int i = 0; i < fontSizeWidth * ts.size; i++) {
+				for (int j = 0; j < fontSizeHeight * ts.size; j++) {
+					const RGB& letterPixel = ts.font->GetPixel(letterX * fontSizeWidth + i / ts.size, letterY * fontSizeHeight + j / ts.size);
 					
 					int subX{};
 					int subY{};
 					
-					if(x >= 0 && y >= 0) {
-						subX = x + (caretCol-1) * size * (fontSizeWidth) + i;
-						subY = y + newLineCount * fontSizeHeight + j;
-					} else {
-						subX = startX * fontSizeWidth + (caretCol-1) * size * (fontSizeWidth) + i;
-						if(subX >= GetWidth()) {
-							globalY++;
-							globalX = 0;
-							startX = 0;
-							caretCol = 1;
-							subX = startX * fontSizeWidth + (caretCol-1) * (fontSizeWidth) + i;
-						}
-						subY = j + globalY*size * fontSizeHeight;
-					}
+					subX = x + (caretCol-1) * ts.size * (fontSizeWidth) + i;
+					subY = y + newLineCount * fontSizeHeight + j;
 					
 					if (x >= 0 && y >= 0) {
-						int fw = font.GetFontWidth();
-						int fh = font.GetFontHeight();
-						switch (ta) {
+						int fw = ts.font->GetFontWidth();
+						int fh = ts.font->GetFontHeight();
+						switch (ts.ta) {
 							case TextAlignment::TL: break; // NOTE: this is Default
-							case TextAlignment::TC: subX -= fw * textBoundingBoxWidth/2.f*size; break;
-							case TextAlignment::TR: subX -= fw * textBoundingBoxWidth*size; break;
-							case TextAlignment::CL: subY -= fh * textBoundingBoxHeight/2.f*size; break;
-							case TextAlignment::CC: subX -= fw * textBoundingBoxWidth/2.f*size; 
-													subY -= fh * textBoundingBoxHeight/2.f*size; break;
-							case TextAlignment::CR: subX -= fw * textBoundingBoxWidth*size; 
-													subY -= fh * textBoundingBoxHeight/2.f*size;break;
-							case TextAlignment::BL: subY -= fh * textBoundingBoxHeight*size; break;
-							case TextAlignment::BC: subX -= fw * textBoundingBoxWidth/2.f*size; 
-													subY -= fh * textBoundingBoxHeight*size; break;
-							case TextAlignment::BR: subX -= fw * textBoundingBoxWidth*size; 
-													subY -= fh * textBoundingBoxHeight*size; break;
+							case TextAlignment::TC: subX -= fw * textBoundingBoxWidth/2.f*ts.size; break;
+							case TextAlignment::TR: subX -= fw * textBoundingBoxWidth*ts.size; break;
+							case TextAlignment::CL: subY -= fh * textBoundingBoxHeight/2.f*ts.size; break;
+							case TextAlignment::CC: subX -= fw * textBoundingBoxWidth/2.f*ts.size; 
+													subY -= fh * textBoundingBoxHeight/2.f*ts.size; break;
+							case TextAlignment::CR: subX -= fw * textBoundingBoxWidth*ts.size; 
+													subY -= fh * textBoundingBoxHeight/2.f*ts.size;break;
+							case TextAlignment::BL: subY -= fh * textBoundingBoxHeight*ts.size; break;
+							case TextAlignment::BC: subX -= fw * textBoundingBoxWidth/2.f*ts.size; 
+													subY -= fh * textBoundingBoxHeight*ts.size; break;
+							case TextAlignment::BR: subX -= fw * textBoundingBoxWidth*ts.size; 
+													subY -= fh * textBoundingBoxHeight*ts.size; break;
 						}
 					}
 					
@@ -1249,12 +1244,12 @@ void cdr::Renderer::DrawText(const std::string_view text, int x, int y, cdr::Tex
 					subX < 0 || subY < 0)
 					continue;
 					
-					if(letterPixel == RGB::Black && bColor != RGBA::Transparent && GetPixel(subX, subY) != shadowColor) {
-						DrawPixel(bColor, subX, subY);
+					if(letterPixel == RGB::Black && ts.bColor != RGBA::Transparent && GetPixel(subX, subY) != ts.shadowColor) {
+						DrawPixel(ts.bColor, subX, subY);
 					} else if(letterPixel == RGB::White){
-						DrawPixel(fColor, subX, subY);
-						if(font.GetPixel(letterX * fontSizeWidth + i/size + shadowOffsetX, letterY * fontSizeHeight + j/size + shadowOffsetY) == RGB::Black) {
-							DrawPixel(shadowColor, subX + shadowOffsetX*size, subY + shadowOffsetY*size);
+						DrawPixel(ts.fColor, subX, subY);
+						if(ts.font->GetPixel(letterX * fontSizeWidth + i/ts.size + ts.shadowOffsetX, letterY * fontSizeHeight + j/ts.size + ts.shadowOffsetY) == RGB::Black) {
+							DrawPixel(ts.shadowColor, subX + ts.shadowOffsetX*ts.size, subY + ts.shadowOffsetY*ts.size);
 						}
 					}
 				}

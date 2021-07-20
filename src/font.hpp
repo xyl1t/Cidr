@@ -37,7 +37,6 @@ enum class TextAlignment {
 	CL,	CC,	CR,
 	BL,	BC,	BR,
 };
-
 namespace Fonts {
 extern const cdr::Font Raster8x16;
 extern const cdr::Font Raster8x8;
@@ -45,6 +44,23 @@ extern const cdr::Font Raster10x10;
 extern const cdr::Font Raster10x12;
 extern const cdr::Font Raster8x12;
 }
+
+struct TextStyle {
+	const Font* font;
+	TextAlignment ta;
+	float size;
+	RGBA fColor;
+	RGBA bColor;
+	RGBA shadowColor;
+	int shadowOffsetX;
+	int shadowOffsetY;
+	
+	TextStyle(const Font& font = cdr::Fonts::Raster8x12, TextAlignment ta = TextAlignment::TL, float size = 1, const RGBA& fColor = RGB::White, const RGBA& bColor = RGBA::Transparent, const RGBA& shadowColor = RGBA::Transparent, int shadowOffsetX = 1, int shadowOffsetY = 1);	
+	TextStyle(const TextStyle& other);
+	TextStyle& operator=(const TextStyle& other);
+};
+
+extern const TextStyle DefaultTextStyle;
 
 }
 
