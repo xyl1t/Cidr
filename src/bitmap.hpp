@@ -91,7 +91,7 @@ public:
 	RGBBitmap& operator=(RGBBitmap&& other) noexcept;
 	
 	inline RGB GetPixel(int x, int y) const {
-		return RGBA{data[x + y * width]};
+		return RGB{data[x + y * width]};
 	}
 	inline void SetPixel(const RGB& value, int x, int y) {
 		data[x + y * width] = RGBtoUINT(value);
