@@ -736,7 +736,7 @@ public:
 };
 
 class RGBABitmap : public BaseBitmap {
-	int components{4};
+	static constexpr int components{4};
 	
 public:
 	RGBABitmap(int width, int height);
@@ -759,6 +759,8 @@ public:
 };
 
 class RGBBitmap : public BaseBitmap {
+	static constexpr int components{3};
+	
 public:
 	RGBBitmap(int width, int height);
 	RGBBitmap(uint32_t* source, int sourceWidth, int sourceHeight);
@@ -772,7 +774,7 @@ public:
 	RGBBitmap& operator=(RGBBitmap&& other) noexcept;
 	
 	inline RGB GetPixel(int x, int y) const {
-		return {data[x + y * width]};
+		return RGB{data[x + y * width]};
 	}
 	inline void SetPixel(const RGB& value, int x, int y) {
 		data[x + y * width] = RGBtoUINT(value);
@@ -980,6 +982,7 @@ public:
 	
 	vec2();
 	vec2(float x, float y);
+	vec2(const vec2&) = default;
 	
 	inline float length() const {
 		return sqrt((x * x) + (y * y));
@@ -1013,6 +1016,7 @@ public:
 	
 	vec3();
 	vec3(float x, float y, float z);
+	vec3(const vec3&) = default;
 
 	inline float length() const {
 		return sqrt((x * x) + (y * y) + (z * z));
@@ -1053,6 +1057,7 @@ public:
 
 	vec4();
 	vec4(float x, float y, float z, float w = 1.0f);
+	vec4(const vec4&) = default;
 
 	inline float length() const {
 		return sqrt((x * x) + (y * y) + (z * z));
@@ -1100,6 +1105,8 @@ public:
 	ivec2();
 	ivec2(int x, int y);
 	
+	ivec2(const ivec2&) = default;
+	
 	inline float length() const {
 		return sqrt((x * x) + (y * y));
 	}
@@ -1128,6 +1135,7 @@ public:
 	
 	ivec3();
 	ivec3(int x, int y, int z);
+	ivec3(const ivec3&) = default;
 	
 	inline float length() const {
 		return sqrt((x * x) + (y * y) + (z * z));
@@ -1159,6 +1167,7 @@ public:
 
 	ivec4();
 	ivec4(int x, int y, int z, int w);
+	ivec4(const ivec4&) = default;
 	
 	inline int length() const {
 		return sqrt((x * x) + (y * y) + (z * z) + (w * w));
@@ -4137,7 +4146,7 @@ tem::mat2x2 tem::mat2x2::operator*(const float other) {
 	tem::mat2x2 temp = tem::mat2x2(*this);
 	
 	for(int i = 0; i < 4; i++) {
-		temp.mat[i] *= 2;
+		temp.mat[i] *= other;
 	}
 	
 	return temp;
@@ -4146,7 +4155,7 @@ tem::mat2x2 tem::mat2x2::operator/(const float other) {
 	tem::mat2x2 temp = tem::mat2x2(*this);
 	
 	for(int i = 0; i < 4; i++) {
-		temp.mat[i] /= 2;
+		temp.mat[i] /= other;
 	}
 	
 	return temp;
@@ -13234,7 +13243,7 @@ static void stbiw__putc(stbi__write_context *s, unsigned char c)
 
 static void stbiw__write1(stbi__write_context *s, unsigned char a)
 {
-   if (s->buf_used + 1 > sizeof(s->buffer))
+   if ((unsigned)s->buf_used + 1 > sizeof(s->buffer))
       stbiw__write_flush(s);
    s->buffer[s->buf_used++] = a;
 }
@@ -13242,7 +13251,7 @@ static void stbiw__write1(stbi__write_context *s, unsigned char a)
 static void stbiw__write3(stbi__write_context *s, unsigned char a, unsigned char b, unsigned char c)
 {
    int n;
-   if (s->buf_used + 3 > sizeof(s->buffer))
+   if ((unsigned)s->buf_used + 3 > sizeof(s->buffer))
       stbiw__write_flush(s);
    n = s->buf_used;
    s->buf_used = n+3;
@@ -13336,7 +13345,7 @@ static int stbi_write_bmp_core(stbi__write_context *s, int x, int y, int comp, c
 
 STBIWDEF int stbi_write_bmp_to_func(stbi_write_func *func, void *context, int x, int y, int comp, const void *data)
 {
-   stbi__write_context s = { 0 };
+   stbi__write_context s{};
    stbi__start_write_callbacks(&s, func, context);
    return stbi_write_bmp_core(&s, x, y, comp, data);
 }
@@ -13344,7 +13353,7 @@ STBIWDEF int stbi_write_bmp_to_func(stbi_write_func *func, void *context, int x,
 #ifndef STBI_WRITE_NO_STDIO
 STBIWDEF int stbi_write_bmp(char const *filename, int x, int y, int comp, const void *data)
 {
-   stbi__write_context s = { 0 };
+   stbi__write_context s{};
    if (stbi__start_write_file(&s,filename)) {
       int r = stbi_write_bmp_core(&s, x, y, comp, data);
       stbi__end_write_file(&s);
@@ -13435,7 +13444,7 @@ static int stbi_write_tga_core(stbi__write_context *s, int x, int y, int comp, v
 
 STBIWDEF int stbi_write_tga_to_func(stbi_write_func *func, void *context, int x, int y, int comp, const void *data)
 {
-   stbi__write_context s = { 0 };
+   stbi__write_context s{};
    stbi__start_write_callbacks(&s, func, context);
    return stbi_write_tga_core(&s, x, y, comp, (void *) data);
 }
@@ -13443,7 +13452,7 @@ STBIWDEF int stbi_write_tga_to_func(stbi_write_func *func, void *context, int x,
 #ifndef STBI_WRITE_NO_STDIO
 STBIWDEF int stbi_write_tga(char const *filename, int x, int y, int comp, const void *data)
 {
-   stbi__write_context s = { 0 };
+   stbi__write_context s{};
    if (stbi__start_write_file(&s,filename)) {
       int r = stbi_write_tga_core(&s, x, y, comp, (void *) data);
       stbi__end_write_file(&s);
@@ -13609,7 +13618,7 @@ static int stbi_write_hdr_core(stbi__write_context *s, int x, int y, int comp, f
 
 STBIWDEF int stbi_write_hdr_to_func(stbi_write_func *func, void *context, int x, int y, int comp, const float *data)
 {
-   stbi__write_context s = { 0 };
+   stbi__write_context s{};
    stbi__start_write_callbacks(&s, func, context);
    return stbi_write_hdr_core(&s, x, y, comp, (float *) data);
 }
@@ -13617,7 +13626,7 @@ STBIWDEF int stbi_write_hdr_to_func(stbi_write_func *func, void *context, int x,
 #ifndef STBI_WRITE_NO_STDIO
 STBIWDEF int stbi_write_hdr(char const *filename, int x, int y, int comp, const float *data)
 {
-   stbi__write_context s = { 0 };
+   stbi__write_context s{};
    if (stbi__start_write_file(&s,filename)) {
       int r = stbi_write_hdr_core(&s, x, y, comp, (float *) data);
       stbi__end_write_file(&s);
@@ -14413,7 +14422,7 @@ static int stbi_write_jpg_core(stbi__write_context *s, int width, int height, in
 
 STBIWDEF int stbi_write_jpg_to_func(stbi_write_func *func, void *context, int x, int y, int comp, const void *data, int quality)
 {
-   stbi__write_context s = { 0 };
+   stbi__write_context s{};
    stbi__start_write_callbacks(&s, func, context);
    return stbi_write_jpg_core(&s, x, y, comp, (void *) data, quality);
 }
@@ -14422,7 +14431,7 @@ STBIWDEF int stbi_write_jpg_to_func(stbi_write_func *func, void *context, int x,
 #ifndef STBI_WRITE_NO_STDIO
 STBIWDEF int stbi_write_jpg(char const *filename, int x, int y, int comp, const void *data, int quality)
 {
-   stbi__write_context s = { 0 };
+   stbi__write_context s{};
    if (stbi__start_write_file(&s,filename)) {
       int r = stbi_write_jpg_core(&s, x, y, comp, data, quality);
       stbi__end_write_file(&s);
