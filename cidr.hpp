@@ -2149,7 +2149,7 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 
 
 
-#if !defined(cdr_linear) && !defined(cdr_barycentric)
+#if !defined(CDR_LINEAR) && !defined(CDR_BARYCENTRIC)
 	for (int y = std::ceil(p1.y); y < std::ceil(p2.y); y++) {
 		double t1 = (y - std::ceil(p1.y)) / (double)(std::ceil(p3.y) - std::ceil(p1.y));
 		double t2 = (y - std::ceil(p1.y)) / (double)(std::ceil(p2.y) - std::ceil(p1.y));
