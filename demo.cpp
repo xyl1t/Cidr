@@ -72,27 +72,27 @@ int main(int argc, char** argv) {
 	uint32_t old = 0;
 	uint32_t timer = 0;
 	
-	cdr::Bitmap savingBitmap{256, 256};
-	cdr::Renderer savingBitmapRenderer{savingBitmap.GetData(), savingBitmap.GetWidth(), savingBitmap.GetHeight()};
+	cdr::Bitmap myBitmap{256, 256};
+	cdr::Renderer myBitmapRenderer{myBitmap.GetData(), myBitmap.GetWidth(), myBitmap.GetHeight()};
 	for (uint32_t x = 0; x < 256; x++) {
 		for (uint32_t y = 0; y < 256; y++) {
 			// cdr::RGBA c1((x^y) | ~x, (x) & ~y, (y) | x);
 			// cdr::RGBA c2(((y+x)*2) >> (~x&y), ((y+x)*4) >> (x&y), ((y+x)*8) >> (x&~y));
-			savingBitmap.SetRawPixel(
+			myBitmap.SetRawPixel(
 				(y & (x^~y)) >> (~x&~y) | ((y & (x^~y))),
 				(x & (x^y) ) >> (~x& y) | ((x & (x^y) )),
 				(y & (x^y) ) >> ( x&~y) | ((y & (x^y) )),
 				0xff, x, y);
 		}
 	}
-	
-	savingBitmapRenderer.SetTextFont(cdr::Fonts::Raster8x16);
-	savingBitmapRenderer.SetTextAlignment(cdr::TextAlignment::CC);
-	savingBitmapRenderer.SetTextSize(4);
-	savingBitmapRenderer.SetTextShadowColor(cdr::RGB::Black);
-	savingBitmapRenderer.DrawText("Cidr", 132, 128);
-	
-	savingBitmap.SaveAs("savingBitmap.png", cdr::Bitmap::Formats::PNG);
+
+	myBitmapRenderer.SetTextFont(cdr::Fonts::Raster8x16);
+	myBitmapRenderer.SetTextAlignment(cdr::TextAlignment::CC);
+	myBitmapRenderer.SetTextSize(4);
+	myBitmapRenderer.SetTextShadowColor(cdr::RGB::Black);
+	myBitmapRenderer.DrawText("Cidr", 132, 128);
+
+	myBitmap.SaveAs("myBitmap", cdr::Bitmap::Formats::PNG);
 	
 	cdr::RGBA (*currentShader)(const cdr::Renderer& renderer, int x, int y) {nullptr};
 	cdr::Bitmap bitmap{"../res/pureTest.png"};
