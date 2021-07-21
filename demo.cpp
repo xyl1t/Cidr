@@ -311,6 +311,7 @@ int main(int argc, char** argv) {
 		
 		/* TEXT */
 		cidrRend.SetTextFont(cdr::Fonts::Raster8x16);
+		cidrRend.SetTextShadowColor(cdr::RGB::Black);
 		if(showText) {
 			cidrRend.DrawText("textured triangles", pInBetween.x - (8 * 18 / 2), pInBetween.y - 32);
 			cidrRend.DrawText("shaded rectangle", 64, 16);
