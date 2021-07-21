@@ -19,6 +19,7 @@
 #include <vector>
 #include <cstdio>
 #include <fstream>
+#include <string_view>
 
 #define CIDR_IMPLEMENTATION
 #ifndef NDEBUG
@@ -75,8 +76,8 @@ int main(int argc, char** argv) {
 	cdr::Renderer savingBitmapRenderer{savingBitmap.GetData(), savingBitmap.GetWidth(), savingBitmap.GetHeight()};
 	for (uint32_t x = 0; x < 256; x++) {
 		for (uint32_t y = 0; y < 256; y++) {
-			cdr::RGBA c1((x^y) | ~x, (x) & ~y, (y) | x);
-			cdr::RGBA c2(((y+x)*2) >> (~x&y), ((y+x)*4) >> (x&y), ((y+x)*8) >> (x&~y));
+			// cdr::RGBA c1((x^y) | ~x, (x) & ~y, (y) | x);
+			// cdr::RGBA c2(((y+x)*2) >> (~x&y), ((y+x)*4) >> (x&y), ((y+x)*8) >> (x&~y));
 			savingBitmap.SetRawPixel(
 				(y & (x^~y)) >> (~x&~y) | ((y & (x^~y))),
 				(x & (x^y) ) >> (~x& y) | ((x & (x^y) )),
@@ -85,7 +86,11 @@ int main(int argc, char** argv) {
 		}
 	}
 	
-	savingBitmapRenderer.DrawText("Cidr", 132, 128, {cdr::Fonts::Raster8x16, cdr::TextAlignment::CC, 4, cdr::RGB::White, cdr::RGBA::Transparent, cdr::RGB::Black});
+	savingBitmapRenderer.SetTextFont(cdr::Fonts::Raster8x16);
+	savingBitmapRenderer.SetTextAlignment(cdr::TextAlignment::CC);
+	savingBitmapRenderer.SetTextSize(4);
+	savingBitmapRenderer.SetTextShadowColor(cdr::RGB::Black);
+	savingBitmapRenderer.DrawText("Cidr", 132, 128);
 	
 	savingBitmap.SaveAs("savingBitmap.png", cdr::Bitmap::Formats::PNG);
 	
@@ -276,14 +281,6 @@ int main(int argc, char** argv) {
 			400, 		128,
 			400 + 64, 	128,
 			400 + 32, 	128 + 32);
-		
-		/* IMAGES */
-		cidrRend.ClampToBorderColor = cdr::RGB::Gray;
-		int destWidth = bitmap.GetWidth() * 6;
-		int destHeight = bitmap.GetWidth() * 6;
-		cidrRend.DrawBitmap(bitmap, 
-			(float)360-destWidth/2.f,(float)340-destHeight/2.f, destWidth, destHeight, 
-			val2/4.f, -val1/4.f, bitmap.GetWidth(), bitmap.GetHeight());
 
 
 		/* TEXTURED TRIANGLE */
@@ -307,6 +304,15 @@ int main(int argc, char** argv) {
 			p1.x, p1.y,
 			p3.x, p3.y,
 			p4.x, p4.y);
+		
+		
+		/* IMAGES */
+		cidrRend.ClampToBorderColor = cdr::RGB::Gray;
+		int destWidth = bitmap.GetWidth() * 6;
+		int destHeight = bitmap.GetWidth() * 6;
+		cidrRend.DrawBitmap(bitmap, 
+			(float)360-destWidth/2.f,(float)340-destHeight/2.f, destWidth, destHeight, 
+			val2/4.f, -val1/4.f, bitmap.GetWidth(), bitmap.GetHeight());
 		
 		
 		/* TEXT */
@@ -335,7 +341,7 @@ int main(int argc, char** argv) {
 		//#0CD848 nicegreen 
 		
 		int wordCount = 0;
-		for(const std::string& word : {	"Lorem", "ipsum", "dolor", "sit", "amet,", "consectetur", "adipiscing", "elit,"	}) {
+		for(std::string_view word : { "Lorem", "ipsum", "dolor", "sit", "amet,", "consectetur", "adipiscing", "elit,"	}) {
 			cidrRend.DrawText(word, 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420, 
 				{cdr::Fonts::Raster8x16, cdr::TextAlignment::TL, 1, getRandomColor(128, 255), getRandomColor(0, 64), cdr::RGBA::Black, 1, 1});
 			wordCount += word.length();
@@ -343,7 +349,7 @@ int main(int argc, char** argv) {
 			wordCount++;
 		}
 		wordCount = 0;
-		for(const std::string& word : { "sed", "do", "eiusmod", "tempor", "incididunt", "labore", "et", "dolore", "aliqua." }) {
+		for(std::string_view word : { "sed", "do", "eiusmod", "tempor", "incididunt", "labore", "et", "dolore", "aliqua." }) {
 			cidrRend.DrawText(word, 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420 + cdr::Fonts::Raster8x16.GetFontHeight(), 
 				{cdr::Fonts::Raster8x16, cdr::TextAlignment::TL, 1, getRandomColor(128, 255), getRandomColor(0, 64), cdr::RGBA::Black, 1, 1});
 			wordCount += word.length();
