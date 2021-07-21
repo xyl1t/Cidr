@@ -4843,6 +4843,7 @@ cdr::BaseBitmap::~BaseBitmap() {
 	delete[] data;
 }
 
+// provie filename without extension!
 void cdr::BaseBitmap::SaveAs(const std::string& fileName, Formats format, int quality) {
 	// NOTE: Cidr uses rgba, stbi uses abgr
 	uint32_t* abgrData = new uint32_t[this->width * this->height];
@@ -4850,18 +4851,19 @@ void cdr::BaseBitmap::SaveAs(const std::string& fileName, Formats format, int qu
 		abgrData[i] = UINT_RGBAtoUINT_ABGR(data[i]);
 	}
 	
+	// NOTE: Extension added depending on format argument 
 	switch(format) {
 		case Formats::PNG:
-			stbi_write_png(fileName.c_str(), GetWidth(), GetHeight(), this->components, abgrData, this->components * GetWidth());
+			stbi_write_png((fileName + ".png").c_str(), GetWidth(), GetHeight(), this->components, abgrData, this->components * GetWidth());
 			break;
 		case Formats::BMP:
-			stbi_write_bmp(fileName.c_str(), GetWidth(), GetHeight(), this->components, abgrData);
+			stbi_write_bmp((fileName + ".bmp").c_str(), GetWidth(), GetHeight(), this->components, abgrData);
 			break;
 		case Formats::TGA:
-			stbi_write_tga(fileName.c_str(), GetWidth(), GetHeight(), this->components, abgrData);
+			stbi_write_tga((fileName + ".tga").c_str(), GetWidth(), GetHeight(), this->components, abgrData);
 			break;
 		case Formats::JPG:
-			stbi_write_jpg(fileName.c_str(), GetWidth(), GetHeight(), this->components, abgrData, quality);
+			stbi_write_jpg((fileName + ".jpg").c_str(), GetWidth(), GetHeight(), this->components, abgrData, quality);
 			break;
 	}
 	
