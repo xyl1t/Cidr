@@ -72,31 +72,38 @@ in *one* C++ file to create the implementation before you include the `cidr.hpp`
 ## Sample code
 This code creates and saves an image with the text "cidr" drawn on it. The resulting picture is similar to what you see at the top of the readme.
 ```cpp
-// Create a bitmap to which we want to draw something
-cdr::Bitmap myBitmap{256, 256};
-// Create a rendere and pass the pixels of the just created bitmap to the renderer
-cdr::Renderer myBitmapRenderer{myBitmap.GetData(), myBitmap.GetWidth(), myBitmap.GetHeight()};
-for (uint32_t x = 0; x < 256; x++) {
-    for (uint32_t y = 0; y < 256; y++) {
-		// Drawing a pixel on the bitmap with some "bit hackry"
-        myBitmap.SetRawPixel(
-            (y & (x^~y)) >> (~x&~y) | ((y & (x^~y))),
-            (x & (x^y) ) >> (~x& y) | ((x & (x^y) )),
-            (y & (x^y) ) >> ( x&~y) | ((y & (x^y) )),
-            0xff, x, y);
-    }
+#define CIDR_IMPLEMENTATION
+#include "cidr.hpp"
+
+int main(int argc, char** argv) {
+	// Create a bitmap to which we want to draw something
+	cdr::Bitmap myBitmap{256, 256};
+	// Create a rendere and pass the pixels of the just created bitmap to the renderer
+	cdr::Renderer myBitmapRenderer{myBitmap.GetData(), myBitmap.GetWidth(), myBitmap.GetHeight()};
+	for (uint32_t x = 0; x < 256; x++) {
+		for (uint32_t y = 0; y < 256; y++) {
+			// Drawing a pixel on the bitmap with some "bit hackry"
+			myBitmap.SetRawPixel(
+				(y & (x^~y)) >> (~x&~y) | ((y & (x^~y))),
+				(x & (x^y) ) >> (~x& y) | ((x & (x^y) )),
+				(y & (x^y) ) >> ( x&~y) | ((y & (x^y) )),
+				0xff, x, y);
+		}
+	}
+
+	// Set text style
+	myBitmapRenderer.SetTextFont(cdr::Fonts::Raster8x16);
+	myBitmapRenderer.SetTextAlignment(cdr::TextAlignment::CC);
+	myBitmapRenderer.SetTextSize(4);
+	myBitmapRenderer.SetTextShadowColor(cdr::RGB::Black);
+	// Drawing text
+	myBitmapRenderer.DrawText("Cidr", 132, 128);
+
+	// Save the edited bitmap as "myBitmap.png"
+	myBitmap.SaveAs("myBitmap", cdr::Bitmap::Formats::PNG);
+	
+	return 0;
 }
-
-// Set text style
-myBitmapRenderer.SetTextFont(cdr::Fonts::Raster8x16);
-myBitmapRenderer.SetTextAlignment(cdr::TextAlignment::CC);
-myBitmapRenderer.SetTextSize(4);
-myBitmapRenderer.SetTextShadowColor(cdr::RGB::Black);
-// Drawing text
-myBitmapRenderer.DrawText("Cidr", 132, 128);
-
-// Save the edited bitmap as "myBitmap.png"
-myBitmap.SaveAs("myBitmap", cdr::Bitmap::Formats::PNG);
 ```
 ## Dependencies
 All you need is a compiler that supports C++17.
