@@ -202,7 +202,7 @@ int main(int argc, char** argv) {
 		
 		
 		/* DRAWING A COLORFUL RECTANGLE USING A SHADER */
-		auto lambda = [](const cdr::Renderer& renderer, int x, int y) -> cdr::RGBA {
+		auto lambda = [](const cdr::Renderer& renderer[[maybe_unused]], int x, int y) -> cdr::RGBA {
 			return {
 				static_cast<uint8_t>(x - 3), 
 				static_cast<uint8_t>(y - 3), 
@@ -308,8 +308,8 @@ int main(int argc, char** argv) {
 		
 		/* IMAGES */
 		cidrRend.ClampToBorderColor = cdr::RGB::Gray;
-		int destWidth = bitmap.GetWidth() * 6;
-		int destHeight = bitmap.GetWidth() * 6;
+		int destWidth = 96;
+		int destHeight = 96;
 		cidrRend.DrawBitmap(bitmap, 
 			(float)360-destWidth/2.f,(float)340-destHeight/2.f, destWidth, destHeight, 
 			val2/4.f, -val1/4.f, bitmap.GetWidth(), bitmap.GetHeight());
