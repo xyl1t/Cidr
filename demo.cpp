@@ -343,7 +343,7 @@ int main(int argc, char** argv) {
 		int wordCount = 0;
 		for(std::string_view word : { "Lorem", "ipsum", "dolor", "sit", "amet,", "consectetur", "adipiscing", "elit,"	}) {
 			cidrRend.DrawText(word, 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420, 
-				{cdr::Fonts::Raster8x16, cdr::TextAlignment::TL, 1, getRandomColor(128, 255), getRandomColor(0, 64), cdr::RGBA::Black, 1, 1});
+				{cdr::Fonts::Raster8x16, false, cdr::TextAlignment::TL, 1, getRandomColor(128, 255), getRandomColor(0, 64), cdr::RGBA::Black, 1, 1});
 			wordCount += word.length();
 			cidrRend.DrawText(" ", 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420);
 			wordCount++;
@@ -351,7 +351,7 @@ int main(int argc, char** argv) {
 		wordCount = 0;
 		for(std::string_view word : { "sed", "do", "eiusmod", "tempor", "incididunt", "labore", "et", "dolore", "aliqua." }) {
 			cidrRend.DrawText(word, 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420 + cdr::Fonts::Raster8x16.GetFontHeight(), 
-				{cdr::Fonts::Raster8x16, cdr::TextAlignment::TL, 1, getRandomColor(128, 255), getRandomColor(0, 64), cdr::RGBA::Black, 1, 1});
+				{cdr::Fonts::Raster8x16, false, cdr::TextAlignment::TL, 1, getRandomColor(128, 255), getRandomColor(0, 64), cdr::RGBA::Black, 1, 1});
 			wordCount += word.length();
 			cidrRend.DrawText(" ", 16 + wordCount * cdr::Fonts::Raster8x16.GetFontWidth(), 420 + cdr::Fonts::Raster8x16.GetFontHeight());
 			wordCount++;
