@@ -7,7 +7,7 @@
 #include "font.hpp"
 
 cdr::Font::Font(const uint8_t* data, int fontSheetWidth, int fontSheetHeight, int fontWidth, int fontHeight) : 
-	fontSheet{fontSheetWidth, fontSheetHeight}, fontWidth{fontWidth}, fontHeight{fontHeight} {
+	fontSheet{fontSheetWidth, fontSheetHeight}, fontWidth{fontWidth}, fontHeight{fontHeight}, kernX((fontSheetWidth/fontWidth) * (fontSheetHeight/fontHeight)) {
 		
 	auto getCoordX = [](int val, int width) {
 		return val % width;
@@ -26,17 +26,113 @@ cdr::Font::Font(const uint8_t* data, int fontSheetWidth, int fontSheetHeight, in
 			fontSheet.SetPixel(cdr::RGBA{c, c, c, 255}, getCoordX(i*8 + j, fontSheetWidth), getCoordY(i*8 + j, fontSheetWidth));
 		}
 	}
+	
+	for (int cX = 0; cX < fontSheetWidth / fontWidth; cX++) {
+		for (int cY = 0; cY < fontSheetHeight / fontHeight; cY++) {
+			bool kernL = false;
+			bool kernLInit = false;
+			bool kernR = false;
+			bool kernRInit = false;
+			for (int xl = 0, xr = fontWidth - 1; xl < fontWidth; xl++, xr--) {
+				for (int y = cY*fontHeight; y < cY*fontHeight+fontHeight; y++) {
+					
+					kernL |= (fontSheet.GetPixel(xl + cX * fontWidth, y) == cdr::RGB::White);
+					kernR |= (fontSheet.GetPixel(xr + cX * fontWidth, y) == cdr::RGB::White);
+					
+					if (!kernLInit) {
+						kernX[cX + (cY * (fontSheet.GetWidth() / fontWidth))].first = xl - 1;
+					}
+					// if (kernL != kernLInit) {
+					// 	this->fontSheet.SetPixel(cdr::RGBA::Red, kernX[cX + cY * fontSheet.GetWidth() / fontWidth].first + cX * fontWidth, y);
+					// }
+					kernLInit |= kernL;
+					
+					if (!kernRInit) {
+						kernX[cX + cY * fontSheet.GetWidth() / fontWidth].second = xr + 1;
+					}
+					// if (kernR != kernRInit) {
+					// 	this->fontSheet.SetPixel(cdr::RGBA::Green, kernX[cX + cY * fontSheet.GetWidth() / fontWidth].second + cX * fontWidth, y);
+					// }
+					kernRInit |= kernR;
+					
+					if (kernR && kernL) {
+						goto next;
+					}
+				}
+			}
+			next:;
+		}
+	}
+	
+	// for (int cX = 0; cX < fontSheetWidth / fontWidth - 1; cX++) {
+	// 	for (int cY = 0; cY < fontSheetHeight / fontHeight; cY++) {
+	// 		for (int y = cY*fontHeight; y < cY*fontHeight+fontHeight; y++) {
+	// 			fontSheet.SetPixel(cdr::RGB::Red,   cX * fontWidth + kernX[cX + cY * fontSheetWidth / fontWidth].first,  y);
+	// 			fontSheet.SetPixel(cdr::RGB::Green, cX * fontWidth + kernX[cX + cY * fontSheetWidth / fontWidth].second, y);
+	// 		}
+	// 	}
+	// }
+}
+cdr::Font::Font(const Bitmap& fontSheet, int fontWidth, int fontHeight) : 
+	fontSheet{fontSheet}, fontWidth{fontWidth}, fontHeight{fontHeight}, kernX((fontSheet.GetWidth()/fontWidth) * (fontSheet.GetHeight()/fontHeight)) {
+	for (int cX = 0; cX < fontSheet.GetWidth() / fontWidth; cX++) {
+		for (int cY = 0; cY < fontSheet.GetHeight() / fontHeight; cY++) {
+			bool kernL = false;
+			bool kernLInit = false;
+			bool kernR = false;
+			bool kernRInit = false;
+			for (int xl = 0, xr = fontWidth - 1; xl < fontWidth; xl++, xr--) {
+				for (int y = cY*fontHeight; y < cY*fontHeight+fontHeight; y++) {
+					
+					kernL |= (fontSheet.GetPixel(xl + cX * fontWidth, y) == cdr::RGB::White);
+					kernR |= (fontSheet.GetPixel(xr + cX * fontWidth, y) == cdr::RGB::White);
+					
+					if (!kernLInit) {
+						kernX[cX + (cY * (fontSheet.GetWidth() / fontWidth))].first = xl - 1;
+					}
+					// if (kernL != kernLInit) {
+					// 	this->fontSheet.SetPixel(cdr::RGBA::Red, kernX[cX + cY * fontSheet.GetWidth() / fontWidth].first + cX * fontWidth, y);
+					// }
+					kernLInit |= kernL;
+					
+					if (!kernRInit) {
+						kernX[cX + cY * fontSheet.GetWidth() / fontWidth].second = xr + 1;
+					}
+					// if (kernR != kernRInit) {
+					// 	this->fontSheet.SetPixel(cdr::RGBA::Green, kernX[cX + cY * fontSheet.GetWidth() / fontWidth].second + cX * fontWidth, y);
+					// }
+					kernRInit |= kernR;
+					
+					if (kernR && kernL) {
+						goto next;
+					}
+				}
+			}
+			next:;
+		}
+	}
+	
+	// for (int cX = 0; cX < fontSheet.GetWidth() / fontWidth - 1; cX++) {
+	// 	for (int cY = 0; cY < fontSheet.GetHeight() / fontHeight; cY++) {
+	// 		for (int y = cY*fontHeight; y < cY*fontHeight+fontHeight; y++) {
+	// 			this->fontSheet.SetPixel(cdr::RGB::Red,   cX * fontWidth + kernX[cX + cY * fontSheet.GetWidth() / fontWidth].first,  y);
+	// 			this->fontSheet.SetPixel(cdr::RGB::Green, cX * fontWidth + kernX[cX + cY * fontSheet.GetHeight() / fontWidth].second, y);
+	// 		}
+	// 	}
+	// }
 }
 
-cdr::TextStyle::TextStyle(const Font& font, TextAlignment ta, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY)
-	: font(&font), ta(ta), size(size), fColor(fColor), bColor(bColor), shadowColor(shadowColor), shadowOffsetX(shadowOffsetX), shadowOffsetY(shadowOffsetY) {
+
+cdr::TextStyle::TextStyle(const Font& font, bool useKerning, TextAlignment ta, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY)
+	: font(&font), useKerning(useKerning), ta(ta), size(size), fColor(fColor), bColor(bColor), shadowColor(shadowColor), shadowOffsetX(shadowOffsetX), shadowOffsetY(shadowOffsetY) {
 }
 
 cdr::TextStyle::TextStyle(const TextStyle& other)
-	: font(other.font), ta(other.ta), size(other.size), fColor(other.fColor), bColor(other.bColor), shadowColor(other.shadowColor), shadowOffsetX(other.shadowOffsetX), shadowOffsetY(other.shadowOffsetY) {
+	: font(other.font), useKerning(other.useKerning), ta(other.ta), size(other.size), fColor(other.fColor), bColor(other.bColor), shadowColor(other.shadowColor), shadowOffsetX(other.shadowOffsetX), shadowOffsetY(other.shadowOffsetY) {
 }
 cdr::TextStyle& cdr::TextStyle::operator=(const TextStyle& other) {
 	this->font = other.font;
+	this->useKerning = other.useKerning;
 	this->ta = other.ta;
 	this->size = other.size;
 	this->fColor = other.fColor;

@@ -1156,6 +1156,50 @@ uint32_t cdr::Renderer::sampleTextureRaw(const cdr::Bitmap& bitmap, float xSrc, 
 	}
 }
 
+void cdr::Renderer::DrawGlyph(uint8_t glyph, int x, int y, const TextStyle& ts) {
+	int fontWidth = ts.font->GetFontWidth();
+	int fontHeight = ts.font->GetFontHeight();
+	
+	int letterX = glyph % (ts.font->GetFontSheetWidth() / fontWidth);
+	int letterY = glyph / (ts.font->GetFontSheetHeight() / fontHeight);
+	if (x >= 0 && y >= 0) {
+		switch (ts.ta) {
+			case TextAlignment::TL: break; // NOTE: this is Default
+			case TextAlignment::TC: x -= fontWidth/2.f*ts.size; break;
+			case TextAlignment::TR: x -= fontWidth*ts.size; break;
+			case TextAlignment::CL: y -= fontHeight/2.f*ts.size; break;
+			case TextAlignment::CC: x -= fontWidth/2.f*ts.size; 
+									y -= fontHeight/2.f*ts.size; break;
+			case TextAlignment::CR: x -= fontWidth*ts.size; 
+									y -= fontHeight/2.f*ts.size;break;
+			case TextAlignment::BL: y -= fontHeight*ts.size; break;
+			case TextAlignment::BC: x -= fontWidth/2.f*ts.size; 
+									y -= fontHeight*ts.size; break;
+			case TextAlignment::BR: x -= fontWidth*ts.size; 
+									y -= fontHeight*ts.size; break;
+		}
+	}
+	for (int i = 0; i < fontWidth * ts.size; i++) {
+		for (int j = 0; j < fontHeight * ts.size; j++) {
+			const RGB& letterPixel = ts.font->GetPixel(letterX * fontWidth + i / ts.size, letterY * fontHeight + j / ts.size);
+			int subX{static_cast<int>(x + i)};
+			int subY{static_cast<int>(y + j)};
+			
+			if (subX >= GetWidth() || subY >= GetHeight() || subX < 0 || subY < 0) continue;
+			
+			if (letterPixel == RGB::Black && ts.bColor != RGBA::Transparent && GetPixel(subX, subY) != ts.shadowColor) {
+				DrawPixel(ts.bColor, subX, subY);
+			} else if(letterPixel == RGB::White) {
+				DrawPixel(ts.fColor, subX, subY);
+				int sx = i/ts.size + ts.shadowOffsetX;
+				int sy = j/ts.size + ts.shadowOffsetY;
+				if (sx < 0 || sy < 0 || sx >= fontWidth || sy >= fontHeight || ts.font->GetPixel(letterX * fontWidth + sx, letterY * fontHeight + sy) == RGB::Black) {
+					DrawPixel(ts.shadowColor, subX + ts.shadowOffsetX*ts.size, subY + ts.shadowOffsetY*ts.size);
+				}
+			}
+		}
+	}
+}
 void cdr::Renderer::DrawText(const std::string_view text, const TextStyle& ts) {
 	DrawText(text, globalX * ts.font->GetFontWidth(), globalY * ts.font->GetFontHeight(), ts);
 	int caretCol{};
@@ -1185,27 +1229,55 @@ void cdr::Renderer::DrawText(const std::string_view text, int x, int y, const Te
 	int charsCols = ts.font->GetFontSheetHeight() / fontSizeHeight;
 		
 	int textBoundingBoxWidth{};
-	int textBoundingBoxHeight{1};
+	int textBoundingBoxHeight{fontSizeHeight};
 	int localWidth{};
 	for (const auto& letter : text) {
 		if (letter == '\n') {
-			textBoundingBoxHeight++;
+			textBoundingBoxHeight += fontSizeHeight;
 			localWidth = 0;
 		} else	if (letter == '\t') {
 			// NOTE: the 4 is the tab size
-			localWidth += 4 - (localWidth) % 4;
+			int tab = 4 - (localWidth) % 4;
+			localWidth += tab;
 		} else {
-			localWidth++;
+			if (!ts.useKerning) {
+				localWidth += fontSizeWidth;
+			}
+			else {
+				int letterX = letter % charsCols;
+				int letterY = letter / charsRows;
+				int start = std::min(ts.font->GetLeftKernel(letterX, letterY), ts.font->GetRightKernel(letterX, letterY));
+				int end = 	std::max(ts.font->GetLeftKernel(letterX, letterY), ts.font->GetRightKernel(letterX, letterY));
+				localWidth += end - start;
+			}
 		}
 		if(localWidth > textBoundingBoxWidth) {
 			textBoundingBoxWidth = localWidth;
 		}
 	}
 	
-	int newLineCount{};
+	if (x >= 0 && y >= 0) {
+		switch (ts.ta) {
+			case TextAlignment::TL: break; // NOTE: this is Default
+			case TextAlignment::TC: x -= textBoundingBoxWidth/2.f*ts.size; break;
+			case TextAlignment::TR: x -= textBoundingBoxWidth*ts.size; break;
+			case TextAlignment::CL: y -= textBoundingBoxHeight/2.f*ts.size; break;
+			case TextAlignment::CC: x -= textBoundingBoxWidth/2.f*ts.size; 
+									y -= textBoundingBoxHeight/2.f*ts.size; break;
+			case TextAlignment::CR: x -= textBoundingBoxWidth*ts.size; 
+									y -= textBoundingBoxHeight/2.f*ts.size;break;
+			case TextAlignment::BL: y -= textBoundingBoxHeight*ts.size; break;
+			case TextAlignment::BC: x -= textBoundingBoxWidth/2.f*ts.size; 
+									y -= textBoundingBoxHeight*ts.size; break;
+			case TextAlignment::BR: x -= textBoundingBoxWidth*ts.size; 
+									y -= textBoundingBoxHeight*ts.size; break;
+		}
+	}
+	
 	int caretCol{};
-	for (int letterCount = 0; (unsigned)letterCount < text.size(); letterCount++) {
-		const unsigned char& letter = text[letterCount];
+	int newLineCount{};
+	for (int letterIndex = 0; (unsigned)letterIndex < text.size(); letterIndex++) {
+		const unsigned char& letter = text[letterIndex];
 		if(letter < 0 || letter > 255) continue;
 		
 		int letterX = letter % charsCols;
@@ -1215,53 +1287,44 @@ void cdr::Renderer::DrawText(const std::string_view text, int x, int y, const Te
 			caretCol = 0;
 		} else	if (letter == '\t') {
 			// NOTE: the 4 is the tab size
-			caretCol += 4 - (caretCol) % 4;
+			int tab = 4 - (caretCol) % 4;
+			FillRectangle(ts.bColor, x + caretCol * ts.size, y + newLineCount * fontSizeHeight, fontSizeWidth * tab, fontSizeHeight);
+			caretCol += tab * fontSizeWidth;
 		} else {
-			caretCol++;
-			for (int i = 0; i < fontSizeWidth * ts.size; i++) {
+			int start = 0;
+			int end = fontSizeWidth;
+			if (ts.useKerning) {
+				start = std::min(ts.font->GetLeftKernel(letterX, letterY), ts.font->GetRightKernel(letterX, letterY));
+				end   = std::max(ts.font->GetLeftKernel(letterX, letterY), ts.font->GetRightKernel(letterX, letterY));
+			}
+			for (int i = start; i < end * ts.size; i++) {
 				for (int j = 0; j < fontSizeHeight * ts.size; j++) {
 					const RGB& letterPixel = ts.font->GetPixel(letterX * fontSizeWidth + i / ts.size, letterY * fontSizeHeight + j / ts.size);
 					
-					int subX{};
-					int subY{};
-					
-					subX = x + (caretCol-1) * ts.size * (fontSizeWidth) + i;
-					subY = y + newLineCount * fontSizeHeight + j;
-					
-					if (x >= 0 && y >= 0) {
-						int fw = ts.font->GetFontWidth();
-						int fh = ts.font->GetFontHeight();
-						switch (ts.ta) {
-							case TextAlignment::TL: break; // NOTE: this is Default
-							case TextAlignment::TC: subX -= fw * textBoundingBoxWidth/2.f*ts.size; break;
-							case TextAlignment::TR: subX -= fw * textBoundingBoxWidth*ts.size; break;
-							case TextAlignment::CL: subY -= fh * textBoundingBoxHeight/2.f*ts.size; break;
-							case TextAlignment::CC: subX -= fw * textBoundingBoxWidth/2.f*ts.size; 
-													subY -= fh * textBoundingBoxHeight/2.f*ts.size; break;
-							case TextAlignment::CR: subX -= fw * textBoundingBoxWidth*ts.size; 
-													subY -= fh * textBoundingBoxHeight/2.f*ts.size;break;
-							case TextAlignment::BL: subY -= fh * textBoundingBoxHeight*ts.size; break;
-							case TextAlignment::BC: subX -= fw * textBoundingBoxWidth/2.f*ts.size; 
-													subY -= fh * textBoundingBoxHeight*ts.size; break;
-							case TextAlignment::BR: subX -= fw * textBoundingBoxWidth*ts.size; 
-													subY -= fh * textBoundingBoxHeight*ts.size; break;
-						}
-					}
+					int subX = x + caretCol * ts.size + (i - start);
+					int subY = y + newLineCount * fontSizeHeight + j;
 					
 					if(subX >= GetWidth() || subY >= GetHeight() || 
 					subX < 0 || subY < 0)
 					continue;
 					
-					if(letterPixel == RGB::Black && ts.bColor != RGBA::Transparent && GetPixel(subX, subY) != ts.shadowColor) {
+					if(ts.bColor != RGBA::Transparent && (letterPixel == RGB::Black || i < 0 || i >= ts.font->GetRightKernel(letterX, letterY) * ts.size) && GetPixel(subX, subY) != ts.shadowColor) {
 						DrawPixel(ts.bColor, subX, subY);
-					} else if(letterPixel == RGB::White){
+					} else if(letterPixel == RGB::White && !(letterPixel == RGB::Black || i < 0 || i >= ts.font->GetRightKernel(letterX, letterY) * ts.size)) {
 						DrawPixel(ts.fColor, subX, subY);
-						if(ts.font->GetPixel(letterX * fontSizeWidth + i/ts.size + ts.shadowOffsetX, letterY * fontSizeHeight + j/ts.size + ts.shadowOffsetY) == RGB::Black) {
+						int sx = i/ts.size + ts.shadowOffsetX;
+						int sy = j/ts.size + ts.shadowOffsetY;
+						if((sx < 0 || sy < 0 || sx >= fontSizeWidth || sy >= fontSizeHeight || ts.font->GetPixel(letterX * fontSizeWidth + sx, letterY * fontSizeHeight + sy) == RGB::Black)
+							&& GetPixel(subX + ts.shadowOffsetX*ts.size, subY + ts.shadowOffsetY*ts.size) != ts.fColor) { // HACK: checks if color of pixel is foreground color
 							DrawPixel(ts.shadowColor, subX + ts.shadowOffsetX*ts.size, subY + ts.shadowOffsetY*ts.size);
 						}
 					}
 				}
 			}
+			if (ts.useKerning)
+				caretCol += end - start;
+			else 
+				caretCol += fontSizeWidth;
 		}
 	}
 }

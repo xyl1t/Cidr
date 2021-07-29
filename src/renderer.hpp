@@ -54,12 +54,13 @@ public:
 	void FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3);
 	void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3);
 	void DrawBitmap(const Bitmap& bitmap, float destX, float destY, int destWidth, int destHeight, float srcX, float srcY, int srcWidth, int srcHeight);
+	void DrawGlyph(uint8_t glyph, int x, int y, const TextStyle& ts);
 	void DrawText(const std::string_view text, const TextStyle& ts);
 	void DrawText(const std::string_view text, int x, int y, const TextStyle& ts);
 	void DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, FPoint p1, FPoint p2, FPoint p3);
 	
 	/* DRAWING FUNCTION OVERLOADS */
-	inline void DrawPixel(const RGBA& color, int x, int y);
+		   void DrawPixel(const RGBA& color, int x, int y);
 	inline void DrawLine(const RGBA& color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(color, Point{x1, y1}, Point{x2, y2}, AA, GC); }
 	inline void DrawRectangle(const RGBA& color, int x, int y, int width, int height) { DrawRectangle(color, Rectangle{x, y, width, height}); }
 	inline void FillRectangle(const RGBA& color, int x, int y, int width, int height) { FillRectangle(color, Rectangle{x,y, width, height}); }
@@ -73,6 +74,7 @@ public:
 	inline void FillTriangle(RGBA color1, RGBA color2, RGBA color3, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(color1, color2, color3, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}); }
 	inline void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(shader, Point{x1, y1}, Point{x2, y2}, Point{x3, y3} ); }
 	inline void DrawBitmap(const Bitmap& bitmap, FPoint destLocation, int destWidth, int destHeight, FPoint srcLocation, int srcWidth, int srcHeight) { DrawBitmap(bitmap, destLocation.x, destLocation.y, destWidth, destHeight, srcLocation.x, srcLocation.y, srcWidth, srcHeight); }
+	inline void DrawGlyph(uint8_t glyph, int x, int y) { DrawGlyph(glyph, x, y, textStyle); }
 	inline void DrawText(const std::string_view text) { DrawText(text, textStyle); };
 	inline void DrawText(const std::string_view text, int x, int y) { DrawText(text, x, y, textStyle); };
 	
@@ -86,7 +88,8 @@ public:
 	inline void FillTriangle(uint32_t color, const Point& p1, Point p2, Point p3) { FillTriangle(RGBA{color}, p1, p2, p3 ); }
 	inline void FillTriangle(uint32_t color1, uint32_t color2, uint32_t color3, Point p1, Point p2, Point p3) { FillTriangle(RGBA{color1}, RGBA{color2}, RGBA{color3}, p1, p2, p3); }
 	inline void DrawBitmap(const Bitmap& bitmap, FRectangle destRect, FRectangle srcRect) { DrawBitmap(bitmap, destRect.x, destRect.y, destRect.width, destRect.height, srcRect.x, srcRect.y, srcRect.width, srcRect.height); }
-	
+	inline void DrawGlyph(uint8_t glyph, Point p, const TextStyle& ts) { DrawGlyph(glyph, p.x, p.y, ts); };
+
 	inline void DrawPixel(uint32_t color, int x, int y);
 	inline void DrawLine(uint32_t color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(RGBA{color}, Point{x1, y1}, Point{x2, y2}, AA, GC); }
 	inline void DrawRectangle(uint32_t color, int x, int y, int width, int height) { DrawRectangle(RGBA{color}, Rectangle{x, y, width, height}); }
@@ -96,6 +99,7 @@ public:
 	inline void DrawTriangle(uint32_t color, int x1, int y1, int x2, int y2, int x3, int y3, bool AA = false, bool GC = false) { DrawTriangle(RGBA{color}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}, AA, GC ); }
 	inline void FillTriangle(uint32_t color, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(RGBA{color}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3} ); }
 	inline void FillTriangle(uint32_t color1, uint32_t color2, uint32_t color3, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(RGBA{color1}, RGBA{color2}, RGBA{color3}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}); }
+	inline void DrawGlyph(uint8_t glyph, Point p) { DrawGlyph(glyph, p.x, p.y, textStyle); };
 	
 	/* GETTERS */
 	inline uint32_t* GetData() const {

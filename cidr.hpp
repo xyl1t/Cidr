@@ -901,15 +901,17 @@ using BitmapMonochrome = Bitmap<RGBA>;
 #define CIDR_FONT_HPP
 
 namespace cdr {
-	
+		
 class Font {
 private:
 	Bitmap fontSheet;
 	int fontWidth;
 	int fontHeight;
+	std::vector<std::pair<int, int>> kernX;
 	
 public: 
 	Font(const uint8_t data[], int fontSheetWidth, int fontSheetHeight, int fontWidth, int fontHeight);
+	Font(const Bitmap& fontSheet, int fontWidth, int fontHeight);
 	
 	inline const RGBA GetPixel(int x, int y) const {
 		return fontSheet.GetPixel(x, y);
@@ -918,6 +920,8 @@ public:
 	inline int GetFontHeight() const { return fontHeight; }
 	inline int GetFontSheetWidth() const { return fontSheet.GetWidth(); }
 	inline int GetFontSheetHeight() const { return fontSheet.GetHeight(); }
+	inline int GetLeftKernel(int characterX, int characterY) const { return kernX[characterX + characterY * fontSheet.GetWidth() / fontWidth].first; }
+	inline int GetRightKernel(int characterX, int characterY) const { return kernX[characterX + characterY * fontSheet.GetWidth() / fontWidth].second; }
 };
 
 // NOTE: 
@@ -938,6 +942,7 @@ extern const cdr::Font Raster8x12;
 
 struct TextStyle {
 	const Font* font;
+	bool useKerning;
 	TextAlignment ta;
 	float size;
 	RGBA fColor;
@@ -946,7 +951,7 @@ struct TextStyle {
 	int shadowOffsetX;
 	int shadowOffsetY;
 	
-	TextStyle(const Font& font = cdr::Fonts::Raster8x12, TextAlignment ta = TextAlignment::TL, float size = 1, const RGBA& fColor = RGB::White, const RGBA& bColor = RGBA::Transparent, const RGBA& shadowColor = RGBA::Transparent, int shadowOffsetX = 1, int shadowOffsetY = 1);	
+	TextStyle(const Font& font = cdr::Fonts::Raster8x12, bool useKerning = false, TextAlignment ta = TextAlignment::TL, float size = 1, const RGBA& fColor = RGB::White, const RGBA& bColor = RGBA::Transparent, const RGBA& shadowColor = RGBA::Transparent, int shadowOffsetX = 1, int shadowOffsetY = 1);
 	TextStyle(const TextStyle& other);
 	TextStyle& operator=(const TextStyle& other);
 };
@@ -1536,12 +1541,13 @@ public:
 	void FillTriangle(RGBA color1, RGBA color2, RGBA color3, Point p1, Point p2, Point p3);
 	void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), Point p1, Point p2, Point p3);
 	void DrawBitmap(const Bitmap& bitmap, float destX, float destY, int destWidth, int destHeight, float srcX, float srcY, int srcWidth, int srcHeight);
+	void DrawGlyph(uint8_t glyph, int x, int y, const TextStyle& ts);
 	void DrawText(const std::string_view text, const TextStyle& ts);
 	void DrawText(const std::string_view text, int x, int y, const TextStyle& ts);
 	void DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, FPoint p1, FPoint p2, FPoint p3);
 	
 	/* DRAWING FUNCTION OVERLOADS */
-	inline void DrawPixel(const RGBA& color, int x, int y);
+		   void DrawPixel(const RGBA& color, int x, int y);
 	inline void DrawLine(const RGBA& color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(color, Point{x1, y1}, Point{x2, y2}, AA, GC); }
 	inline void DrawRectangle(const RGBA& color, int x, int y, int width, int height) { DrawRectangle(color, Rectangle{x, y, width, height}); }
 	inline void FillRectangle(const RGBA& color, int x, int y, int width, int height) { FillRectangle(color, Rectangle{x,y, width, height}); }
@@ -1555,6 +1561,7 @@ public:
 	inline void FillTriangle(RGBA color1, RGBA color2, RGBA color3, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(color1, color2, color3, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}); }
 	inline void FillTriangle(RGBA (*shader)(const Renderer& renderer, int x, int y), int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(shader, Point{x1, y1}, Point{x2, y2}, Point{x3, y3} ); }
 	inline void DrawBitmap(const Bitmap& bitmap, FPoint destLocation, int destWidth, int destHeight, FPoint srcLocation, int srcWidth, int srcHeight) { DrawBitmap(bitmap, destLocation.x, destLocation.y, destWidth, destHeight, srcLocation.x, srcLocation.y, srcWidth, srcHeight); }
+	inline void DrawGlyph(uint8_t glyph, int x, int y) { DrawGlyph(glyph, x, y, textStyle); }
 	inline void DrawText(const std::string_view text) { DrawText(text, textStyle); };
 	inline void DrawText(const std::string_view text, int x, int y) { DrawText(text, x, y, textStyle); };
 	
@@ -1568,7 +1575,8 @@ public:
 	inline void FillTriangle(uint32_t color, const Point& p1, Point p2, Point p3) { FillTriangle(RGBA{color}, p1, p2, p3 ); }
 	inline void FillTriangle(uint32_t color1, uint32_t color2, uint32_t color3, Point p1, Point p2, Point p3) { FillTriangle(RGBA{color1}, RGBA{color2}, RGBA{color3}, p1, p2, p3); }
 	inline void DrawBitmap(const Bitmap& bitmap, FRectangle destRect, FRectangle srcRect) { DrawBitmap(bitmap, destRect.x, destRect.y, destRect.width, destRect.height, srcRect.x, srcRect.y, srcRect.width, srcRect.height); }
-	
+	inline void DrawGlyph(uint8_t glyph, Point p, const TextStyle& ts) { DrawGlyph(glyph, p.x, p.y, ts); };
+
 	inline void DrawPixel(uint32_t color, int x, int y);
 	inline void DrawLine(uint32_t color, int x1, int y1, int x2, int y2, bool AA = false, bool GC = false) { DrawLine(RGBA{color}, Point{x1, y1}, Point{x2, y2}, AA, GC); }
 	inline void DrawRectangle(uint32_t color, int x, int y, int width, int height) { DrawRectangle(RGBA{color}, Rectangle{x, y, width, height}); }
@@ -1578,6 +1586,7 @@ public:
 	inline void DrawTriangle(uint32_t color, int x1, int y1, int x2, int y2, int x3, int y3, bool AA = false, bool GC = false) { DrawTriangle(RGBA{color}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}, AA, GC ); }
 	inline void FillTriangle(uint32_t color, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(RGBA{color}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3} ); }
 	inline void FillTriangle(uint32_t color1, uint32_t color2, uint32_t color3, int x1, int y1, int x2, int y2, int x3, int y3) { FillTriangle(RGBA{color1}, RGBA{color2}, RGBA{color3}, Point{x1, y1}, Point{x2, y2}, Point{x3, y3}); }
+	inline void DrawGlyph(uint8_t glyph, Point p) { DrawGlyph(glyph, p.x, p.y, textStyle); };
 	
 	/* GETTERS */
 	inline uint32_t* GetData() const {
@@ -2857,6 +2866,50 @@ uint32_t cdr::Renderer::sampleTextureRaw(const cdr::Bitmap& bitmap, float xSrc, 
 	}
 }
 
+void cdr::Renderer::DrawGlyph(uint8_t glyph, int x, int y, const TextStyle& ts) {
+	int fontWidth = ts.font->GetFontWidth();
+	int fontHeight = ts.font->GetFontHeight();
+	
+	int letterX = glyph % (ts.font->GetFontSheetWidth() / fontWidth);
+	int letterY = glyph / (ts.font->GetFontSheetHeight() / fontHeight);
+	if (x >= 0 && y >= 0) {
+		switch (ts.ta) {
+			case TextAlignment::TL: break; // NOTE: this is Default
+			case TextAlignment::TC: x -= fontWidth/2.f*ts.size; break;
+			case TextAlignment::TR: x -= fontWidth*ts.size; break;
+			case TextAlignment::CL: y -= fontHeight/2.f*ts.size; break;
+			case TextAlignment::CC: x -= fontWidth/2.f*ts.size; 
+									y -= fontHeight/2.f*ts.size; break;
+			case TextAlignment::CR: x -= fontWidth*ts.size; 
+									y -= fontHeight/2.f*ts.size;break;
+			case TextAlignment::BL: y -= fontHeight*ts.size; break;
+			case TextAlignment::BC: x -= fontWidth/2.f*ts.size; 
+									y -= fontHeight*ts.size; break;
+			case TextAlignment::BR: x -= fontWidth*ts.size; 
+									y -= fontHeight*ts.size; break;
+		}
+	}
+	for (int i = 0; i < fontWidth * ts.size; i++) {
+		for (int j = 0; j < fontHeight * ts.size; j++) {
+			const RGB& letterPixel = ts.font->GetPixel(letterX * fontWidth + i / ts.size, letterY * fontHeight + j / ts.size);
+			int subX{static_cast<int>(x + i)};
+			int subY{static_cast<int>(y + j)};
+			
+			if (subX >= GetWidth() || subY >= GetHeight() || subX < 0 || subY < 0) continue;
+			
+			if (letterPixel == RGB::Black && ts.bColor != RGBA::Transparent && GetPixel(subX, subY) != ts.shadowColor) {
+				DrawPixel(ts.bColor, subX, subY);
+			} else if(letterPixel == RGB::White) {
+				DrawPixel(ts.fColor, subX, subY);
+				int sx = i/ts.size + ts.shadowOffsetX;
+				int sy = j/ts.size + ts.shadowOffsetY;
+				if (sx < 0 || sy < 0 || sx >= fontWidth || sy >= fontHeight || ts.font->GetPixel(letterX * fontWidth + sx, letterY * fontHeight + sy) == RGB::Black) {
+					DrawPixel(ts.shadowColor, subX + ts.shadowOffsetX*ts.size, subY + ts.shadowOffsetY*ts.size);
+				}
+			}
+		}
+	}
+}
 void cdr::Renderer::DrawText(const std::string_view text, const TextStyle& ts) {
 	DrawText(text, globalX * ts.font->GetFontWidth(), globalY * ts.font->GetFontHeight(), ts);
 	int caretCol{};
@@ -2886,27 +2939,55 @@ void cdr::Renderer::DrawText(const std::string_view text, int x, int y, const Te
 	int charsCols = ts.font->GetFontSheetHeight() / fontSizeHeight;
 		
 	int textBoundingBoxWidth{};
-	int textBoundingBoxHeight{1};
+	int textBoundingBoxHeight{fontSizeHeight};
 	int localWidth{};
 	for (const auto& letter : text) {
 		if (letter == '\n') {
-			textBoundingBoxHeight++;
+			textBoundingBoxHeight += fontSizeHeight;
 			localWidth = 0;
 		} else	if (letter == '\t') {
 			// NOTE: the 4 is the tab size
-			localWidth += 4 - (localWidth) % 4;
+			int tab = 4 - (localWidth) % 4;
+			localWidth += tab;
 		} else {
-			localWidth++;
+			if (!ts.useKerning) {
+				localWidth += fontSizeWidth;
+			}
+			else {
+				int letterX = letter % charsCols;
+				int letterY = letter / charsRows;
+				int start = std::min(ts.font->GetLeftKernel(letterX, letterY), ts.font->GetRightKernel(letterX, letterY));
+				int end = 	std::max(ts.font->GetLeftKernel(letterX, letterY), ts.font->GetRightKernel(letterX, letterY));
+				localWidth += end - start;
+			}
 		}
 		if(localWidth > textBoundingBoxWidth) {
 			textBoundingBoxWidth = localWidth;
 		}
 	}
 	
-	int newLineCount{};
+	if (x >= 0 && y >= 0) {
+		switch (ts.ta) {
+			case TextAlignment::TL: break; // NOTE: this is Default
+			case TextAlignment::TC: x -= textBoundingBoxWidth/2.f*ts.size; break;
+			case TextAlignment::TR: x -= textBoundingBoxWidth*ts.size; break;
+			case TextAlignment::CL: y -= textBoundingBoxHeight/2.f*ts.size; break;
+			case TextAlignment::CC: x -= textBoundingBoxWidth/2.f*ts.size; 
+									y -= textBoundingBoxHeight/2.f*ts.size; break;
+			case TextAlignment::CR: x -= textBoundingBoxWidth*ts.size; 
+									y -= textBoundingBoxHeight/2.f*ts.size;break;
+			case TextAlignment::BL: y -= textBoundingBoxHeight*ts.size; break;
+			case TextAlignment::BC: x -= textBoundingBoxWidth/2.f*ts.size; 
+									y -= textBoundingBoxHeight*ts.size; break;
+			case TextAlignment::BR: x -= textBoundingBoxWidth*ts.size; 
+									y -= textBoundingBoxHeight*ts.size; break;
+		}
+	}
+	
 	int caretCol{};
-	for (int letterCount = 0; (unsigned)letterCount < text.size(); letterCount++) {
-		const unsigned char& letter = text[letterCount];
+	int newLineCount{};
+	for (int letterIndex = 0; (unsigned)letterIndex < text.size(); letterIndex++) {
+		const unsigned char& letter = text[letterIndex];
 		if(letter < 0 || letter > 255) continue;
 		
 		int letterX = letter % charsCols;
@@ -2916,53 +2997,44 @@ void cdr::Renderer::DrawText(const std::string_view text, int x, int y, const Te
 			caretCol = 0;
 		} else	if (letter == '\t') {
 			// NOTE: the 4 is the tab size
-			caretCol += 4 - (caretCol) % 4;
+			int tab = 4 - (caretCol) % 4;
+			FillRectangle(ts.bColor, x + caretCol * ts.size, y + newLineCount * fontSizeHeight, fontSizeWidth * tab, fontSizeHeight);
+			caretCol += tab * fontSizeWidth;
 		} else {
-			caretCol++;
-			for (int i = 0; i < fontSizeWidth * ts.size; i++) {
+			int start = 0;
+			int end = fontSizeWidth;
+			if (ts.useKerning) {
+				start = std::min(ts.font->GetLeftKernel(letterX, letterY), ts.font->GetRightKernel(letterX, letterY));
+				end   = std::max(ts.font->GetLeftKernel(letterX, letterY), ts.font->GetRightKernel(letterX, letterY));
+			}
+			for (int i = start; i < end * ts.size; i++) {
 				for (int j = 0; j < fontSizeHeight * ts.size; j++) {
 					const RGB& letterPixel = ts.font->GetPixel(letterX * fontSizeWidth + i / ts.size, letterY * fontSizeHeight + j / ts.size);
 					
-					int subX{};
-					int subY{};
-					
-					subX = x + (caretCol-1) * ts.size * (fontSizeWidth) + i;
-					subY = y + newLineCount * fontSizeHeight + j;
-					
-					if (x >= 0 && y >= 0) {
-						int fw = ts.font->GetFontWidth();
-						int fh = ts.font->GetFontHeight();
-						switch (ts.ta) {
-							case TextAlignment::TL: break; // NOTE: this is Default
-							case TextAlignment::TC: subX -= fw * textBoundingBoxWidth/2.f*ts.size; break;
-							case TextAlignment::TR: subX -= fw * textBoundingBoxWidth*ts.size; break;
-							case TextAlignment::CL: subY -= fh * textBoundingBoxHeight/2.f*ts.size; break;
-							case TextAlignment::CC: subX -= fw * textBoundingBoxWidth/2.f*ts.size; 
-													subY -= fh * textBoundingBoxHeight/2.f*ts.size; break;
-							case TextAlignment::CR: subX -= fw * textBoundingBoxWidth*ts.size; 
-													subY -= fh * textBoundingBoxHeight/2.f*ts.size;break;
-							case TextAlignment::BL: subY -= fh * textBoundingBoxHeight*ts.size; break;
-							case TextAlignment::BC: subX -= fw * textBoundingBoxWidth/2.f*ts.size; 
-													subY -= fh * textBoundingBoxHeight*ts.size; break;
-							case TextAlignment::BR: subX -= fw * textBoundingBoxWidth*ts.size; 
-													subY -= fh * textBoundingBoxHeight*ts.size; break;
-						}
-					}
+					int subX = x + caretCol * ts.size + (i - start);
+					int subY = y + newLineCount * fontSizeHeight + j;
 					
 					if(subX >= GetWidth() || subY >= GetHeight() || 
 					subX < 0 || subY < 0)
 					continue;
 					
-					if(letterPixel == RGB::Black && ts.bColor != RGBA::Transparent && GetPixel(subX, subY) != ts.shadowColor) {
+					if(ts.bColor != RGBA::Transparent && (letterPixel == RGB::Black || i < 0 || i >= ts.font->GetRightKernel(letterX, letterY) * ts.size) && GetPixel(subX, subY) != ts.shadowColor) {
 						DrawPixel(ts.bColor, subX, subY);
-					} else if(letterPixel == RGB::White){
+					} else if(letterPixel == RGB::White && !(letterPixel == RGB::Black || i < 0 || i >= ts.font->GetRightKernel(letterX, letterY) * ts.size)) {
 						DrawPixel(ts.fColor, subX, subY);
-						if(ts.font->GetPixel(letterX * fontSizeWidth + i/ts.size + ts.shadowOffsetX, letterY * fontSizeHeight + j/ts.size + ts.shadowOffsetY) == RGB::Black) {
+						int sx = i/ts.size + ts.shadowOffsetX;
+						int sy = j/ts.size + ts.shadowOffsetY;
+						if((sx < 0 || sy < 0 || sx >= fontSizeWidth || sy >= fontSizeHeight || ts.font->GetPixel(letterX * fontSizeWidth + sx, letterY * fontSizeHeight + sy) == RGB::Black)
+							&& GetPixel(subX + ts.shadowOffsetX*ts.size, subY + ts.shadowOffsetY*ts.size) != ts.fColor) { // HACK: checks if color of pixel is foreground color
 							DrawPixel(ts.shadowColor, subX + ts.shadowOffsetX*ts.size, subY + ts.shadowOffsetY*ts.size);
 						}
 					}
 				}
 			}
+			if (ts.useKerning)
+				caretCol += end - start;
+			else 
+				caretCol += fontSizeWidth;
 		}
 	}
 }
@@ -5294,8 +5366,9 @@ cdr::FPoint::operator cdr::Point() const {
  * Date: 12.2.2021				*
  ********************************/
 
+
 cdr::Font::Font(const uint8_t* data, int fontSheetWidth, int fontSheetHeight, int fontWidth, int fontHeight) : 
-	fontSheet{fontSheetWidth, fontSheetHeight}, fontWidth{fontWidth}, fontHeight{fontHeight} {
+	fontSheet{fontSheetWidth, fontSheetHeight}, fontWidth{fontWidth}, fontHeight{fontHeight}, kernX((fontSheetWidth/fontWidth) * (fontSheetHeight/fontHeight)) {
 		
 	auto getCoordX = [](int val, int width) {
 		return val % width;
@@ -5314,17 +5387,113 @@ cdr::Font::Font(const uint8_t* data, int fontSheetWidth, int fontSheetHeight, in
 			fontSheet.SetPixel(cdr::RGBA{c, c, c, 255}, getCoordX(i*8 + j, fontSheetWidth), getCoordY(i*8 + j, fontSheetWidth));
 		}
 	}
+	
+	for (int cX = 0; cX < fontSheetWidth / fontWidth; cX++) {
+		for (int cY = 0; cY < fontSheetHeight / fontHeight; cY++) {
+			bool kernL = false;
+			bool kernLInit = false;
+			bool kernR = false;
+			bool kernRInit = false;
+			for (int xl = 0, xr = fontWidth - 1; xl < fontWidth; xl++, xr--) {
+				for (int y = cY*fontHeight; y < cY*fontHeight+fontHeight; y++) {
+					
+					kernL |= (fontSheet.GetPixel(xl + cX * fontWidth, y) == cdr::RGB::White);
+					kernR |= (fontSheet.GetPixel(xr + cX * fontWidth, y) == cdr::RGB::White);
+					
+					if (!kernLInit) {
+						kernX[cX + (cY * (fontSheet.GetWidth() / fontWidth))].first = xl - 1;
+					}
+					// if (kernL != kernLInit) {
+					// 	this->fontSheet.SetPixel(cdr::RGBA::Red, kernX[cX + cY * fontSheet.GetWidth() / fontWidth].first + cX * fontWidth, y);
+					// }
+					kernLInit |= kernL;
+					
+					if (!kernRInit) {
+						kernX[cX + cY * fontSheet.GetWidth() / fontWidth].second = xr + 1;
+					}
+					// if (kernR != kernRInit) {
+					// 	this->fontSheet.SetPixel(cdr::RGBA::Green, kernX[cX + cY * fontSheet.GetWidth() / fontWidth].second + cX * fontWidth, y);
+					// }
+					kernRInit |= kernR;
+					
+					if (kernR && kernL) {
+						goto next;
+					}
+				}
+			}
+			next:;
+		}
+	}
+	
+	// for (int cX = 0; cX < fontSheetWidth / fontWidth - 1; cX++) {
+	// 	for (int cY = 0; cY < fontSheetHeight / fontHeight; cY++) {
+	// 		for (int y = cY*fontHeight; y < cY*fontHeight+fontHeight; y++) {
+	// 			fontSheet.SetPixel(cdr::RGB::Red,   cX * fontWidth + kernX[cX + cY * fontSheetWidth / fontWidth].first,  y);
+	// 			fontSheet.SetPixel(cdr::RGB::Green, cX * fontWidth + kernX[cX + cY * fontSheetWidth / fontWidth].second, y);
+	// 		}
+	// 	}
+	// }
+}
+cdr::Font::Font(const Bitmap& fontSheet, int fontWidth, int fontHeight) : 
+	fontSheet{fontSheet}, fontWidth{fontWidth}, fontHeight{fontHeight}, kernX((fontSheet.GetWidth()/fontWidth) * (fontSheet.GetHeight()/fontHeight)) {
+	for (int cX = 0; cX < fontSheet.GetWidth() / fontWidth; cX++) {
+		for (int cY = 0; cY < fontSheet.GetHeight() / fontHeight; cY++) {
+			bool kernL = false;
+			bool kernLInit = false;
+			bool kernR = false;
+			bool kernRInit = false;
+			for (int xl = 0, xr = fontWidth - 1; xl < fontWidth; xl++, xr--) {
+				for (int y = cY*fontHeight; y < cY*fontHeight+fontHeight; y++) {
+					
+					kernL |= (fontSheet.GetPixel(xl + cX * fontWidth, y) == cdr::RGB::White);
+					kernR |= (fontSheet.GetPixel(xr + cX * fontWidth, y) == cdr::RGB::White);
+					
+					if (!kernLInit) {
+						kernX[cX + (cY * (fontSheet.GetWidth() / fontWidth))].first = xl - 1;
+					}
+					// if (kernL != kernLInit) {
+					// 	this->fontSheet.SetPixel(cdr::RGBA::Red, kernX[cX + cY * fontSheet.GetWidth() / fontWidth].first + cX * fontWidth, y);
+					// }
+					kernLInit |= kernL;
+					
+					if (!kernRInit) {
+						kernX[cX + cY * fontSheet.GetWidth() / fontWidth].second = xr + 1;
+					}
+					// if (kernR != kernRInit) {
+					// 	this->fontSheet.SetPixel(cdr::RGBA::Green, kernX[cX + cY * fontSheet.GetWidth() / fontWidth].second + cX * fontWidth, y);
+					// }
+					kernRInit |= kernR;
+					
+					if (kernR && kernL) {
+						goto next;
+					}
+				}
+			}
+			next:;
+		}
+	}
+	
+	// for (int cX = 0; cX < fontSheet.GetWidth() / fontWidth - 1; cX++) {
+	// 	for (int cY = 0; cY < fontSheet.GetHeight() / fontHeight; cY++) {
+	// 		for (int y = cY*fontHeight; y < cY*fontHeight+fontHeight; y++) {
+	// 			this->fontSheet.SetPixel(cdr::RGB::Red,   cX * fontWidth + kernX[cX + cY * fontSheet.GetWidth() / fontWidth].first,  y);
+	// 			this->fontSheet.SetPixel(cdr::RGB::Green, cX * fontWidth + kernX[cX + cY * fontSheet.GetHeight() / fontWidth].second, y);
+	// 		}
+	// 	}
+	// }
 }
 
-cdr::TextStyle::TextStyle(const Font& font, TextAlignment ta, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY)
-	: font(&font), ta(ta), size(size), fColor(fColor), bColor(bColor), shadowColor(shadowColor), shadowOffsetX(shadowOffsetX), shadowOffsetY(shadowOffsetY) {
+
+cdr::TextStyle::TextStyle(const Font& font, bool useKerning, TextAlignment ta, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY)
+	: font(&font), useKerning(useKerning), ta(ta), size(size), fColor(fColor), bColor(bColor), shadowColor(shadowColor), shadowOffsetX(shadowOffsetX), shadowOffsetY(shadowOffsetY) {
 }
 
 cdr::TextStyle::TextStyle(const TextStyle& other)
-	: font(other.font), ta(other.ta), size(other.size), fColor(other.fColor), bColor(other.bColor), shadowColor(other.shadowColor), shadowOffsetX(other.shadowOffsetX), shadowOffsetY(other.shadowOffsetY) {
+	: font(other.font), useKerning(other.useKerning), ta(other.ta), size(other.size), fColor(other.fColor), bColor(other.bColor), shadowColor(other.shadowColor), shadowOffsetX(other.shadowOffsetX), shadowOffsetY(other.shadowOffsetY) {
 }
 cdr::TextStyle& cdr::TextStyle::operator=(const TextStyle& other) {
 	this->font = other.font;
+	this->useKerning = other.useKerning;
 	this->ta = other.ta;
 	this->size = other.size;
 	this->fColor = other.fColor;

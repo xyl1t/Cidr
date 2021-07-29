@@ -8,6 +8,8 @@
 #define CIDR_FONT_HPP
 
 #include "bitmap.hpp"
+#include <utility>
+#include <vector>
 
 namespace cdr {
 	
@@ -16,9 +18,11 @@ private:
 	Bitmap fontSheet;
 	int fontWidth;
 	int fontHeight;
+	std::vector<std::pair<int, int>> kernX;
 	
 public: 
 	Font(const uint8_t data[], int fontSheetWidth, int fontSheetHeight, int fontWidth, int fontHeight);
+	Font(const Bitmap& fontSheet, int fontWidth, int fontHeight);
 	
 	inline const RGBA GetPixel(int x, int y) const {
 		return fontSheet.GetPixel(x, y);
@@ -27,6 +31,8 @@ public:
 	inline int GetFontHeight() const { return fontHeight; }
 	inline int GetFontSheetWidth() const { return fontSheet.GetWidth(); }
 	inline int GetFontSheetHeight() const { return fontSheet.GetHeight(); }
+	inline int GetLeftKernel(int characterX, int characterY) const { return kernX[characterX + characterY * fontSheet.GetWidth() / fontWidth].first; }
+	inline int GetRightKernel(int characterX, int characterY) const { return kernX[characterX + characterY * fontSheet.GetWidth() / fontWidth].second; }
 };
 
 // NOTE: 
@@ -47,6 +53,7 @@ extern const cdr::Font Raster8x12;
 
 struct TextStyle {
 	const Font* font;
+	bool useKerning;
 	TextAlignment ta;
 	float size;
 	RGBA fColor;
@@ -55,7 +62,7 @@ struct TextStyle {
 	int shadowOffsetX;
 	int shadowOffsetY;
 	
-	TextStyle(const Font& font = cdr::Fonts::Raster8x12, TextAlignment ta = TextAlignment::TL, float size = 1, const RGBA& fColor = RGB::White, const RGBA& bColor = RGBA::Transparent, const RGBA& shadowColor = RGBA::Transparent, int shadowOffsetX = 1, int shadowOffsetY = 1);	
+	TextStyle(const Font& font = cdr::Fonts::Raster8x12, bool useKerning = false, TextAlignment ta = TextAlignment::TL, float size = 1, const RGBA& fColor = RGB::White, const RGBA& bColor = RGBA::Transparent, const RGBA& shadowColor = RGBA::Transparent, int shadowOffsetX = 1, int shadowOffsetY = 1);
 	TextStyle(const TextStyle& other);
 	TextStyle& operator=(const TextStyle& other);
 };
