@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
 		old = current;
 		current = t.elapsed();
 		if(timer > 1000) {
-			//std::cout << "ms: " << (current - old) / 1000000.f << '\n';
+			std::cout << "ms: " << (current - old) / 1000000.f << '\n';
 			timer = 0; 
 		}
 		timer += (current - old) / 1000000.f;
