@@ -86,7 +86,7 @@ public:
 	vec3 operator/(const float other) const;
 	operator vec2() const { 
 		return vec2{this->x, this->y};
-	};
+	}
 };
 class vec4 {
 public:
@@ -128,7 +128,7 @@ public:
 	vec4 operator/(const float other) const;
 	operator vec3() const { 
 		return vec3{this->x, this->y, this->z};
-	};
+	}
 };
 
 
@@ -436,6 +436,6 @@ inline float degrees(float radian) {
 	return radian * 180.0 / 3.141592653589793;
 }
 
-};
+}
 
 #endif /* TENSOR_MATH_HPP */

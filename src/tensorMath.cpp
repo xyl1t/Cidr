@@ -504,7 +504,7 @@ tem::mat2x2& tem::mat2x2::operator*=(const tem::mat2x2& other) {
 		for(int j = 0; j < 2; j++) {
 			this->mat[i + j * 2] =
 				this->mat[j * 2] * other.mat[j + i] +
-				this->mat[j * 2 + 1] * other.mat[j + 2 + i];
+				this->mat[j * 2 + 1] * other.mat[j * 2 + i];
 		}
 	}
 	

@@ -1205,8 +1205,7 @@ void cdr::Renderer::DrawText(const std::string_view text, const TextStyle& ts) {
 	int caretCol{};
 	for (int letterCount = 0; (unsigned)letterCount < text.size(); letterCount++) {
 		const unsigned char& letter = text[letterCount];
-		if(letter < 0 || letter > 255) continue;
-		
+				
 		if (letter == '\n') {
 			caretCol = 0;
 			globalY++;
@@ -1278,8 +1277,7 @@ void cdr::Renderer::DrawText(const std::string_view text, int x, int y, const Te
 	int newLineCount{};
 	for (int letterIndex = 0; (unsigned)letterIndex < text.size(); letterIndex++) {
 		const unsigned char& letter = text[letterIndex];
-		if(letter < 0 || letter > 255) continue;
-		
+				
 		int letterX = letter % charsCols;
 		int letterY = letter / charsRows;
 		if (letter == '\n') {

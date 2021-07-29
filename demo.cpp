@@ -20,6 +20,7 @@
 #include <cstdio>
 #include <fstream>
 #include <string_view>
+#include <algorithm>
 
 #define CIDR_IMPLEMENTATION
 #ifndef NDEBUG
@@ -93,6 +94,13 @@ int main(int argc, char** argv) {
 	myBitmapRenderer.DrawText("Cidr", 132, 128);
 
 	myBitmap.SaveAs("myBitmap", cdr::Bitmap::Formats::PNG);
+
+	SDL_Surface* icon = SDL_CreateRGBSurfaceFrom(
+		myBitmap.GetData(), myBitmap.GetWidth(), myBitmap.GetHeight(), 
+		32, myBitmap.GetWidth() * sizeof(uint32_t), 
+		0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
+	SDL_SetWindowIcon(window, icon);
+	SDL_FreeSurface(icon);
 	
 	cdr::RGBA (*currentShader)(const cdr::Renderer& renderer, int x, int y) {nullptr};
 	cdr::Bitmap bitmap{"../res/pureTest.png"};
@@ -109,7 +117,7 @@ int main(int argc, char** argv) {
 		old = current;
 		current = t.elapsed();
 		if(timer > 1000) {
-			std::cout << "ms: " << (current - old) / 1000000.f << '\n';
+			//std::cout << "ms: " << (current - old) / 1000000.f << '\n';
 			timer = 0; 
 		}
 		timer += (current - old) / 1000000.f;

@@ -171,7 +171,7 @@ inline bool isInBounds(float x, float y, int w, int h) {
 }
 inline float edgeFunc (const FPoint& a, const FPoint& b, const FPoint& c) {
 	return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
-};
+}
 
 inline RGB alphaBlendColor(const cdr::RGB& color1, const cdr::RGB& color2, float alpha) {
 	return cdr::RGB { 

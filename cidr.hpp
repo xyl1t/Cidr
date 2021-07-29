@@ -1051,7 +1051,7 @@ public:
 	vec3 operator/(const float other) const;
 	operator vec2() const { 
 		return vec2{this->x, this->y};
-	};
+	}
 };
 class vec4 {
 public:
@@ -1093,7 +1093,7 @@ public:
 	vec4 operator/(const float other) const;
 	operator vec3() const { 
 		return vec3{this->x, this->y, this->z};
-	};
+	}
 };
 
 
@@ -1658,7 +1658,7 @@ inline bool isInBounds(float x, float y, int w, int h) {
 }
 inline float edgeFunc (const FPoint& a, const FPoint& b, const FPoint& c) {
 	return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
-};
+}
 
 inline RGB alphaBlendColor(const cdr::RGB& color1, const cdr::RGB& color2, float alpha) {
 	return cdr::RGB { 
@@ -2915,7 +2915,6 @@ void cdr::Renderer::DrawText(const std::string_view text, const TextStyle& ts) {
 	int caretCol{};
 	for (int letterCount = 0; (unsigned)letterCount < text.size(); letterCount++) {
 		const unsigned char& letter = text[letterCount];
-		if(letter < 0 || letter > 255) continue;
 		
 		if (letter == '\n') {
 			caretCol = 0;
@@ -2988,7 +2987,6 @@ void cdr::Renderer::DrawText(const std::string_view text, int x, int y, const Te
 	int newLineCount{};
 	for (int letterIndex = 0; (unsigned)letterIndex < text.size(); letterIndex++) {
 		const unsigned char& letter = text[letterIndex];
-		if(letter < 0 || letter > 255) continue;
 		
 		int letterX = letter % charsCols;
 		int letterY = letter / charsRows;
@@ -4161,7 +4159,7 @@ tem::mat2x2& tem::mat2x2::operator*=(const tem::mat2x2& other) {
 		for(int j = 0; j < 2; j++) {
 			this->mat[i + j * 2] =
 				this->mat[j * 2] * other.mat[j + i] +
-				this->mat[j * 2 + 1] * other.mat[j + 2 + i];
+				this->mat[j * 2 + 1] * other.mat[j * 2 + i];
 		}
 	}
 	
