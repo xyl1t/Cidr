@@ -10,6 +10,7 @@
 #include "bitmap.hpp"
 #include <utility>
 #include <vector>
+#include <string_view>
 
 namespace cdr {
 	
@@ -22,6 +23,7 @@ private:
 	
 public: 
 	Font(const uint8_t data[], int fontSheetWidth, int fontSheetHeight, int fontWidth, int fontHeight);
+	Font(std::string_view fontPath, int fontWidth, int fontHeight);
 	Font(const Bitmap& fontSheet, int fontWidth, int fontHeight);
 	
 	inline const RGBA GetPixel(int x, int y) const {

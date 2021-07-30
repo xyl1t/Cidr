@@ -122,6 +122,7 @@ cdr::Font::Font(const Bitmap& fontSheet, int fontWidth, int fontHeight) :
 	// }
 }
 
+cdr::Font::Font(std::string_view fontPath, int fontWidth, int fontHeight) : Font(Bitmap(fontPath), fontWidth, fontHeight) {}
 
 cdr::TextStyle::TextStyle(const Font& font, bool useKerning, TextAlignment ta, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY)
 	: font(&font), useKerning(useKerning), ta(ta), size(size), fColor(fColor), bColor(bColor), shadowColor(shadowColor), shadowOffsetX(shadowOffsetX), shadowOffsetY(shadowOffsetY) {
