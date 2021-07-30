@@ -717,7 +717,7 @@ public:
 	
 	BaseBitmap(int width, int height, int numComponents = 4);
 	BaseBitmap(uint32_t* source, int sourceWidth, int sourceHeight, int sourceComponents);
-	BaseBitmap(const std::string& file, int reqComponents = 0);
+	BaseBitmap(std::string_view file, int reqComponents = 0);
 	virtual ~BaseBitmap();
 
 	BaseBitmap(const BaseBitmap& other);
@@ -741,7 +741,7 @@ class RGBABitmap : public BaseBitmap {
 public:
 	RGBABitmap(int width, int height);
 	RGBABitmap(uint32_t* source, int sourceWidth, int sourceHeight);
-	RGBABitmap(const std::string& file);
+	RGBABitmap(std::string_view file);
 	~RGBABitmap();
 
 	// copy constructor/assignment
@@ -764,7 +764,7 @@ class RGBBitmap : public BaseBitmap {
 public:
 	RGBBitmap(int width, int height);
 	RGBBitmap(uint32_t* source, int sourceWidth, int sourceHeight);
-	RGBBitmap(const std::string& file);
+	RGBBitmap(std::string_view file);
 	~RGBBitmap();
 
 	// copy constructor/assignment
@@ -911,6 +911,7 @@ private:
 	
 public: 
 	Font(const uint8_t data[], int fontSheetWidth, int fontSheetHeight, int fontWidth, int fontHeight);
+	Font(std::string_view fontPath, int fontWidth, int fontHeight);
 	Font(const Bitmap& fontSheet, int fontWidth, int fontHeight);
 	
 	inline const RGBA GetPixel(int x, int y) const {
@@ -4869,8 +4870,8 @@ cdr::BaseBitmap::BaseBitmap(uint32_t* source, int sourceWidth, int sourceHeight,
 	data{new uint32_t[sourceWidth * sourceHeight]}, width{sourceWidth}, height{sourceHeight}, components{sourceComponents} {
 	memcpy(data, source, width * height * sizeof(uint32_t));
 }
-cdr::BaseBitmap::BaseBitmap(const std::string& file, int reqComponents) {
-	uint8_t* imageData = stbi_load(file.c_str(), &this->width, &this->height, &this->components, reqComponents);
+cdr::BaseBitmap::BaseBitmap(std::string_view file, int reqComponents) {
+	uint8_t* imageData = stbi_load(file.data(), &this->width, &this->height, &this->components, reqComponents);
 	this->components = reqComponents;
 	if(imageData) {
 		data = new uint32_t[width * height];
@@ -4886,7 +4887,7 @@ cdr::BaseBitmap::BaseBitmap(const std::string& file, int reqComponents) {
 		}
 		stbi_image_free(imageData);
 	} else {
-		throw std::runtime_error("Cidr: Bitmap not found (" + file + ")");
+		throw std::runtime_error("Cidr: Bitmap not found (" + std::string(file) + ")");
 	}
 }
 
@@ -4962,7 +4963,7 @@ void cdr::BaseBitmap::SaveAs(const std::string& fileName, Formats format, int qu
 
 cdr::RGBABitmap::RGBABitmap(int width, int height) : BaseBitmap(width, height, 4) {}
 cdr::RGBABitmap::RGBABitmap(uint32_t* source, int sourceWidth, int sourceHeight) : BaseBitmap(source, sourceWidth, sourceHeight, 4) {}
-cdr::RGBABitmap::RGBABitmap(const std::string& file) : BaseBitmap(file, 4) {}
+cdr::RGBABitmap::RGBABitmap(std::string_view file) : BaseBitmap(file, 4) {}
 
 cdr::RGBABitmap::RGBABitmap(const RGBABitmap& other) : BaseBitmap(other) {}
 cdr::RGBABitmap& cdr::RGBABitmap::operator=(const RGBABitmap& other) {
@@ -4981,7 +4982,7 @@ cdr::RGBABitmap::~RGBABitmap() {}
 
 cdr::RGBBitmap::RGBBitmap(int width, int height) : BaseBitmap(width, height, 3) {}
 cdr::RGBBitmap::RGBBitmap(uint32_t* source, int sourceWidth, int sourceHeight) : BaseBitmap(source, sourceWidth, sourceHeight, 4) {}
-cdr::RGBBitmap::RGBBitmap(const std::string& file) : BaseBitmap(file, 3) {}
+cdr::RGBBitmap::RGBBitmap(std::string_view file) : BaseBitmap(file, 3) {}
 
 cdr::RGBBitmap::RGBBitmap(const RGBBitmap& other) : BaseBitmap(other) {}
 cdr::RGBBitmap& cdr::RGBBitmap::operator=(const RGBBitmap& other) {
@@ -5489,6 +5490,7 @@ cdr::Font::Font(const Bitmap& fontSheet, int fontWidth, int fontHeight) :
 	// }
 }
 
+cdr::Font::Font(std::string_view fontPath, int fontWidth, int fontHeight) : Font(Bitmap(fontPath), fontWidth, fontHeight) {}
 
 cdr::TextStyle::TextStyle(const Font& font, bool useKerning, TextAlignment ta, float size, const RGBA& fColor, const RGBA& bColor, const RGBA& shadowColor, int shadowOffsetX, int shadowOffsetY)
 	: font(&font), useKerning(useKerning), ta(ta), size(size), fColor(fColor), bColor(bColor), shadowColor(shadowColor), shadowOffsetX(shadowOffsetX), shadowOffsetY(shadowOffsetY) {
