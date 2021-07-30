@@ -2202,6 +2202,9 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 		yLerp -= (min - startX) * yStep;
 		
 		for (int x = startX; x < endX; x++) {
+#ifdef CDR_PERFORMANCE
+			pixels[getIndex(x, y)] = texture.GetRawPixel(xLerp, yLerp);
+#else
 			// NOTE: doing this, instead of just DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y), in order to achieve *performance*
 			if (this->ScaleType == ScaleType::Nearest) {
 				if (!useAlphaBlending && (texture.GetRawPixel((float)xLerp, (float)yLerp)& 0xff) != 0 && (float)xLerp >= 0 && (float)yLerp >= 0 && (float)xLerp < texture.GetWidth() && (float)yLerp < texture.GetHeight()) {
@@ -2212,6 +2215,7 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 			} else {
 				DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y);
 			}
+#endif
 			
 			xLerp += xStep;
 			yLerp += yStep;
@@ -2252,6 +2256,9 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 		yLerp -= (min - startX) * yStep;
 		
 		for (int x = startX; x < endX; x++) {
+#ifdef CDR_PERFORMANCE
+			pixels[getIndex(x, y)] = texture.GetRawPixel(xLerp, yLerp);
+#else
 			// NOTE: doing this, instead of just DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y), in order to achieve *performance*
 			if (this->ScaleType == ScaleType::Nearest) {
 				if (!useAlphaBlending && (texture.GetRawPixel((float)xLerp, (float)yLerp)& 0xff) != 0 && (float)xLerp >= 0 && (float)yLerp >= 0 && (float)xLerp < texture.GetWidth() && (float)yLerp < texture.GetHeight()) {
@@ -2262,6 +2269,7 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 			} else {
 				DrawPixel(sampleTexture(texture, xLerp, yLerp), x, y);
 			}
+#endif
 			
 			xLerp += xStep;
 			yLerp += yStep;
