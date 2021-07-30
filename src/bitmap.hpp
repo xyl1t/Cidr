@@ -34,7 +34,7 @@ public:
 	
 	BaseBitmap(int width, int height, int numComponents = 4);
 	BaseBitmap(uint32_t* source, int sourceWidth, int sourceHeight, int sourceComponents);
-	BaseBitmap(const std::string& file, int reqComponents = 0);
+	BaseBitmap(std::string_view file, int reqComponents = 0);
 	virtual ~BaseBitmap();
 
 	BaseBitmap(const BaseBitmap& other);
@@ -58,7 +58,7 @@ class RGBABitmap : public BaseBitmap {
 public:
 	RGBABitmap(int width, int height);
 	RGBABitmap(uint32_t* source, int sourceWidth, int sourceHeight);
-	RGBABitmap(const std::string& file);
+	RGBABitmap(std::string_view file);
 	~RGBABitmap();
 
 	// copy constructor/assignment
@@ -81,7 +81,7 @@ class RGBBitmap : public BaseBitmap {
 public:
 	RGBBitmap(int width, int height);
 	RGBBitmap(uint32_t* source, int sourceWidth, int sourceHeight);
-	RGBBitmap(const std::string& file);
+	RGBBitmap(std::string_view file);
 	~RGBBitmap();
 
 	// copy constructor/assignment
@@ -109,7 +109,7 @@ public:
 // public:
 // 	MonochromeBitmap(int width, int height);
 // 	MonochromeBitmap(uint8_t* source, int sourceWidth, int sourceHeight);
-// 	MonochromeBitmap(const std::string& file);
+// 	MonochromeBitmap(std::string_view file);
 // 	~MonochromeBitmap();
 
 // 	// copy constructor/assignment
