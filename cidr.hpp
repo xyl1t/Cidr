@@ -2143,7 +2143,7 @@ struct DPoint {
 
 // void cdr::Renderer::DrawTriangle(const Bitmap& texture, float tx1, float ty1, float tx2, float ty2, float tx3, float ty3, float x1, float y1, float x2, float y2, float x3, float y3) {
 void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, FPoint tp3, FPoint p1, FPoint p2, FPoint p3) {
-	Timer t{};
+	// Timer t{};
 	
 	// sort top most point
 	if(p1.y > p2.y) {
@@ -2437,16 +2437,16 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 	}
 #endif
 	
-	static int counter = 0;
-	static double accumulation = 0;
-	counter++;
-	accumulation += t.elapsedSeconds()*1000;
+	// static int counter = 0;
+	// static double accumulation = 0;
+	// counter++;
+	// accumulation += t.elapsedSeconds()*1000;
 	
-	if (counter > 128) {
-		// std::cout << "speed: " << accumulation/counter << std::endl;
-		counter = 0;
-		accumulation = 0;
-	}
+	// if (counter > 128) {
+	// 	// std::cout << "speed: " << accumulation/counter << std::endl;
+	// 	counter = 0;
+	// 	accumulation = 0;
+	// }
 }
 void cdr::Renderer::FillTriangle(const RGBA& color, Point p1, Point p2, Point p3) {
 	// sort top most point
@@ -3160,7 +3160,7 @@ void cdr::Renderer::DrawTriangle(const Bitmap& texture, FPoint tp1, FPoint tp2, 
 	// std::cout << "p2: " << p2.x << "; " << p2.y << std::endl;
 	// std::cout << "p3: " << p3.x << "; " << p3.y << std::endl << std::endl;
 
-	Timer t{};	
+	// Timer t{};	
 	
 	tp1.x *= texture.GetWidth();
 	tp2.x *= texture.GetWidth();
